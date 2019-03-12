@@ -1,6 +1,7 @@
 /*
 
 !/src/
+!/tests/
 !/.gitattributes
 !/.gitignore
 !/composer.json

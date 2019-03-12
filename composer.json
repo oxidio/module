@@ -1,17 +1,19 @@
 {
-  "name": "oxidio/module",
+  "name": "oxidio/oxidio",
   "type": "library",
   "description": "shared functionality for oxid(io) modules",
   "license": "GPL-3.0",
   "require": {
-    "php-fn/php-fn": "^1",
+    "php-fn/di": "^1",
 
     "ext-json": "*",
     "php": ">=7.1"
   },
   "require-dev": {
     "oxid-esales/oxideshop-demodata-ce": "^6",
-    "oxidio/project": "dev-master"
+    "oxidio/project": "dev-master",
+
+    "php-fn/test": "^1"
   },
   "autoload": {
     "psr-4": {
@@ -19,6 +21,14 @@
     },
     "files": [
       "src/autoload-files.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Oxidio\\": ["tests/Oxidio"]
+    },
+    "files": [
+      "tests/autoload-files.php"
     ]
   }
 }

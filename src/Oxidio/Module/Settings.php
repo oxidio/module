@@ -8,10 +8,11 @@ namespace Oxidio\Module;
 use fn;
 use Generator;
 use IteratorAggregate;
+use JsonSerializable;
 
 /**
  */
-class Settings implements IteratorAggregate
+class Settings implements IteratorAggregate, JsonSerializable
 {
     /**
      * @var iterable
@@ -21,7 +22,7 @@ class Settings implements IteratorAggregate
     /**
      * @param iterable $groups
      */
-    public function __construct($groups)
+    public function __construct(iterable $groups)
     {
         $this->groups = $groups;
     }
@@ -33,12 +34,20 @@ class Settings implements IteratorAggregate
     {
         foreach ($this->groups as $groupLabel => $group) {
             foreach ($group as $name => $setting) {
-                if (empty($setting['type'])) {
+                if (empty($setting[Settings\TYPE])) {
                     $setting = fn\merge($setting, $this->type($setting));
                 }
-                yield fn\merge(['group' => $groupLabel, 'name' => $name], $setting);
+                yield fn\merge([Settings\GROUP => $groupLabel, Settings\NAME => $name], $setting);
             }
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function jsonSerialize()
+    {
+        return fn\traverse($this);
     }
 
     /**
@@ -52,17 +61,17 @@ class Settings implements IteratorAggregate
         foreach ($this->groups as $groupLabel => $group) {
             yield 'SHOP_MODULE_GROUP_' . $groupLabel => $groupLabel;
             foreach ($group as $name => $setting) {
-                $label = $setting['label'] ?? $name;
+                $label = $setting[Settings\LABEL] ?? $name;
                 $key   = 'SHOP_MODULE_' . $name;
 
                 yield $key => is_array($label) ? $label[$lang] ?? current($label) : $label;
-                if ($help = $setting['?'] ?? []) {
+                if ($help = $setting[Settings\HELP] ?? []) {
                     yield 'HELP_' . $key => is_array($help) ? $help[$lang] ?? current($help) : $help;
                 }
-                if (!isset($setting['selected'])) {
+                if (!isset($setting[Settings\SELECTED])) {
                     continue;
                 }
-                foreach ($this->constraints($setting['value'] ?? []) as $value => $label) {
+                foreach ($this->constraints($setting[Settings\VALUE] ?? []) as $value => $label) {
                     yield "{$key}_{$value}" => is_array($label) ? $label[$lang] ?? current($label) : $label;
                 }
             }
@@ -76,24 +85,24 @@ class Settings implements IteratorAggregate
      */
     private function type(array $setting): array
     {
-        $value = $setting['value'] ?? null;
+        $value = $setting[Settings\VALUE] ?? null;
 
         if (is_bool($value)) {
-            return ['type' => 'bool', 'value' => $value ? 'true' : 'false'];
+            return [Settings\TYPE => 'bool', Settings\VALUE => $value ? 'true' : 'false'];
         }
         if (!is_iterable($value)) {
-            return ['type' => 'str', 'value' => $value];
+            return [Settings\TYPE => 'str', Settings\VALUE => $value];
         }
 
-        if ($selected = $setting['selected'] ?? null) {
+        if ($selected = $setting[Settings\SELECTED] ?? null) {
             return [
-                'type'        => 'select',
-                'value'       => $selected,
+                Settings\TYPE        => 'select',
+                Settings\VALUE       => $selected,
                 'constraints' => $this->constraints($value)->keys()->string('|')
             ];
         }
 
-        return ['type' => 'aarr', 'value' => $value];
+        return [Settings\TYPE => 'aarr', Settings\VALUE => $value];
     }
 
     /**

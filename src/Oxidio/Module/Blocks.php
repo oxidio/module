@@ -7,10 +7,12 @@ namespace Oxidio\Module;
 
 use Generator;
 use IteratorAggregate;
+use JsonSerializable;
+use fn;
 
 /**
  */
-class Blocks implements IteratorAggregate
+class Blocks implements IteratorAggregate, JsonSerializable
 {
     /**
      * @var iterable
@@ -53,5 +55,13 @@ class Blocks implements IteratorAggregate
                 yield ['template' => $template, 'block' => $block, 'file' => $this->directory . $file];
             }
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function jsonSerialize()
+    {
+        return fn\traverse($this);
     }
 }

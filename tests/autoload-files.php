@@ -3,6 +3,4 @@
  * Copyright (C) oxidio. See LICENSE file for license details.
  */
 
-namespace Oxidio
-{
-}
+require_once __DIR__ . '/constants.php';
