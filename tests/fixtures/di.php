@@ -5,6 +5,8 @@
 
 namespace Oxidio\Module;
 
+use DI;
+use fn;
 
 return [
     ID       => ID,
@@ -20,5 +22,12 @@ return [
             'selected' => [Settings\VALUE => ['a', 'b', 'c'], Settings\SELECTED => 'a'],
         ]
     ],
-    BLOCKS   => ['t1.tpl' => 'b1', 't2.tpl' => ['b2', 'b3' => 'b3.tpl']]
+    BLOCKS   => ['t1.tpl' => 'b1', 't2.tpl' => ['b2', 'b3' => 'b3.tpl']],
+
+    'cli'    => DI\decorate(function(fn\Cli $cli) {
+        $cli->command('c1', function(fn\Cli\IO $io) {
+            $io->success('c1');
+        });
+        return $cli;
+    })
 ];

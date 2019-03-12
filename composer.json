@@ -4,7 +4,7 @@
   "description": "shared functionality for oxid(io) modules",
   "license": "GPL-3.0",
   "require": {
-    "php-fn/di": "^1",
+    "php-fn/cli": "^1",
 
     "ext-json": "*",
     "php": ">=7.1"

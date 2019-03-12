@@ -12,12 +12,19 @@ use Oxidio\Module\Settings;
 use Psr\Container\ContainerInterface;
 
 /**
+ * @property-read string $id
+ * @property-read string $title
+ * @property-read string $url
+ * @property-read string $author
+ * @property-read array  $settings
+ * @property-read array  $block
+ * @property-read fn\Cli $cli
  */
 class Module implements JsonSerializable
 {
     use fn\DI\PropertiesReadOnlyTrait;
 
-    protected const CONFIG = null;
+    protected const CONFIG = __DIR__ . '/../../config/di.php';
 
     /**
      * @var static[]
@@ -37,11 +44,6 @@ class Module implements JsonSerializable
         $this->container = $container;
     }
 
-    public function getContainer(): fn\DI\Container
-    {
-        return $this->container;
-    }
-
     /**
      * @param string $config
      *
@@ -52,6 +54,7 @@ class Module implements JsonSerializable
         $config = $config ?: static::CONFIG;
         if (!isset(static::$cache[$config])) {
             static::$cache[$config] = new static(fn\di(
+                self::CONFIG,
                 $config,
                 call_user_func(require fn\VENDOR_DIR . 'autoload.php', function (ContainerInterface $container) {
                     return $container;
@@ -67,7 +70,7 @@ class Module implements JsonSerializable
      *
      * @return mixed
      */
-    protected function get($name, $default = null)
+    public function get($name, $default = null)
     {
         if (is_iterable($name)) {
             return fn\traverse($name, function($default, $name) {
@@ -79,6 +82,11 @@ class Module implements JsonSerializable
             });
         }
         return $this->$name ?? $default;
+    }
+
+    public function __invoke()
+    {
+        return call_user_func($this->cli);
     }
 
     /**
