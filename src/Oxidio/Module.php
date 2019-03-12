@@ -17,6 +17,8 @@ class Module implements JsonSerializable
 {
     use fn\DI\PropertiesReadOnlyTrait;
 
+    protected const CONFIG = null;
+
     /**
      * @var static[]
      */
@@ -40,8 +42,9 @@ class Module implements JsonSerializable
      *
      * @return static
      */
-    public static function instance(string $config): self
+    public static function instance(string $config = null)
     {
+        $config = $config ?: static::CONFIG;
         if (!isset(static::$cache[$config])) {
             static::$cache[$config] = new static(fn\di(
                 $config,

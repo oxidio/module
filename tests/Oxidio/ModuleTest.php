@@ -8,13 +8,18 @@ namespace Oxidio;
 use fn\test\assert;
 use Oxidio\Module\Settings as S;
 
+class TestModule extends Module
+{
+    protected const CONFIG = TEST;
+}
+
 /**
  */
 class ModuleTest extends \PHPUnit_Framework_TestCase
 {
     public function testInstance(): void
     {
-        assert\type(Module::class, $module = Module::instance(TEST));
+        assert\type(TestModule::class, $module = TestModule::instance());
         assert\same($module, Module::instance(TEST));
         assert\not\same($module, Module::instance(TEST_EMPTY));
     }
