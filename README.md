@@ -1,1 +1,1 @@
-# oxidio/module
+# oxidio/oxidio
