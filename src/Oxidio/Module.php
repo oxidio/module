@@ -37,6 +37,11 @@ class Module implements JsonSerializable
         $this->container = $container;
     }
 
+    public function getContainer(): fn\DI\Container
+    {
+        return $this->container;
+    }
+
     /**
      * @param string $config
      *
