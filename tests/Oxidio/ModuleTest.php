@@ -10,7 +10,7 @@ use Oxidio\Module\Settings as S;
 
 class TestModule extends Module
 {
-    protected const CONFIG = TEST;
+    protected const CONFIG = DI\TEST;
 }
 
 /**
@@ -20,8 +20,8 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
     public function testInstance(): void
     {
         assert\type(TestModule::class, $module = TestModule::instance());
-        assert\same($module, Module::instance(TEST));
-        assert\not\same($module, Module::instance(TEST_EMPTY));
+        assert\same($module, Module::instance(DI\TEST));
+        assert\not\same($module, Module::instance(DI\TEST_EMPTY));
     }
 
     public function testJsonSerialize(): void
@@ -33,7 +33,7 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
             Module\AUTHOR   => null,
             Module\SETTINGS => [],
             Module\BLOCKS   => [],
-        ], json_decode(json_encode(Module::instance(TEST_EMPTY)), true));
+        ], json_decode(json_encode(Module::instance(DI\TEST_EMPTY)), true));
 
         assert\equals([
             Module\ID       => Module\ID,
@@ -52,7 +52,7 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
                 ['template' => 't2.tpl', 'block' => 'b2', 'file' => 'views/blocks/t2-b2.tpl'],
                 ['template' => 't2.tpl', 'block' => 'b3', 'file' => 'views/blocks/b3.tpl'],
             ],
-        ], json_decode(json_encode(Module::instance(TEST)), true));
+        ], json_decode(json_encode(Module::instance(DI\TEST)), true));
 
     }
 }
