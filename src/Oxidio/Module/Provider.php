@@ -6,6 +6,7 @@
 namespace Oxidio\Module;
 
 use fn;
+use OxidEsales\Eshop\Core\Registry;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -44,8 +45,16 @@ class Provider
      */
     private static function create(string $id): Module
     {
+        $ids = Registry::getUtils()->fromPhpFileCache(__METHOD__) ?: [];
+        $id = $ids[$id] ?? $id;
+
         $module = new Module($di = fn\di(Module::CONFIG, self::id($id), self::container()));
         $di->set(Module::class, $module);
+
+        if (!isset($ids[$module->id])) {
+            $ids[$module->id] = $id;
+            Registry::getUtils()->toPhpFileCache(__METHOD__, $ids);
+        }
         return self::$cache[$id] = self::$cache[$module->id] = $module;
     }
 

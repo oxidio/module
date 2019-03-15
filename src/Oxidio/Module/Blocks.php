@@ -14,31 +14,25 @@ use fn;
  */
 class Blocks implements IteratorAggregate, JsonSerializable
 {
+    public const DIRECTORY = 'views/blocks/';
+    public const EXTENSION = '.tpl';
+
     /**
-     * @var iterable
+     * @var Block[][]
      */
     private $templates;
 
     /**
-     * @var string
+     * @var null
      */
-    private $directory;
+    private $serialized;
 
     /**
-     * @var string
+     * @param Block[][] $templates
      */
-    private $extension;
-
-    /**
-     * @param iterable $templates
-     * @param string   $directory
-     * @param string   $extension
-     */
-    public function __construct(iterable $templates, string $directory = 'views/blocks/', string $extension = '.tpl')
+    public function __construct(iterable $templates)
     {
         $this->templates = $templates;
-        $this->directory = $directory;
-        $this->extension = $extension;
     }
 
     /**
@@ -47,14 +41,26 @@ class Blocks implements IteratorAggregate, JsonSerializable
     public function getIterator(): Generator
     {
         foreach ($this->templates as $template => $blocks) {
-            foreach (is_iterable($blocks) ? $blocks : [$blocks] as $block => $file) {
-                if (is_numeric($block)) {
-                    $block = $file;
-                    $file  = substr($template, 0, -strlen($this->extension)) . "-{$block}{$this->extension}";
-                }
-                yield ['template' => $template, 'block' => $block, 'file' => $this->directory . $file];
+            foreach ($blocks as $name => $block) {
+                $file = substr($template, 0, -strlen(self::EXTENSION)) . "-{$name}";
+
+                $block->template = $template;
+                $block->name     = $name;
+                $block->file     = self::DIRECTORY . $file . self::EXTENSION;
+
+                yield $block->file => $block;
             }
         }
+    }
+
+    /**
+     * @param string $file
+     *
+     * @return Block|null
+     */
+    public function get(string $file): ?Block
+    {
+        return $this->jsonSerialize()[$file] ?? null;
     }
 
     /**
@@ -62,6 +68,6 @@ class Blocks implements IteratorAggregate, JsonSerializable
      */
     public function jsonSerialize()
     {
-        return fn\traverse($this);
+        return $this->serialized ?: $this->serialized = fn\traverse($this);
     }
 }

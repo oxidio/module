@@ -13,11 +13,6 @@ use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * @property-read string $id
- * @property-read string $title
- * @property-read string $url
- * @property-read string $author
- * @property-read array  $settings
- * @property-read array  $block
  * @property-read fn\Cli $cli
  * @property-read array  $metadata
  */
@@ -28,7 +23,7 @@ class Module implements JsonSerializable
     /**
      * @var string
      */
-    public const CONFIG = __DIR__ . '/../../../config/di.php';
+    public const CONFIG = __DIR__ . '/../../../config/module.php';
 
     /**
      * @var fn\DI\Container
@@ -63,9 +58,31 @@ class Module implements JsonSerializable
         return $this->$name ?? $default;
     }
 
+    /**
+     * @see \fn\Cli::run
+     *
+     * @return mixed
+     */
     public function __invoke()
     {
         return call_user_func($this->cli);
+    }
+
+    public function renderBlock(string $file, array $vars): string
+    {
+        /** @var Blocks $blocks */
+        $blocks = $this->get(Blocks::class);
+        if ($block = $blocks->get($file)) {
+            fn\traverse($vars, function($var) {
+                if (is_object($var)) {
+                    $class = get_class($var);
+                    $this->container->set($class, $var);
+                }
+            });
+            return (string) $this->container->call($block->callback, $vars);
+        }
+
+        return '';
     }
 
     /**
@@ -86,9 +103,9 @@ class Module implements JsonSerializable
      */
     public function activate(bool $enable, OxidModule $module): bool
     {
-        $fs = new Filesystem;
+        $fs   = new Filesystem;
+        $path = $module->getModuleFullPath();
         if ($enable) {
-            $path = $module->getModuleFullPath();
             foreach (Registry::getLang()->getLanguageIds() as $lang) {
                 $fs->dumpFile("{$path}/views/admin/$lang/module_options.php", implode(PHP_EOL, [
                     '<?php',
@@ -96,19 +113,31 @@ class Module implements JsonSerializable
                     sprintf('$aLang = %s;', var_export($this->getTranslations($lang), true)),
                 ]));
             }
+
+            foreach ($this->get(Blocks::class) as $file => $block) {
+                $fs->dumpFile("{$path}/{$file}", sprintf($block, $this->id));
+            }
+        } else {
+            $fs->remove("{$path}/views/");
         }
+
         return true;
     }
+
 
     /**
      * @inheritdoc
      */
     public function jsonSerialize()
     {
-        return $this->get([ID, TITLE, URL, AUTHOR]) + [
-            SETTINGS => new Settings($this->get(SETTINGS, [])),
-            BLOCKS   => new Blocks($this->get(BLOCKS, [])),
-            EVENTS   => new Events
+        return [
+            ID       => $this->id,
+            TITLE    => $this->get(TITLE),
+            URL      => $this->get(URL),
+            AUTHOR   => $this->get(AUTHOR),
+            SETTINGS => $this->get(Settings::class),
+            BLOCKS   => $this->get(Blocks::class),
+            EVENTS   => $this->get(Events::class)
         ];
     }
 }

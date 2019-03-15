@@ -5,5 +5,5 @@
 
 namespace Oxidio\DI
 {
-    const BAR = __DIR__ . '/../config/di.php';
+    const BAR = __DIR__ . '/../config/bar.php';
 }

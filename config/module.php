@@ -18,6 +18,16 @@ return [
     SETTINGS => [],
     BLOCKS   => [],
 
+    Events::class => DI\create(),
+
+    Settings::class => function(Module $module) {
+        return new Settings($module->get(SETTINGS));
+    },
+
+    Blocks::class => function(Module $module) {
+        return new Blocks($module->get(BLOCKS));
+    },
+
     'cli'    => function(ContainerInterface $container): fn\Cli {
         return fn\cli($container, [
             'cli.name'             => $container->get(TITLE),

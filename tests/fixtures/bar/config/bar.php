@@ -5,6 +5,9 @@
 
 namespace Oxidio\Module;
 
+use OxidEsales\Eshop\Application\Controller\StartController;
+use OxidEsales\Eshop\Core\Theme;
+
 return [
     ID       => 'oxidio/module-bar',
     TITLE    => 'bar module (oxidio)',
@@ -20,5 +23,20 @@ return [
         'bar' => [
             'selected' => [SETTINGS\VALUE => ['c' => 'C', 'd' => 'D', 'e' => 'E'], SETTINGS\SELECTED => 'd']
         ]
+    ],
+
+    BLOCKS   => [
+        Theme\LAYOUT_BASE   => [
+            Theme\LAYOUT_BASE\BLOCK_HEAD_META_ROBOTS  => prepend(function() {
+
+            }),
+            Theme\LAYOUT_BASE\BLOCK_HEAD_TITLE => overwrite(function($oView) {
+                return get_class($oView);
+            }),
+        ],
+        Theme\LAYOUT_FOOTER => [
+            Theme\LAYOUT_FOOTER\BLOCK_MAIN => append(function() {
+            }),
+        ],
     ],
 ];
