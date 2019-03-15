@@ -4,26 +4,10 @@
   "description": "",
   "version": "1.0.0",
   "license": "GPL-3.0",
-  "require": {
-  },
-  "require-dev": {
-  },
-  "autoload": {
-    "psr-4": {
-      "Oxidio\\": ["src/"]
-    },
-    "files": [
-      "src/autoload-files.php"
-    ]
-  },
   "extra": {
     "oxideshop": {
-      "whitelist-filter": [
-        "metadata.php"
-      ],
+      "whitelist-filter": ["metadata.php"],
       "target-directory": "oxidio/module-foo"
     }
-  },
-  "bin": [
-  ]
+  }
 }

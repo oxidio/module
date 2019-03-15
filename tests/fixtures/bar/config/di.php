@@ -7,7 +7,7 @@ namespace Oxidio\Module;
 
 return [
     ID     => 'oxidio/module-bar',
-    TITLE  => 'oxidio/module-bar',
+    TITLE  => 'bar module (oxidio)',
     URL    => 'https://github.com/oxidio',
     AUTHOR => 'oxidio',
 ];

@@ -11,6 +11,7 @@ namespace Oxidio\Module
     const AUTHOR   = 'author';
     const SETTINGS = 'settings';
     const BLOCKS   = 'blocks';
+    const EVENTS   = 'events';
 }
 
 namespace Oxidio\Module\Settings

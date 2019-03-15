@@ -23,19 +23,10 @@
     "php-fn/test": "^1"
   },
   "autoload": {
-    "psr-4": {
-      "Oxidio\\": ["src/Oxidio"]
-    },
-    "files": [
-      "src/autoload-files.php"
-    ]
+    "psr-4": {"Oxidio\\": ["src/Oxidio"]},
+    "files": ["src/autoload-files.php"]
   },
   "autoload-dev": {
-    "psr-4": {
-      "Oxidio\\": ["tests/Oxidio"]
-    },
-    "files": [
-      "tests/autoload-files.php"
-    ]
+    "psr-4": {"Oxidio\\": ["tests/Oxidio"]}
   }
 }
