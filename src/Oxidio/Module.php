@@ -7,6 +7,7 @@ namespace Oxidio;
 
 use fn;
 use JsonSerializable;
+use OxidEsales\Eshop\Core\Registry;
 use Oxidio\Module\Blocks;
 use Oxidio\Module\Settings;
 use Psr\Container\ContainerInterface;
@@ -107,6 +108,44 @@ class Module implements JsonSerializable
         return $this->get([Module\ID, Module\TITLE, Module\URL, Module\AUTHOR]) + [
             Module\SETTINGS => new Settings($this->get(Module\SETTINGS, [])),
             Module\BLOCKS   => new Blocks($this->get(Module\BLOCKS, [])),
+
+            /** @see \OxidEsales\EshopCommunity\Core\Module\ModuleInstaller::_callEvent */
+            'events' => [
+                'onActivate'   => [static::class, 'onActivate'],
+                'onDeactivate' => [static::class, 'onDeactivate'],
+            ]
         ];
+    }
+
+    public function activate(): bool
+    {
+        return true;
+    }
+
+    public function deactivate(): bool
+    {
+        return true;
+    }
+
+    private static function getCurrentModule(): ?self
+    {
+        $req = Registry::getRequest();
+        $id  = $req->getRequestParameter('oxid') ?: debug_backtrace(FALSE, 4)[3]['args'][1] ?? null;
+        foreach (self::$cache as $module) {
+            if ($id === $module->id) {
+                return $module;
+            }
+        }
+        return null;
+    }
+
+    public static function onActivate(): bool
+    {
+        return ($module = self::getCurrentModule()) && $module->activate();
+    }
+
+    public static function onDeactivate(): bool
+    {
+        return ($module = self::getCurrentModule()) && $module->deactivate();
     }
 }
