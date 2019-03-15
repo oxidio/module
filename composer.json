@@ -10,6 +10,7 @@
 
   "require": {
     "php-fn/cli": "^1",
+    "symfony/filesystem": "^3",
 
     "ext-json": "*",
     "php": ">=7.1"

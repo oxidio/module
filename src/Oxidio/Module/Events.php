@@ -6,7 +6,7 @@
 namespace Oxidio\Module;
 
 use JsonSerializable;
-use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\Eshop\Core\Module\Module as OxidModule;
 
 /**
  */
@@ -28,7 +28,7 @@ class Events implements JsonSerializable
      */
     public static function onActivate(): bool
     {
-        return ($module = self::getCurrentModule()) && $module->activate();
+        return self::activate(true);
     }
 
     /**
@@ -36,18 +36,24 @@ class Events implements JsonSerializable
      */
     public static function onDeactivate(): bool
     {
-        return ($module = self::getCurrentModule()) && $module->deactivate();
+        return self::activate(false);
     }
 
     /**
+     * @see \OxidEsales\EshopCommunity\Core\Module\ModuleInstaller::activate
+     * @see \OxidEsales\EshopCommunity\Core\Module\ModuleInstaller::deactivate
      * @see \OxidEsales\EshopCommunity\Core\Module\ModuleInstaller::_callEvent
      *
-     * @return Module|null
+     * @param bool $enable
+     *
+     * @return bool
      */
-    private static function getCurrentModule(): ?Module
+    private static function activate(bool $enable): bool
     {
-        $req = Registry::getRequest();
-        $id  = $req->getRequestParameter('oxid') ?: debug_backtrace(FALSE, 4)[3]['args'][1] ?? null;
-        return Provider::has($id) ? Provider::module($id) : null;
+        $module = debug_backtrace(FALSE, 5)[4]['args'][0] ?? null;
+        if ($module instanceof OxidModule && Provider::has($id = $module->getId())) {
+            return Provider::module($id)->activate($enable, $module);
+        }
+        return false;
     }
 }
