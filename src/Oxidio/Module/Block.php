@@ -6,6 +6,8 @@
 namespace Oxidio\Module;
 
 use JsonSerializable;
+use fn;
+use OxidEsales\Eshop\Application\Controller\FrontendController;
 
 /**
  */
@@ -35,7 +37,7 @@ class Block implements JsonSerializable
     /**
      * @var callable
      */
-    public $callback;
+    protected $callback;
 
     /**
      * @var mixed
@@ -46,7 +48,7 @@ class Block implements JsonSerializable
      * @param callable $callback
      * @param bool|null $action
      */
-    public function __construct(callable $callback, $action = self::APPEND)
+    public function __construct($callback, $action = self::APPEND)
     {
         $this->callback = $callback;
         $this->action   = $action;
@@ -61,6 +63,26 @@ class Block implements JsonSerializable
     }
 
     /**
+     * @param fn\DI\Container $container
+     * @param array $vars @see \Smarty::get_template_vars
+     * @return string
+     */
+    public function __invoke(fn\DI\Container $container, array $vars): string
+    {
+        $container->set('vars', $vars);
+        foreach ($vars as $var) {
+            if (is_object($var)) {
+                $class = get_class($var);
+                $container->set($class, $var);
+                if ($var instanceof FrontendController) {
+                    $container->set(FrontendController::class, $var);
+                }
+            }
+        }
+        return (string) $container->call($this->callback, $vars);
+    }
+
+    /**
      * @see Module::renderBlock
      * @see \Smarty::get_template_vars
      * @see \smarty_prefilter_oxblock
@@ -70,7 +92,7 @@ class Block implements JsonSerializable
         return implode(PHP_EOL, [
             $this->action === self::APPEND ? self::PARENT : null,
             '[{php}]',
-            '    echo ' . Provider::class . "::module('%s')->renderBlock(",
+            '    echo ' . Module::class . "::instance('%s')->renderBlock(",
             "        '{$this->file}',",
             '        $this->get_template_vars()',
             '    )',

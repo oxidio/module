@@ -5,14 +5,14 @@
 
 namespace Oxidio\Module;
 
-use OxidEsales\Eshop\Application\Controller\StartController;
+use OxidEsales\Eshop\Application\Controller\FrontendController;
+use OxidEsales\Eshop\Core\Config;
 use OxidEsales\Eshop\Core\Theme;
+use fn;
+use DI;
 
 return [
-    ID       => 'oxidio/module-bar',
     TITLE    => 'bar module (oxidio)',
-    URL      => 'https://github.com/oxidio',
-    AUTHOR   => 'oxidio',
     SETTINGS => [
         'foo' => [
             'string' => [SETTINGS\VALUE => 'string'],
@@ -24,14 +24,13 @@ return [
             'selected' => [SETTINGS\VALUE => ['c' => 'C', 'd' => 'D', 'e' => 'E'], SETTINGS\SELECTED => 'd']
         ]
     ],
-
     BLOCKS   => [
         Theme\LAYOUT_BASE   => [
             Theme\LAYOUT_BASE\BLOCK_HEAD_META_ROBOTS  => prepend(function() {
 
             }),
-            Theme\LAYOUT_BASE\BLOCK_HEAD_TITLE => overwrite(function($oView) {
-                return get_class($oView);
+            Theme\LAYOUT_BASE\BLOCK_HEAD_TITLE => overwrite(function(FrontendController $ctrl, Config $config) {
+                return get_class($ctrl);
             }),
         ],
         Theme\LAYOUT_FOOTER => [
@@ -39,4 +38,11 @@ return [
             }),
         ],
     ],
+
+    CLI   => DI\decorate(function(fn\Cli $cli) {
+        $cli->command('bar', function(fn\Cli\IO $io) {
+            $io->success('bar');
+        });
+        return $cli;
+    })
 ];

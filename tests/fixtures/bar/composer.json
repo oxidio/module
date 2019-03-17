@@ -1,16 +1,16 @@
 {
   "name": "oxidio/module-bar",
   "type": "oxideshop-module",
-  "description": "",
-  "version": "1.0.0",
+  "description": "some bar description",
+  "homepage": "https://oxidio-module-bar.localhost/",
+  "authors": [{"name":  "oxidio", "email": "bar@oxidio.localhost"}],
+  "version": "1.0.1",
   "license": "GPL-3.0",
-  "autoload": {
-    "files": ["src/autoload-files.php"]
-  },
   "extra": {
     "oxideshop": {
       "whitelist-filter": ["metadata.php"],
       "target-directory": "oxidio/module-bar"
-    }
-  }
+    },
+    "di": "config/bar.php"
+  },
 }

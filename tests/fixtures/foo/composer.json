@@ -1,7 +1,9 @@
 {
   "name": "oxidio/module-foo",
   "type": "oxideshop-module",
-  "description": "",
+  "description": "some foo description",
+  "homepage": "https://oxidio-module-foo.localhost/",
+  "authors": [{"name":  "oxidio", "email": "foo@oxidio.localhost"}],
   "version": "1.0.0",
   "license": "GPL-3.0",
   "extra": {

@@ -51,9 +51,6 @@ class Events implements JsonSerializable
     private static function activate(bool $enable): bool
     {
         $module = debug_backtrace(FALSE, 5)[4]['args'][0] ?? null;
-        if ($module instanceof OxidModule && Provider::has($id = $module->getId())) {
-            return Provider::module($id)->activate($enable, $module);
-        }
-        return false;
+        return $module instanceof OxidModule && Module::instance($module->getId())->activate($enable, $module);
     }
 }

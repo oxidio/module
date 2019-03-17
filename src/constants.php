@@ -5,13 +5,16 @@
 
 namespace Oxidio\Module
 {
-    const ID       = 'id';
-    const TITLE    = 'title';
-    const URL      = 'url';
-    const AUTHOR   = 'author';
-    const SETTINGS = 'settings';
-    const BLOCKS   = 'blocks';
-    const EVENTS   = 'events';
+    const ID          = 'id';
+    const TITLE       = 'title';
+    const DESCRIPTION = 'description';
+    const URL         = 'url';
+    const VERSION     = 'version';
+    const AUTHOR      = 'author';
+    const EMAIL       = 'email';
+    const SETTINGS    = 'settings';
+    const BLOCKS      = 'blocks';
+    const CLI         = 'cli';
 }
 
 namespace Oxidio\Module\Settings

@@ -1,4 +1,4 @@
 <?php
 
 $sMetadataVersion = '2.1';
-$aModule          = Oxidio\Module\Provider::module(Oxidio\DI\BAR)->metadata;
+$aModule          = Oxidio\Module\Module::instance(fn\VENDOR\OXIDIO\MODULE_BAR)->getMetadata();

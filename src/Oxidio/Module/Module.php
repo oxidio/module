@@ -6,24 +6,25 @@
 namespace Oxidio\Module;
 
 use fn;
+use DI;
 use JsonSerializable;
 use OxidEsales\Eshop\Core\Module\Module as OxidModule;
 use OxidEsales\Eshop\Core\Registry;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Console\Command\Command;
 
 /**
  * @property-read string $id
  * @property-read fn\Cli $cli
- * @property-read array  $metadata
  */
 class Module implements JsonSerializable
 {
     use fn\DI\PropertiesReadOnlyTrait;
 
     /**
-     * @var string
+     * @var static[]
      */
-    public const CONFIG = __DIR__ . '/../../../config/module.php';
+    private static $cache = [];
 
     /**
      * @var fn\DI\Container
@@ -31,11 +32,46 @@ class Module implements JsonSerializable
     protected $container;
 
     /**
-     * @param fn\DI\Container $container
+     * @param string $id
      */
-    public function __construct(fn\DI\Container $container)
+    public function __construct(string $id)
     {
-        $this->container = $container;
+        $package = (fn\PACKAGES[$id] ?? []) + [
+            CLI => function() {
+                return fn\cli($this->container, [
+                    'cli.name' => $this->get(TITLE),
+                    'cli.version' => $this->getVersion(),
+                    'cli.commands.default' => DI\value(function(Command $command) {
+                        return $command->setHidden(true);
+                    }),
+                ]);
+            }
+        ];
+
+        ($di = $package['extra']['di'] ?? []) && $di = $package['dir'] . $di;
+        $this->container = fn\di($package, $di, fn\Composer\DIClassLoader::instance()->getContainer());
+        $this->container->set(self::class, $this);
+        $this->container->set(ID, $id);
+    }
+
+    private function getVersion(): string
+    {
+        return implode('.', array_slice(explode('.', $this->get(VERSION)), 0, -1));
+    }
+
+    private function getBlocks(): Blocks
+    {
+        return new Blocks($this->get(BLOCKS, []));
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return static
+     */
+    public static function instance(string $id): self
+    {
+        return self::$cache[$id] ?? self::$cache[$id] = new static($id);
     }
 
     /**
@@ -58,41 +94,12 @@ class Module implements JsonSerializable
         return $this->$name ?? $default;
     }
 
-    /**
-     * @see \fn\Cli::run
-     *
-     * @return mixed
-     */
-    public function __invoke()
-    {
-        return call_user_func($this->cli);
-    }
-
     public function renderBlock(string $file, array $vars): string
     {
-        /** @var Blocks $blocks */
-        $blocks = $this->get(Blocks::class);
-        if ($block = $blocks->get($file)) {
-            fn\traverse($vars, function($var) {
-                if (is_object($var)) {
-                    $class = get_class($var);
-                    $this->container->set($class, $var);
-                }
-            });
-            return (string) $this->container->call($block->callback, $vars);
+        if ($block = $this->getBlocks()->get($file)) {
+            return $block($this->container, $vars);
         }
-
         return '';
-    }
-
-    /**
-     * @param string $lang
-     *
-     * @return array
-     */
-    public function getTranslations(string $lang): array
-    {
-        return fn\traverse((new Settings($this->get(SETTINGS, [])))->translate($lang));
     }
 
     /**
@@ -114,7 +121,7 @@ class Module implements JsonSerializable
                 ]));
             }
 
-            foreach ($this->get(Blocks::class) as $file => $block) {
+            foreach ($this->getBlocks() as $file => $block) {
                 $fs->dumpFile("{$path}/{$file}", sprintf($block, $this->id));
             }
         } else {
@@ -124,20 +131,41 @@ class Module implements JsonSerializable
         return true;
     }
 
-
     /**
      * @inheritdoc
      */
     public function jsonSerialize()
     {
+        $author = $this->get('authors')[0] ?? [];
         return [
-            ID       => $this->id,
-            TITLE    => $this->get(TITLE),
-            URL      => $this->get(URL),
-            AUTHOR   => $this->get(AUTHOR),
-            SETTINGS => $this->get(Settings::class),
-            BLOCKS   => $this->get(Blocks::class),
-            EVENTS   => $this->get(Events::class)
+            ID          => $this->id,
+            TITLE       => $this->get(TITLE, $this->id),
+            DESCRIPTION => $this->get(DESCRIPTION),
+            URL         => $this->get(URL, $this->get('homepage')),
+            VERSION     => $this->getVersion(),
+            AUTHOR      => $this->get(AUTHOR, $author['name'] ?? null),
+            EMAIL       => $this->get(EMAIL, $author['email'] ?? null),
+            SETTINGS    => new Settings($this->get(SETTINGS, [])),
+            BLOCKS      => $this->getBlocks(),
+            'events'    => new Events
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getMetadata(): array
+    {
+        return json_decode(json_encode($this), true);
+    }
+
+    /**
+     * @param string $lang
+     *
+     * @return array
+     */
+    public function getTranslations(string $lang): array
+    {
+        return fn\traverse((new Settings($this->get(SETTINGS, [])))->translate($lang));
     }
 }
