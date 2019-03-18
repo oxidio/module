@@ -6,6 +6,8 @@
 namespace Oxidio\Module;
 
 use OxidEsales\Eshop\Application\Controller\FrontendController;
+use OxidEsales\Eshop\Application\Model\Article;
+use OxidEsales\Eshop\Application\Model\ArticleList;
 use OxidEsales\Eshop\Core\Config;
 use OxidEsales\Eshop\Core\Theme;
 use fn;
@@ -29,8 +31,16 @@ return [
             Theme\LAYOUT_BASE\BLOCK_HEAD_META_ROBOTS  => prepend(function() {
 
             }),
-            Theme\LAYOUT_BASE\BLOCK_HEAD_TITLE => overwrite(function(FrontendController $ctrl, Config $config) {
-                return get_class($ctrl);
+            Theme\LAYOUT_BASE\BLOCK_HEAD_TITLE => overwrite(function(
+                FrontendController $ctrl,
+                Config $config,
+                Article $default = null,
+                ArticleList ...$lists
+            ) {
+                return get_class($ctrl) . '-'
+                    . get_class($config) . '-'
+                    . ($default ? get_class($default) : '') . '-'
+                    . count($lists);
             }),
         ],
         Theme\LAYOUT_FOOTER => [

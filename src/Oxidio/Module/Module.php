@@ -10,8 +10,10 @@ use DI;
 use JsonSerializable;
 use OxidEsales\Eshop\Core\Module\Module as OxidModule;
 use OxidEsales\Eshop\Core\Registry;
+use ReflectionParameter;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Console\Command\Command;
+use Invoker\ParameterResolver;
 
 /**
  * @property-read string $id
@@ -30,6 +32,11 @@ class Module implements JsonSerializable
      * @var fn\DI\Container
      */
     protected $container;
+
+    /**
+     * @var fn\DI\Invoker
+     */
+    private $invoker;
 
     /**
      * @param string $id
@@ -97,9 +104,53 @@ class Module implements JsonSerializable
     public function renderBlock(string $file, array $vars): string
     {
         if ($block = $this->getBlocks()->get($file)) {
-            return $block($this->container, $vars);
+            return (string) $this->getInvoker()->call($block->callback, $vars);
         }
         return '';
+    }
+
+    /**
+     * @see GeneratorResolver
+     * @param ReflectionParameter $parameter
+     * @param array                $provided
+     *
+     * @return \Generator
+     */
+    public function __invoke(ReflectionParameter $parameter, array $provided)
+    {
+        $class = $parameter->getClass();
+        if ($parameter->isVariadic()) {
+            if ($class) {
+                foreach ($provided as $value) {
+                    $class->isInstance($value) && yield $value;
+                }
+            } else if (array_key_exists($parameter->getName(), $provided)) {
+                yield from array_values((array)$provided[$parameter->getName()]);
+            }
+        } else if ($class) {
+            foreach ($provided as $value) {
+                if ($class->isInstance($value)) {
+                    yield $value;
+                    break;
+                }
+            }
+        } else if (array_key_exists($parameter->getName(), $provided)) {
+            yield $provided[$parameter->getName()];
+        }
+    }
+
+    /**
+     * @return fn\DI\Invoker
+     */
+    public function getInvoker(): fn\DI\Invoker
+    {
+        return $this->invoker ?: $this->invoker = new fn\DI\Invoker(
+            $this,
+            new ParameterResolver\AssociativeArrayResolver,
+            $this->container,
+            new ParameterResolver\Container\ParameterNameContainerResolver($this->container),
+            new ParameterResolver\DefaultValueResolver
+        );
     }
 
     /**

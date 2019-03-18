@@ -37,7 +37,7 @@ class Block implements JsonSerializable
     /**
      * @var callable
      */
-    protected $callback;
+    public $callback;
 
     /**
      * @var mixed
@@ -60,26 +60,6 @@ class Block implements JsonSerializable
     public function jsonSerialize()
     {
         return ['template' => $this->template, 'block' => $this->name, 'file' => $this->file];
-    }
-
-    /**
-     * @param fn\DI\Container $container
-     * @param array $vars @see \Smarty::get_template_vars
-     * @return string
-     */
-    public function __invoke(fn\DI\Container $container, array $vars): string
-    {
-        $container->set('vars', $vars);
-        foreach ($vars as $var) {
-            if (is_object($var)) {
-                $class = get_class($var);
-                $container->set($class, $var);
-                if ($var instanceof FrontendController) {
-                    $container->set(FrontendController::class, $var);
-                }
-            }
-        }
-        return (string) $container->call($this->callback, $vars);
     }
 
     /**
