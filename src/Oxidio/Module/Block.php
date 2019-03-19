@@ -72,10 +72,7 @@ class Block implements JsonSerializable
         return implode(PHP_EOL, [
             $this->action === self::APPEND ? self::PARENT : null,
             '[{php}]',
-            '    echo ' . Module::class . "::instance('%s')->renderBlock(",
-            "        '{$this->file}',",
-            '        $this->get_template_vars()',
-            '    )',
+            '    echo ' . Module::class . "::instance('%s')->renderBlock('{$this->file}')",
             '[{/php}]',
             $this->action === self::PREPEND ? self::PARENT : null,
         ]);

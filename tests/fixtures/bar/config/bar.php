@@ -12,6 +12,8 @@ use OxidEsales\Eshop\Core\Config;
 use OxidEsales\Eshop\Core\Theme;
 use fn;
 use DI;
+use Oxidio\DI\SmartyTemplateVars;
+use Smarty;
 
 return [
     TITLE    => 'bar module (oxidio)',
@@ -33,14 +35,20 @@ return [
             }),
             Theme\LAYOUT_BASE\BLOCK_HEAD_TITLE => overwrite(function(
                 FrontendController $ctrl,
-                Config $config,
+                SmartyTemplateVars $vars,
+                Smarty $smarty,
+                Config $configFromRegistry,
                 Article $default = null,
                 ArticleList ...$lists
             ) {
-                return get_class($ctrl) . '-'
-                    . get_class($config) . '-'
-                    . ($default ? get_class($default) : '') . '-'
-                    . count($lists);
+                return implode('-', [
+                    get_class($ctrl),
+                    get_class($vars),
+                    get_class($smarty),
+                    get_class($configFromRegistry),
+                    $default ? get_class($default) : '',
+                    count($lists)
+                ]);
             }),
         ],
         Theme\LAYOUT_FOOTER => [
