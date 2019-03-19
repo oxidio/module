@@ -166,6 +166,7 @@ class Module implements JsonSerializable
             EMAIL       => $this->get(EMAIL, $author['email'] ?? null),
             SETTINGS    => new Settings($this->get(SETTINGS, [])),
             BLOCKS      => $this->getBlocks(),
+            EXTEND      => $this->get(EXTEND, []),
             'events'    => new Events
         ];
     }

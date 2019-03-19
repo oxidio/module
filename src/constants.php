@@ -14,6 +14,7 @@ namespace Oxidio\Module
     const EMAIL       = 'email';
     const SETTINGS    = 'settings';
     const BLOCKS      = 'blocks';
+    const EXTEND      = 'extend';
     const CLI         = 'cli';
 }
 

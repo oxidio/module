@@ -9,14 +9,17 @@ use OxidEsales\Eshop\Application\Controller\FrontendController;
 use OxidEsales\Eshop\Application\Model\Article;
 use OxidEsales\Eshop\Application\Model\ArticleList;
 use OxidEsales\Eshop\Core\Config;
+use OxidEsales\Eshop\Core\SeoDecoder;
 use OxidEsales\Eshop\Core\Theme;
 use fn;
 use DI;
+use Oxidio\Bar\Core\BarSeoDecoder;
 use Oxidio\DI\SmartyTemplateVars;
 use Smarty;
 
 return [
     TITLE    => 'bar module (oxidio)',
+
     SETTINGS => [
         'foo' => [
             'string' => [SETTINGS\VALUE => 'string'],
@@ -28,6 +31,11 @@ return [
             'selected' => [SETTINGS\VALUE => ['c' => 'C', 'd' => 'D', 'e' => 'E'], SETTINGS\SELECTED => 'd']
         ]
     ],
+
+    EXTEND => [
+        SeoDecoder::class => BarSeoDecoder::class,
+    ],
+
     BLOCKS   => [
         Theme\LAYOUT_BASE   => [
             Theme\LAYOUT_BASE\BLOCK_HEAD_META_ROBOTS  => prepend(function() {
@@ -38,6 +46,7 @@ return [
                 SmartyTemplateVars $vars,
                 Smarty $smarty,
                 Config $configFromRegistry,
+                SeoDecoder $decoder,
                 Article $default = null,
                 ArticleList ...$lists
             ) {
@@ -46,6 +55,7 @@ return [
                     get_class($vars),
                     get_class($smarty),
                     get_class($configFromRegistry),
+                    get_class($decoder),
                     $default ? get_class($default) : '',
                     count($lists)
                 ]);
