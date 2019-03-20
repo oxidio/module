@@ -45,19 +45,38 @@ namespace Oxidio
 
 namespace Oxidio\Module
 {
+    /**
+     * @param $callable
+     *
+     * @return Block
+     */
     function append($callable): Block
     {
         return new Block($callable, Block::APPEND);
     }
 
+    /**
+     * @param $callable
+     *
+     * @return Block
+     */
     function prepend($callable): Block
     {
         return new Block($callable, Block::PREPEND);
     }
 
+    /**
+     * @param $callable
+     *
+     * @return Block
+     */
     function overwrite($callable): Block
     {
         return new Block($callable, Block::OVERWRITE);
     }
 
+    function menu($label, ...$args): Menu
+    {
+        return new Menu($label, ...$args);
+    }
 }

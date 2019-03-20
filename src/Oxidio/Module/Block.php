@@ -6,8 +6,6 @@
 namespace Oxidio\Module;
 
 use JsonSerializable;
-use fn;
-use OxidEsales\Eshop\Application\Controller\FrontendController;
 
 /**
  */
