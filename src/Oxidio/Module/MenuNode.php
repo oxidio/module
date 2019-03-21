@@ -64,10 +64,19 @@ class MenuNode
 
     public function getId(): string
     {
-        if (!$this->id) {
-            $this->id = is_string($this->label) ? $this->label : reset($this->label);
+        return $this->id ?: $this->id = $this->getLabel();
+    }
+
+    /**
+     * @param string|null $lang
+     * @return string
+     */
+    public function getLabel($lang = ''): ?string
+    {
+        if (is_string($this->label)) {
+            return $this->label;
         }
-        return $this->id;
+        return $this->label[$lang] ?? reset($this->label);
     }
 
     /**

@@ -15,8 +15,15 @@ class MenuTest extends \PHPUnit\Framework\TestCase
 {
     public function testConstructor(): void
     {
-        assert\type(Menu::class, menu('label'));
-        assert\same('label', menu('label')->label);
+        assert\type(Menu::class, $menu = menu('label'));
+        assert\same('label', $menu->label);
+        assert\same(null, $menu->class);
+        assert\same([], $menu->menus);
+        assert\same([], $menu->params);
+        assert\same([], $menu->groups);
+        assert\same([], $menu->rights);
+        assert\same([], $menu->tabs);
+        assert\same([], $menu->buttons);
     }
 
     public function testGetId(): void
@@ -59,7 +66,13 @@ class MenuTest extends \PHPUnit\Framework\TestCase
             '            </SUBMENU>',
             '        </MAINMENU>',
             ['        <MAINMENU id="%s">', end($id = explode('/', Menu\ADMIN\USERS))],
-            ['            <SUBMENU id="%s" cl="%s" list="%s" groups="%s" rights="%s">', 'admin-users-sub1', admin\users\sub1::class, 'user_list', 'g1,g2', 'r1'],
+            ['            <SUBMENU id="%s" cl="%s" list="%s" groups="%s" rights="%s">',
+                'admin-users-sub1',
+                admin\users\sub1::class,
+                'user_list',
+                'g1,g2',
+                'r1'
+            ],
             '            </SUBMENU>',
             ['            <SUBMENU id="%s" cl="%s">', 'admin-users-sub2', admin\users\sub2::class],
             ['                <TAB id="%s" cl="%s" />', 'admin-users-sub2-t1', admin\users\sub2\t1::class],
@@ -80,7 +93,11 @@ class MenuTest extends \PHPUnit\Framework\TestCase
             '    <OXMENU id="bar">',
             '        <MAINMENU id="bar-main">',
             ['            <SUBMENU id="%s">', 'bar-main-sub1'],
-            ['                <TAB id="%s" cl="%s" clparam="%s" />', 'bar-main-sub1-t1', bar\main\sub1\t1::class, 'a=b&amp;c%5B0%5D=d&amp;c%5B1%5D=e'],
+            ['                <TAB id="%s" cl="%s" clparam="%s" />',
+                'bar-main-sub1-t1',
+                bar\main\sub1\t1::class,
+                'a=b&amp;c%5B0%5D=d&amp;c%5B1%5D=e'
+            ],
             ['                <BTN id="%s" />', 'bar-main-sub1-btn1'],
             ['                <BTN id="%s" cl="%s" />', 'bar-main-sub1-btn2', bar\main\sub1\btn2::class],
             '            </SUBMENU>',

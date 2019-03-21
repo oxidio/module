@@ -15,12 +15,17 @@ class Menu extends MenuNode
     /**
      * @var string
      */
-    private const TAGS = ['OXMENU' => 'MAINMENU', 'MAINMENU' => 'SUBMENU', 'SUBMENU' => 'SUBMENU'];
+    protected const TAGS = ['OXMENU' => 'MAINMENU', 'MAINMENU' => 'SUBMENU', 'SUBMENU' => 'SUBMENU'];
 
     /**
      * @var string
      */
-    private const INDENT = '    ';
+    protected const INDENT = '    ';
+
+    /**
+     * @var bool
+     */
+    protected $merged = false;
 
     /**
      * @var self[]
@@ -109,7 +114,8 @@ class Menu extends MenuNode
             // merge
             if ($id) {
                 $item = new static(null, is_iterable($item) ? static::create($item) : []);
-                $item->id = $id;
+                $item->id     = $id;
+                $item->merged = true;
                 yield $item;
                 continue;
             }
@@ -125,5 +131,25 @@ class Menu extends MenuNode
     public function __toString()
     {
         return fn\map($this->toString('OXMENU'))->string;
+    }
+
+    /**
+     * @param string $lang
+     * @return Generator
+     */
+    public function translate(string $lang): Generator
+    {
+        $this->merged || yield $this->getId() => $this->getLabel($lang);
+
+        foreach ($this->menus as $item) {
+            yield from $item->translate($lang);
+        }
+
+        foreach ($this->tabs as $item) {
+            yield $item->getId() => $item->getLabel($lang);
+        }
+        foreach ($this->buttons as $item) {
+            yield $item->getId() => $item->getLabel($lang);
+        }
     }
 }
