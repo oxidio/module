@@ -10,75 +10,80 @@ use fn;
 
 /**
  */
-class Menu
+class Menu extends MenuNode
 {
     /**
      * @var string
      */
-    private const NODES = [
-        'OXMENU'   => 'MAINMENU',
-        'MAINMENU' => 'SUBMENU',
-        'SUBMENU'  => 'SUBMENU',
-    ];
+    private const TAGS = ['OXMENU' => 'MAINMENU', 'MAINMENU' => 'SUBMENU', 'SUBMENU' => 'SUBMENU'];
 
     /**
      * @var string
      */
-    protected $id;
+    private const INDENT = '    ';
 
     /**
-     * @var string|string[]
+     * @var self[]
      */
-    public $label;
+    public $menus = [];
 
     /**
-     * @var string
+     * @var MenuNode[]
      */
-    public $class;
+    public $tabs = [];
 
     /**
-     * @var string
+     * @var MenuNode[]
      */
-    public $list;
+    public $buttons = [];
 
     /**
-     * @var array[][]|self[][]
-     */
-    protected $args;
-
-    /**
-     * @param string|string[] $label
+     * @param string|string[] $props
      * @param array[]|self[] ...$args
      */
-    public function __construct($label, ...$args)
+    public function __construct($props, ...$args)
     {
-        $this->label = $label;
-        $this->args  = $args;
-    }
-
-    public function getId(): string
-    {
-        return $this->id ?: $this->id = is_string($this->label) ? $this->label : reset($this->label);
-    }
-
-    protected function toString(string $node, string $prefix = '    '): Generator
-    {
-        $cl = $this->class ? " cl=\"{$this->class}\"" : '';
-        yield "$prefix<{$node} id=\"{$this->getId()}\"{$cl}>";
-        foreach ($this->args as $arg) {
+        parent::__construct($props);
+        foreach ($args as $arg) {
             foreach (is_iterable($arg) ? $arg : [$arg] as $key => $item) {
-                if ($item instanceof static) { // sub menu
-                    yield fn\map($item->toString(self::NODES[$node], $prefix . '    '))->string;
-                } else if (is_numeric($key)) { // btn
-                    $id = is_array($item) ? reset($item) : $item;
-                    yield "$prefix    <BTN id=\"{$id}\" />";
-                } else { // tab
-                    $id = is_array($item) ? reset($item) : $item;
-                    yield "$prefix    <TAB id=\"{$id}\" cl=\"{$key}\" />";
+                if ($item instanceof static) {
+                    $this->menus[] = $item;
+                    continue;
+                }
+                $item = $item instanceof MenuNode ? $item : new MenuNode($item);
+                if (is_numeric($key)) {
+                    $this->buttons[] = $item;
+                } else {
+                    $item->class  = $key;
+                    $this->tabs[] = $item;
                 }
             }
         }
-        yield "$prefix</{$node}>";
+    }
+
+    /**
+     * @see \OxidEsales\EshopCommunity\Application\Controller\Admin\NavigationTree
+     *
+     * @param string $tag
+     * @param string $indent
+     * @return Generator
+     */
+    protected function toString(string $tag, string $indent = self::INDENT): Generator
+    {
+        $attrs = parent::__toString();
+        $newIndent = $indent . self::INDENT;
+
+        yield "$indent<$tag $attrs>";
+        foreach ($this->menus as $item) {
+            yield fn\map($item->toString(self::TAGS[$tag], $newIndent))->string;
+        }
+        foreach ($this->tabs as $item) {
+            yield "$newIndent<TAB $item />";
+        }
+        foreach ($this->buttons as $item) {
+            yield "$newIndent<BTN $item />";
+        }
+        yield "$indent</{$tag}>";
     }
 
     /**
@@ -93,17 +98,24 @@ class Menu
                 strpos($key, Menu\ADMIN) === 0 ? $id = end($id = explode('/', $key)) : $class = $key;
             }
 
+            // new
             if ($item instanceof static) {
                 $id && $item->id = $id;
                 $class && $item->class = $class;
                 yield $item;
-            } else if ($id) { // merge
-                $known = new static(null, is_iterable($item) ? static::create($item) : []);
-                $known->id = $id;
-                yield $known;
-            } else {
-                yield $key => $item;
+                continue;
             }
+
+            // merge
+            if ($id) {
+                $item = new static(null, is_iterable($item) ? static::create($item) : []);
+                $item->id = $id;
+                yield $item;
+                continue;
+            }
+
+            // tabs & buttons
+            yield $key => $item;
         }
     }
 
@@ -112,10 +124,6 @@ class Menu
      */
     public function __toString()
     {
-        try {
-            return fn\map($this->toString('OXMENU'))->string;
-        } catch (\Exception $e) {
-            return $e->getMessage();
-        }
+        return fn\map($this->toString('OXMENU'))->string;
     }
 }

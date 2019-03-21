@@ -76,8 +76,8 @@ return [
 
     MENU => [
         Menu\ADMIN => [ // merge
-            menu('admin-main', [ // register new main menu under ADMIN
-                admin\main\sub1::class => menu('admin-main-sub1'),
+            menu(['admin-main'], [ // register new main menu under ADMIN
+                admin\main\sub1::class => menu(['label' => 'admin-main-sub1']),
                 admin\main\sub2::class => menu('admin-main-sub2', [
                     admin\main\sub2\t1::class => 'admin-main-sub2-t1',
                     'admin-main-sub2-btn1',
@@ -87,7 +87,7 @@ return [
 
             Menu\ADMIN\USERS => [
                 // register new sub menus under ADMIN/USERS
-                admin\users\sub1::class => menu('admin-users-sub1'),
+                admin\users\sub1::class => menu(['admin-users-sub1', 'list' => 'user_list', 'groups' => ['g1', 'g2'], 'rights' => ['r1']]),
                 admin\users\sub2::class => menu('admin-users-sub2', [
                     admin\users\sub2\t1::class => 'admin-users-sub2-t1',
                     admin\users\sub2\t2::class => 'admin-users-sub2-t2',
@@ -103,14 +103,17 @@ return [
             ],
         ],
 
-        menu('bar', // create
+        menu(['bar'], // create
             menu('bar-main', [ // create new main menu under BAR
                 bar\main\sub1::class => menu('bar-main-sub1', [
-                    bar\main\sub1\t1::class => 'bar-main-sub1-t1',
+                    bar\main\sub1\t1::class => ['bar-main-sub1-t1', 'params' => ['a' => 'b', 'c' => ['d', 'e']]],
                     'bar-main-sub1-btn1',
+                    ['label' => 'bar-main-sub1-btn2', 'class' => bar\main\sub1\btn2::class],
                 ])
             ]),
-            menu('bar-users')
+            [menu(['bar-users', 'params' => ['bar' => 'user'], 'class' => bar\users::class])]
         ),
+
+        foo::class => menu('foo'),
     ],
 ];

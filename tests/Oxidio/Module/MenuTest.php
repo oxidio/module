@@ -59,7 +59,7 @@ class MenuTest extends \PHPUnit\Framework\TestCase
             '            </SUBMENU>',
             '        </MAINMENU>',
             ['        <MAINMENU id="%s">', end($id = explode('/', Menu\ADMIN\USERS))],
-            ['            <SUBMENU id="%s" cl="%s">', 'admin-users-sub1', admin\users\sub1::class],
+            ['            <SUBMENU id="%s" cl="%s" list="%s" groups="%s" rights="%s">', 'admin-users-sub1', admin\users\sub1::class, 'user_list', 'g1,g2', 'r1'],
             '            </SUBMENU>',
             ['            <SUBMENU id="%s" cl="%s">', 'admin-users-sub2', admin\users\sub2::class],
             ['                <TAB id="%s" cl="%s" />', 'admin-users-sub2-t1', admin\users\sub2\t1::class],
@@ -80,16 +80,21 @@ class MenuTest extends \PHPUnit\Framework\TestCase
             '    <OXMENU id="bar">',
             '        <MAINMENU id="bar-main">',
             ['            <SUBMENU id="%s">', 'bar-main-sub1'],
-            ['                <TAB id="%s" cl="%s" />', 'bar-main-sub1-t1', bar\main\sub1\t1::class],
+            ['                <TAB id="%s" cl="%s" clparam="%s" />', 'bar-main-sub1-t1', bar\main\sub1\t1::class, 'a=b&amp;c%5B0%5D=d&amp;c%5B1%5D=e'],
             ['                <BTN id="%s" />', 'bar-main-sub1-btn1'],
+            ['                <BTN id="%s" cl="%s" />', 'bar-main-sub1-btn2', bar\main\sub1\btn2::class],
             '            </SUBMENU>',
             '        </MAINMENU>',
-            '        <MAINMENU id="bar-users">',
+            ['        <MAINMENU id="%s" cl="%s" clparam="%s">', 'bar-users', bar\users::class, 'bar=user'],
             '        </MAINMENU>',
             '    </OXMENU>',
         ], $menus[1]);
-    }
 
+        self::assertToString([
+            ['    <OXMENU id="%s" cl="%s">', 'foo', foo::class],
+            '    </OXMENU>',
+        ], $menus[2]);
+    }
 
     private static function assertToString(array $lines, Menu $menu): void
     {
