@@ -6,6 +6,7 @@
 namespace Oxidio\Module;
 
 use fn;
+use Generator;
 use JsonSerializable;
 use OxidEsales\Eshop\Core\Module\Module as OxidModule;
 use OxidEsales\Eshop\Core\Registry;
@@ -143,11 +144,25 @@ class Module implements JsonSerializable
             foreach ($this->getBlocks() as $file => $block) {
                 $fs->dumpFile("{$path}/{$file}", sprintf($block, $this->id));
             }
+
+            $fs->dumpFile("{$path}/menu.xml", fn\map($this->getMenu())->string);
+
         } else {
             $fs->remove("{$path}/views/");
+            $fs->remove("{$path}/menu.xml");
         }
 
         return true;
+    }
+
+    private function getMenu(): Generator
+    {
+        yield '<?xml version="1.0" encoding="UTF-8"?>';
+        yield '<OX>';
+        foreach (Menu::create($this->get(MENU, [])) as $menu) {
+            yield (string)$menu;
+        }
+        yield '</OX>';
     }
 
     /**

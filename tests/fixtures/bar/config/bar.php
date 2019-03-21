@@ -72,5 +72,45 @@ return [
             $io->success('bar');
         });
         return $cli;
-    })
+    }),
+
+    MENU => [
+        Menu\ADMIN => [ // merge
+            menu('admin-main', [ // register new main menu under ADMIN
+                admin\main\sub1::class => menu('admin-main-sub1'),
+                admin\main\sub2::class => menu('admin-main-sub2', [
+                    admin\main\sub2\t1::class => 'admin-main-sub2-t1',
+                    'admin-main-sub2-btn1',
+                    'admin-main-sub2-btn2',
+                ]),
+            ]),
+
+            Menu\ADMIN\USERS => [
+                // register new sub menus under ADMIN/USERS
+                admin\users\sub1::class => menu('admin-users-sub1'),
+                admin\users\sub2::class => menu('admin-users-sub2', [
+                    admin\users\sub2\t1::class => 'admin-users-sub2-t1',
+                    admin\users\sub2\t2::class => 'admin-users-sub2-t2',
+                    'admin-users-sub2-btn1',
+                ]),
+
+                Menu\ADMIN\USERS\GROUPS => [ // register new tabs and buttons under ADMIN/USERS/GROUPS,
+                    admin\users\groups\t1::class => 'admin-users-groups-t1',
+                    admin\users\groups\t2::class => ['de' => 'admin-users-groups-t2-de', 'en' => 'admin-users-groups-t2-en'],
+                    'admin-users-groups-btn1',
+                    'admin-users-groups-btn2',
+                ],
+            ],
+        ],
+
+        menu('bar', // create
+            menu('bar-main', [ // create new main menu under BAR
+                bar\main\sub1::class => menu('bar-main-sub1', [
+                    bar\main\sub1\t1::class => 'bar-main-sub1-t1',
+                    'bar-main-sub1-btn1',
+                ])
+            ]),
+            menu('bar-users')
+        ),
+    ],
 ];
