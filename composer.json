@@ -9,11 +9,13 @@
   ],
 
   "require": {
-    "php-fn/cli": "^1",
+    "php-fn/php-fn": "^2",
+    "php-fn/di": "^2",
+    "php-fn/cli": "^2",
     "symfony/filesystem": "^3",
 
-    "ext-json": "*",
-    "php": ">=7.1"
+    "php": ">=7.1",
+    "ext-json": "*"
   },
   "require-dev": {
     "oxid-esales/oxideshop-demodata-ce": "^6",

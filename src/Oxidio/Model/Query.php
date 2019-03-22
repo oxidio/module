@@ -49,13 +49,13 @@ class Query implements IteratorAggregate, Countable
      */
     public function __construct($from = null, $mapper = null, ...$where)
     {
-        if (fn\isCallable($from, true)) {
+        if (fn\isCallable($from)) {
             $this->mapper = $this->fromCallable($from);
         } else {
             $this->properties['view'] = $from;
         }
 
-        if (fn\isCallable($mapper, true)) {
+        if (fn\isCallable($mapper)) {
             $this->mapper = $this->fromCallable($mapper);
             $this->where(...$where);
         } else if ($mapper) {
