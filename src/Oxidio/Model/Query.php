@@ -25,9 +25,9 @@ use ReflectionParameter;
  */
 class Query implements IteratorAggregate, Countable
 {
-    use fn\Meta\Properties\ReadOnlyTrait;
+    use fn\PropertiesReadOnlyTrait;
 
-    private const PROPERTIES = [
+    protected const DEFAULT = [
         'limit' => 0,
         'start' => 0,
         'view' => '',
@@ -36,7 +36,6 @@ class Query implements IteratorAggregate, Countable
         'params' => [],
     ];
 
-    private $properties = self::PROPERTIES;
     private $whereTerm;
     private $orderTerm;
     private $limitTerm;
@@ -49,6 +48,7 @@ class Query implements IteratorAggregate, Countable
      */
     public function __construct($from = null, $mapper = null, ...$where)
     {
+        $this->initProperties();
         if (fn\isCallable($from)) {
             $this->mapper = $this->fromCallable($from);
         } else {
