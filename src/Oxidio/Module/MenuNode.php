@@ -8,9 +8,13 @@ namespace Oxidio\Module;
 use fn;
 
 /**
+ * @property $label
  */
 class MenuNode
 {
+
+    use fn\PropertiesReadWriteTrait;
+
     /**
      * @var string
      */

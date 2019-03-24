@@ -17,6 +17,8 @@ namespace Oxidio\Module
     const EXTEND      = 'extend';
     const CLI         = 'cli';
     const MENU        = 'menu';
+    const APP         = 'oxidio-app';
+    const APP_TPL     = '/oxidio/views/admin/tpl/' . APP . '.tpl';
 }
 
 namespace Oxidio\Module\Settings

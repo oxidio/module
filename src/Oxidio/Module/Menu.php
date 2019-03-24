@@ -7,10 +7,12 @@ namespace Oxidio\Module;
 
 use Generator;
 use fn;
+use IteratorAggregate;
 
 /**
+ *
  */
-class Menu extends MenuNode
+class Menu extends MenuNode implements IteratorAggregate
 {
     /**
      * @var string
@@ -43,6 +45,11 @@ class Menu extends MenuNode
     public $buttons = [];
 
     /**
+     * @var callable
+     */
+    public $callback;
+
+    /**
      * @param string|string[] $props
      * @param array[]|self[] ...$args
      */
@@ -50,7 +57,7 @@ class Menu extends MenuNode
     {
         parent::__construct($props);
         foreach ($args as $arg) {
-            foreach (is_iterable($arg) ? $arg : [$arg] as $key => $item) {
+            foreach (is_iterable($arg) && !$arg instanceof static ? $arg : [$arg] as $key => $item) {
                 if ($item instanceof static) {
                     $this->menus[] = $item;
                     continue;
@@ -64,6 +71,14 @@ class Menu extends MenuNode
                 }
             }
         }
+    }
+
+    /**
+     * @return fn\Map
+     */
+    public function getIterator(): fn\Map
+    {
+        return fn\map($this->menus);
     }
 
     /**
@@ -139,12 +154,9 @@ class Menu extends MenuNode
      */
     public function translate(string $lang): Generator
     {
-        $this->merged || yield $this->getId() => $this->getLabel($lang);
-
-        foreach ($this->menus as $item) {
-            yield from $item->translate($lang);
+        if (!$this->merged) {
+            yield $this->getId() => $this->getLabel($lang);
         }
-
         foreach ($this->tabs as $item) {
             yield $item->getId() => $item->getLabel($lang);
         }

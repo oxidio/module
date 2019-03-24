@@ -6,13 +6,13 @@
 namespace Oxidio\Module;
 
 use OxidEsales\Eshop\Application\Controller\FrontendController;
-use OxidEsales\Eshop\Application\Model\Article;
 use OxidEsales\Eshop\Application\Model\ArticleList;
 use OxidEsales\Eshop\Core\Config;
 use OxidEsales\Eshop\Core\SeoDecoder;
 use OxidEsales\Eshop\Core\Theme;
 use fn;
 use DI;
+use OxidEsales\Eshop\Core\ViewConfig;
 use Oxidio\Bar\Core\BarSeoDecoder;
 use Oxidio\DI\SmartyTemplateVars;
 use Smarty;
@@ -109,7 +109,16 @@ return [
                     bar\main\sub1\t1::class => ['bar-main-sub1-t1', 'params' => ['a' => 'b', 'c' => ['d', 'e']]],
                     'bar-main-sub1-btn1',
                     ['label' => 'bar-main-sub1-btn2', 'class' => bar\main\sub1\btn2::class],
-                ])
+                ]),
+                app('bar-app', function(SmartyTemplateVars $vars, App $ctrl, Config $config, ViewConfig $vc) {
+                    return '<h2>' . implode('-', [
+                        'bar-app',
+                        get_class($ctrl),
+                        get_class($vars),
+                        get_class($config),
+                        get_class($vc),
+                    ]) . '</h2>';
+                })
             ]),
             [menu(['bar-users', 'params' => ['bar' => 'user'], 'class' => bar\users::class])]
         ),

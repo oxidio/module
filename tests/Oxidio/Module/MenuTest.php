@@ -10,9 +10,13 @@ use fn\test\assert;
 use Oxidio;
 
 /**
+ * @coversDefaultClass Menu
  */
 class MenuTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @covers ::__constructor()
+     */
     public function testConstructor(): void
     {
         assert\type(Menu::class, $menu = menu('label'));
@@ -26,6 +30,9 @@ class MenuTest extends \PHPUnit\Framework\TestCase
         assert\same([], $menu->buttons);
     }
 
+    /**
+     * @covers ::getId()
+     */
     public function testGetId(): void
     {
         assert\same('label', menu('label')->getId());
@@ -33,6 +40,9 @@ class MenuTest extends \PHPUnit\Framework\TestCase
         assert\same('en', menu(['en', 'de'])->getId());
     }
 
+    /**
+     * @covers ::toString()
+     */
     public function testToString(): void
     {
         self::assertToString([
@@ -50,10 +60,37 @@ class MenuTest extends \PHPUnit\Framework\TestCase
         ], menu('menu', menu('main', menu('sub'))));
     }
 
-    public function testCreate(): void
+    /**
+     * @covers Module::getMenu
+     * @covers ::create()
+     */
+    public function testGetMenu(): void
     {
-        $menus = fn\traverse(Menu::create(Module::instance(fn\VENDOR\OXIDIO\MODULE_BAR)->get(MENU)));
+        $module = Module::instance(fn\VENDOR\OXIDIO\MODULE_BAR);
 
+        assert\same(
+            [
+                0       => Menu\ADMIN,
+                '0/0'   => 'admin-main',
+                '0/0/0' => 'admin-main-sub1',
+                '0/0/1' => 'admin-main-sub2',
+                '0/1'   => explode('/', Menu\ADMIN\USERS)[1],
+                '0/1/0' => 'admin-users-sub1',
+                '0/1/1' => 'admin-users-sub2',
+                '0/1/2' => explode('/', Menu\ADMIN\USERS\GROUPS)[2],
+                1       => 'bar',
+                '1/0'   => 'bar-main',
+                '1/0/0' => 'bar-main-sub1',
+                '1/0/1' => 'bar-app',
+                '1/1'   => 'bar-users',
+                2       => 'foo',
+            ],
+            fn\traverse($module->getMenu(true), function(Menu $menu) {
+                return $menu->getId();
+            })
+        );
+
+        $menus = $module->getMenu();
         self::assertToString([
             ['    <OXMENU id="%s">', Menu\ADMIN],
             ['        <MAINMENU id="%s">', 'admin-main'],
@@ -100,6 +137,10 @@ class MenuTest extends \PHPUnit\Framework\TestCase
             ],
             ['                <BTN id="%s" />', 'bar-main-sub1-btn1'],
             ['                <BTN id="%s" cl="%s" />', 'bar-main-sub1-btn2', bar\main\sub1\btn2::class],
+            '            </SUBMENU>',
+            ['            <SUBMENU id="%s" cl="%s" clparam="%s">', 'bar-app', App::class, http_build_query([
+                APP => $module->id . ':1/0/1'
+            ])],
             '            </SUBMENU>',
             '        </MAINMENU>',
             ['        <MAINMENU id="%s" cl="%s" clparam="%s">', 'bar-users', bar\users::class, 'bar=user'],
