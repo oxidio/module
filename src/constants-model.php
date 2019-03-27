@@ -331,6 +331,321 @@ namespace OxidEsales\Eshop\Core\Database\TABLE
      * @see \OxidEsales\Eshop\Application\Model\Wrapping::__construct
      */
     const OXWRAPPING = 'oxwrapping';
+
+    /**
+     * Shows which users has accepted shop terms [InnoDB]
+     *
+     * @see OXACCEPTEDTERMS\*
+     */
+    const OXACCEPTEDTERMS = 'oxacceptedterms';
+
+    /**
+     * Shows many-to-many relationship between article and its accessory articles [InnoDB]
+     *
+     * @see OXACCESSOIRE2ARTICLE\*
+     */
+    const OXACCESSOIRE2ARTICLE = 'oxaccessoire2article';
+
+    /**
+     * Shows many-to-many relationship between actions and articles [InnoDB]
+     *
+     * @see OXACTIONS2ARTICLE\*
+     */
+    const OXACTIONS2ARTICLE = 'oxactions2article';
+
+    /**
+     * Logs admin actions [InnoDB]
+     *
+     * @see OXADMINLOG\*
+     */
+    const OXADMINLOG = 'oxadminlog';
+
+    /**
+     * Additional information for articles [InnoDB]
+     *
+     * @see OXARTEXTENDS\*
+     */
+    const OXARTEXTENDS = 'oxartextends';
+
+    /**
+     * Shows many-to-many relationship between categories and attributes [InnoDB]
+     *
+     * @see OXCATEGORY2ATTRIBUTE\*
+     */
+    const OXCATEGORY2ATTRIBUTE = 'oxcategory2attribute';
+
+    /**
+     * Shop configuration values [InnoDB]
+     *
+     * @see OXCONFIG\*
+     */
+    const OXCONFIG = 'oxconfig';
+
+    /**
+     * Additional configuraion fields [InnoDB]
+     *
+     * @see OXCONFIGDISPLAY\*
+     */
+    const OXCONFIGDISPLAY = 'oxconfigdisplay';
+
+    /**
+     * Shop counters [InnoDB]
+     *
+     * @see OXCOUNTERS\*
+     */
+    const OXCOUNTERS = 'oxcounters';
+
+    /**
+     * Shows many-to-many relationship between Shipping cost rules (oxdelivery) and delivery methods (oxdeliveryset) [InnoDB]
+     *
+     * @see OXDEL2DELSET\*
+     */
+    const OXDEL2DELSET = 'oxdel2delset';
+
+    /**
+     * User sent invitations [InnoDB]
+     *
+     * @see OXINVITATIONS\*
+     */
+    const OXINVITATIONS = 'oxinvitations';
+
+    /**
+     *  [InnoDB]
+     *
+     * @see OXMIGRATIONS_CE\*
+     */
+    const OXMIGRATIONS_CE = 'oxmigrations_ce';
+
+    /**
+     * Shows many-to-many relationship between actions (oxactions) and objects (table set by oxclass) [InnoDB]
+     *
+     * @see OXOBJECT2ACTION\*
+     */
+    const OXOBJECT2ACTION = 'oxobject2action';
+
+    /**
+     * Shows many-to-many relationship between cross-selling articles [InnoDB]
+     *
+     * @see OXOBJECT2ARTICLE\*
+     */
+    const OXOBJECT2ARTICLE = 'oxobject2article';
+
+    /**
+     * Shows many-to-many relationship between articles and attributes [InnoDB]
+     *
+     * @see OXOBJECT2ATTRIBUTE\*
+     */
+    const OXOBJECT2ATTRIBUTE = 'oxobject2attribute';
+
+    /**
+     * Shows many-to-many relationship between delivery cost rules and objects (table determined by oxtype) [InnoDB]
+     *
+     * @see OXOBJECT2DELIVERY\*
+     */
+    const OXOBJECT2DELIVERY = 'oxobject2delivery';
+
+    /**
+     * Shows many-to-many relationship between discounts and objects (table determined by oxtype) [InnoDB]
+     *
+     * @see OXOBJECT2DISCOUNT\*
+     */
+    const OXOBJECT2DISCOUNT = 'oxobject2discount';
+
+    /**
+     * Shows many-to-many relationship between articles and listmania lists [InnoDB]
+     *
+     * @see OXOBJECT2LIST\*
+     */
+    const OXOBJECT2LIST = 'oxobject2list';
+
+    /**
+     * Shows many-to-many relationship between payments and objects (table determined by oxtype) [InnoDB]
+     *
+     * @see OXOBJECT2PAYMENT\*
+     */
+    const OXOBJECT2PAYMENT = 'oxobject2payment';
+
+    /**
+     * Shows many-to-many relationship between articles and selection lists [InnoDB]
+     *
+     * @see OXOBJECT2SELECTLIST\*
+     */
+    const OXOBJECT2SELECTLIST = 'oxobject2selectlist';
+
+    /**
+     * Seo entries [InnoDB]
+     *
+     * @see OXOBJECT2SEODATA\*
+     */
+    const OXOBJECT2SEODATA = 'oxobject2seodata';
+
+    /**
+     * Article scale prices [InnoDB]
+     *
+     * @see OXPRICE2ARTICLE\*
+     */
+    const OXPRICE2ARTICLE = 'oxprice2article';
+
+    /**
+     * Seo urls information [InnoDB]
+     *
+     * @see OXSEO\*
+     */
+    const OXSEO = 'oxseo';
+
+    /**
+     * Seo urls history. If url does not exists in oxseo, then checks here and redirects [InnoDB]
+     *
+     * @see OXSEOHISTORY\*
+     */
+    const OXSEOHISTORY = 'oxseohistory';
+
+    /**
+     * Seo logging. Logs bad requests [InnoDB]
+     *
+     * @see OXSEOLOGS\*
+     */
+    const OXSEOLOGS = 'oxseologs';
+
+    /**
+     * Module template blocks [InnoDB]
+     *
+     * @see OXTPLBLOCKS\*
+     */
+    const OXTPLBLOCKS = 'oxtplblocks';
+}
+
+/**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXACCEPTEDTERMS
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXACCEPTEDTERMS
+{
+
+    /**
+     * User id (oxuser)
+     *
+     * char(32)
+     */
+    const OXUSERID = 'oxuserid';
+
+    /**
+     * Shop id (oxshops)
+     *
+     * int(11) = 1
+     */
+    const OXSHOPID = 'oxshopid';
+
+    /**
+     * Terms version
+     *
+     * char(32)
+     */
+    const OXTERMVERSION = 'oxtermversion';
+
+    /**
+     * Time, when terms were accepted
+     *
+     * datetime = 0000-00-00 00:00:00
+     */
+    const OXACCEPTEDTIME = 'oxacceptedtime';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXACCESSOIRE2ARTICLE
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXACCESSOIRE2ARTICLE
+{
+
+    /**
+     * Record id
+     *
+     * char(32)
+     */
+    const OXID = 'oxid';
+
+    /**
+     * Accessory Article id (oxarticles)
+     *
+     * char(32)
+     */
+    const OXOBJECTID = 'oxobjectid';
+
+    /**
+     * Article id (oxarticles)
+     *
+     * char(32)
+     */
+    const OXARTICLENID = 'oxarticlenid';
+
+    /**
+     * Sorting
+     *
+     * int(5) = 0
+     */
+    const OXSORT = 'oxsort';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXACTIONS2ARTICLE
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXACTIONS2ARTICLE
+{
+
+    /**
+     * Record id
+     *
+     * char(32)
+     */
+    const OXID = 'oxid';
+
+    /**
+     * Shop id (oxshops)
+     *
+     * int(11) = 1
+     */
+    const OXSHOPID = 'oxshopid';
+
+    /**
+     * Action id (oxactions)
+     *
+     * char(32)
+     */
+    const OXACTIONID = 'oxactionid';
+
+    /**
+     * Article id (oxarticles)
+     *
+     * char(32)
+     */
+    const OXARTID = 'oxartid';
+
+    /**
+     * Sorting
+     *
+     * int(11) = 0
+     */
+    const OXSORT = 'oxsort';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
 }
 
 /**
@@ -548,6 +863,62 @@ namespace OxidEsales\Eshop\Core\Database\TABLE\OXADDRESS
      * varchar(128)
      */
     const OXSAL = 'oxsal';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXADMINLOG
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXADMINLOG
+{
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+
+    /**
+     * User id (oxuser)
+     *
+     * char(32)
+     */
+    const OXUSERID = 'oxuserid';
+
+    /**
+     * Logged sql
+     *
+     * text
+     */
+    const OXSQL = 'oxsql';
+}
+
+/**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXARTEXTENDS
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXARTEXTENDS
+{
+
+    /**
+     * Article id (extends oxarticles article with this id)
+     *
+     * char(32)
+     */
+    const OXID = 'oxid';
+
+    /**
+     * Long description (multilanguage)
+     *
+     * text-i18n
+     */
+    const OXLONGDESC = 'oxlongdesc';
 
     /**
      * Timestamp
@@ -1419,6 +1790,160 @@ namespace OxidEsales\Eshop\Core\Database\TABLE\OXCATEGORIES
 }
 
 /**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXCATEGORY2ATTRIBUTE
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXCATEGORY2ATTRIBUTE
+{
+
+    /**
+     * Record id
+     *
+     * char(32)
+     */
+    const OXID = 'oxid';
+
+    /**
+     * Category id (oxcategories)
+     *
+     * char(32)
+     */
+    const OXOBJECTID = 'oxobjectid';
+
+    /**
+     * Attribute id (oxattributes)
+     *
+     * char(32)
+     */
+    const OXATTRID = 'oxattrid';
+
+    /**
+     * Sorting
+     *
+     * int(11) = 9999
+     */
+    const OXSORT = 'oxsort';
+
+    /**
+     * Creation time
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXCONFIGDISPLAY
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXCONFIGDISPLAY
+{
+
+    /**
+     * Config id (extends oxconfig record with this id)
+     *
+     * char(32)
+     */
+    const OXID = 'oxid';
+
+    /**
+     * Module or theme specific config (theme:themename, module:modulename)
+     *
+     * varchar(100)
+     */
+    const OXCFGMODULE = 'oxcfgmodule';
+
+    /**
+     * Variable name
+     *
+     * varchar(100)
+     */
+    const OXCFGVARNAME = 'oxcfgvarname';
+
+    /**
+     * Grouping (groups config fields to array with specified value as key)
+     *
+     * varchar(255)
+     */
+    const OXGROUPING = 'oxgrouping';
+
+    /**
+     * Serialized constraints
+     *
+     * varchar(255)
+     */
+    const OXVARCONSTRAINT = 'oxvarconstraint';
+
+    /**
+     * Sorting
+     *
+     * int(11) = 0
+     */
+    const OXPOS = 'oxpos';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXCONFIG
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXCONFIG
+{
+
+    /**
+     * Config id
+     *
+     * char(32)
+     */
+    const OXID = 'oxid';
+
+    /**
+     * Shop id (oxshops)
+     *
+     * int(11) = 1
+     */
+    const OXSHOPID = 'oxshopid';
+
+    /**
+     * Module or theme specific config (theme:themename, module:modulename)
+     *
+     * varchar(100)
+     */
+    const OXMODULE = 'oxmodule';
+
+    /**
+     * Variable name
+     *
+     * varchar(100)
+     */
+    const OXVARNAME = 'oxvarname';
+
+    /**
+     * Variable type
+     *
+     * varchar(16)
+     */
+    const OXVARTYPE = 'oxvartype';
+
+    /**
+     * Variable value
+     *
+     * mediumblob
+     */
+    const OXVARVALUE = 'oxvarvalue';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
  * @see \OxidEsales\Eshop\Core\Database\TABLE\OXCONTENTS
  */
 namespace OxidEsales\Eshop\Core\Database\TABLE\OXCONTENTS
@@ -1517,6 +2042,34 @@ namespace OxidEsales\Eshop\Core\Database\TABLE\OXCONTENTS
 }
 
 /**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXCOUNTERS
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXCOUNTERS
+{
+
+    /**
+     * Counter id
+     *
+     * char(32)
+     */
+    const OXIDENT = 'oxident';
+
+    /**
+     * Counted number
+     *
+     * int(11)
+     */
+    const OXCOUNT = 'oxcount';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
  * @see \OxidEsales\Eshop\Core\Database\TABLE\OXCOUNTRY
  */
 namespace OxidEsales\Eshop\Core\Database\TABLE\OXCOUNTRY
@@ -1598,6 +2151,41 @@ namespace OxidEsales\Eshop\Core\Database\TABLE\OXCOUNTRY
      * tinyint(1) = 0
      */
     const OXVATSTATUS = 'oxvatstatus';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXDEL2DELSET
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXDEL2DELSET
+{
+
+    /**
+     * Record id
+     *
+     * char(32)
+     */
+    const OXID = 'oxid';
+
+    /**
+     * Shipping cost rule id (oxdelivery)
+     *
+     * char(32)
+     */
+    const OXDELID = 'oxdelid';
+
+    /**
+     * Delivery method id (oxdeliveryset)
+     *
+     * char(32)
+     */
+    const OXDELSETID = 'oxdelsetid';
 
     /**
      * Timestamp
@@ -2021,6 +2609,62 @@ namespace OxidEsales\Eshop\Core\Database\TABLE\OXGROUPS
 }
 
 /**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXINVITATIONS
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXINVITATIONS
+{
+
+    /**
+     * User id (oxuser), who sent invitation
+     *
+     * char(32)
+     */
+    const OXUSERID = 'oxuserid';
+
+    /**
+     * Creation time
+     *
+     * date
+     */
+    const OXDATE = 'oxdate';
+
+    /**
+     * Recipient email
+     *
+     * varchar(255)
+     */
+    const OXEMAIL = 'oxemail';
+
+    /**
+     * Has recipient user registered
+     *
+     * mediumint(9)
+     */
+    const OXPENDING = 'oxpending';
+
+    /**
+     * Is recipient user accepted
+     *
+     * mediumint(9)
+     */
+    const OXACCEPTED = 'oxaccepted';
+
+    /**
+     * Invitation type
+     *
+     * tinyint(4) = 1
+     */
+    const OXTYPE = 'oxtype';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
  * @see \OxidEsales\Eshop\Core\Database\TABLE\OXLINKS
  */
 namespace OxidEsales\Eshop\Core\Database\TABLE\OXLINKS
@@ -2186,6 +2830,20 @@ namespace OxidEsales\Eshop\Core\Database\TABLE\OXMEDIAURLS
      * timestamp = CURRENT_TIMESTAMP
      */
     const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXMIGRATIONS_CE
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXMIGRATIONS_CE
+{
+
+    /**
+     *
+     *
+     * varchar(255)
+     */
+    const VERSION = 'version';
 }
 
 /**
@@ -2406,6 +3064,139 @@ namespace OxidEsales\Eshop\Core\Database\TABLE\OXNEWS
 }
 
 /**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2ACTION
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2ACTION
+{
+
+    /**
+     * Record id
+     *
+     * char(32)
+     */
+    const OXID = 'oxid';
+
+    /**
+     * Action id (oxactions)
+     *
+     * char(32)
+     */
+    const OXACTIONID = 'oxactionid';
+
+    /**
+     * Object id (table set by oxclass)
+     *
+     * char(32)
+     */
+    const OXOBJECTID = 'oxobjectid';
+
+    /**
+     * Object table name
+     *
+     * char(32)
+     */
+    const OXCLASS = 'oxclass';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2ARTICLE
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2ARTICLE
+{
+
+    /**
+     * Record id
+     *
+     * char(32)
+     */
+    const OXID = 'oxid';
+
+    /**
+     * Cross-selling Article id (oxarticles)
+     *
+     * char(32)
+     */
+    const OXOBJECTID = 'oxobjectid';
+
+    /**
+     * Main Article id (oxarticles)
+     *
+     * char(32)
+     */
+    const OXARTICLENID = 'oxarticlenid';
+
+    /**
+     * Sorting
+     *
+     * int(5) = 0
+     */
+    const OXSORT = 'oxsort';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2ATTRIBUTE
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2ATTRIBUTE
+{
+
+    /**
+     * Record id
+     *
+     * char(32)
+     */
+    const OXID = 'oxid';
+
+    /**
+     * Article id (oxarticles)
+     *
+     * char(32)
+     */
+    const OXOBJECTID = 'oxobjectid';
+
+    /**
+     * Attribute id (oxattributes)
+     *
+     * char(32)
+     */
+    const OXATTRID = 'oxattrid';
+
+    /**
+     * Attribute value (multilanguage)
+     *
+     * varchar-i18n(255)
+     */
+    const OXVALUE = 'oxvalue';
+
+    /**
+     * Sorting
+     *
+     * int(11) = 9999
+     */
+    const OXPOS = 'oxpos';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
  * @see \OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2CATEGORY
  */
 namespace OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2CATEGORY
@@ -2455,6 +3246,90 @@ namespace OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2CATEGORY
 }
 
 /**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2DELIVERY
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2DELIVERY
+{
+
+    /**
+     * Record id
+     *
+     * char(32)
+     */
+    const OXID = 'oxid';
+
+    /**
+     * Delivery id (oxdelivery)
+     *
+     * char(32)
+     */
+    const OXDELIVERYID = 'oxdeliveryid';
+
+    /**
+     * Object id (table determined by oxtype)
+     *
+     * char(32)
+     */
+    const OXOBJECTID = 'oxobjectid';
+
+    /**
+     * Record type
+     *
+     * char(32)
+     */
+    const OXTYPE = 'oxtype';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2DISCOUNT
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2DISCOUNT
+{
+
+    /**
+     * Record id
+     *
+     * char(32)
+     */
+    const OXID = 'oxid';
+
+    /**
+     * Discount id (oxdiscount)
+     *
+     * char(32)
+     */
+    const OXDISCOUNTID = 'oxdiscountid';
+
+    /**
+     * Object id (table determined by oxtype)
+     *
+     * char(32)
+     */
+    const OXOBJECTID = 'oxobjectid';
+
+    /**
+     * Record type
+     *
+     * char(32)
+     */
+    const OXTYPE = 'oxtype';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
  * @see \OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2GROUP
  */
 namespace OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2GROUP
@@ -2487,6 +3362,181 @@ namespace OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2GROUP
      * char(32)
      */
     const OXGROUPSID = 'oxgroupsid';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2LIST
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2LIST
+{
+
+    /**
+     * Record id
+     *
+     * char(32)
+     */
+    const OXID = 'oxid';
+
+    /**
+     * Article id (oxarticles)
+     *
+     * char(32)
+     */
+    const OXOBJECTID = 'oxobjectid';
+
+    /**
+     * Listmania id (oxrecommlists)
+     *
+     * char(32)
+     */
+    const OXLISTID = 'oxlistid';
+
+    /**
+     * Description
+     *
+     * text
+     */
+    const OXDESC = 'oxdesc';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2PAYMENT
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2PAYMENT
+{
+
+    /**
+     * Record id
+     *
+     * char(32)
+     */
+    const OXID = 'oxid';
+
+    /**
+     * Payment id (oxpayments)
+     *
+     * char(32)
+     */
+    const OXPAYMENTID = 'oxpaymentid';
+
+    /**
+     * Object id (table determined by oxtype)
+     *
+     * char(32)
+     */
+    const OXOBJECTID = 'oxobjectid';
+
+    /**
+     * Record type
+     *
+     * char(32)
+     */
+    const OXTYPE = 'oxtype';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2SELECTLIST
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2SELECTLIST
+{
+
+    /**
+     * Record id
+     *
+     * char(32)
+     */
+    const OXID = 'oxid';
+
+    /**
+     * Article id (oxarticles)
+     *
+     * char(32)
+     */
+    const OXOBJECTID = 'oxobjectid';
+
+    /**
+     * Selection list id (oxselectlist)
+     *
+     * char(32)
+     */
+    const OXSELNID = 'oxselnid';
+
+    /**
+     * Sorting
+     *
+     * int(5) = 0
+     */
+    const OXSORT = 'oxsort';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2SEODATA
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXOBJECT2SEODATA
+{
+
+    /**
+     * Objects id
+     *
+     * char(32)
+     */
+    const OXOBJECTID = 'oxobjectid';
+
+    /**
+     * Shop id (oxshops)
+     *
+     * int(11) = 1
+     */
+    const OXSHOPID = 'oxshopid';
+
+    /**
+     * Language id
+     *
+     * int(2) = 0
+     */
+    const OXLANG = 'oxlang';
+
+    /**
+     * Keywords
+     *
+     * text
+     */
+    const OXKEYWORDS = 'oxkeywords';
+
+    /**
+     * Description
+     *
+     * text
+     */
+    const OXDESCRIPTION = 'oxdescription';
 
     /**
      * Timestamp
@@ -3561,6 +4611,69 @@ namespace OxidEsales\Eshop\Core\Database\TABLE\OXPAYMENTS
 }
 
 /**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXPRICE2ARTICLE
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXPRICE2ARTICLE
+{
+
+    /**
+     * Record id
+     *
+     * char(32)
+     */
+    const OXID = 'oxid';
+
+    /**
+     * Shop id (oxshops)
+     *
+     * int(11) = 1
+     */
+    const OXSHOPID = 'oxshopid';
+
+    /**
+     * Article id (oxarticles)
+     *
+     * char(32)
+     */
+    const OXARTID = 'oxartid';
+
+    /**
+     * Price, that will be used for specified article if basket amount is between oxamount and oxamountto
+     *
+     * double = 0
+     */
+    const OXADDABS = 'oxaddabs';
+
+    /**
+     * Discount, that will be used for specified article if basket amount is between oxamount and oxamountto
+     *
+     * double = 0
+     */
+    const OXADDPERC = 'oxaddperc';
+
+    /**
+     * Quantity: From
+     *
+     * double = 0
+     */
+    const OXAMOUNT = 'oxamount';
+
+    /**
+     * Quantity: To
+     *
+     * double = 0
+     */
+    const OXAMOUNTTO = 'oxamountto';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
  * @see \OxidEsales\Eshop\Core\Database\TABLE\OXPRICEALARM
  */
 namespace OxidEsales\Eshop\Core\Database\TABLE\OXPRICEALARM
@@ -3953,6 +5066,188 @@ namespace OxidEsales\Eshop\Core\Database\TABLE\OXSELECTLIST
 }
 
 /**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXSEOHISTORY
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXSEOHISTORY
+{
+
+    /**
+     * Object id
+     *
+     * char(32)
+     */
+    const OXOBJECTID = 'oxobjectid';
+
+    /**
+     * Hashed url (md5)
+     *
+     * char(32)
+     */
+    const OXIDENT = 'oxident';
+
+    /**
+     * Shop id (oxshops)
+     *
+     * int(11) = 1
+     */
+    const OXSHOPID = 'oxshopid';
+
+    /**
+     * Language id
+     *
+     * int(2) = 0
+     */
+    const OXLANG = 'oxlang';
+
+    /**
+     * Hits
+     *
+     * bigint(20) = 0
+     */
+    const OXHITS = 'oxhits';
+
+    /**
+     * Creation time
+     *
+     * timestamp
+     */
+    const OXINSERT = 'oxinsert';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXSEOLOGS
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXSEOLOGS
+{
+
+    /**
+     * Primary url, not seo encoded
+     *
+     * text
+     */
+    const OXSTDURL = 'oxstdurl';
+
+    /**
+     * Hashed seo url
+     *
+     * char(32)
+     */
+    const OXIDENT = 'oxident';
+
+    /**
+     * Shop id (oxshops)
+     *
+     * int(11) = 1
+     */
+    const OXSHOPID = 'oxshopid';
+
+    /**
+     * Language id
+     *
+     * int(11)
+     */
+    const OXLANG = 'oxlang';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXSEO
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXSEO
+{
+
+    /**
+     * Object id
+     *
+     * char(32)
+     */
+    const OXOBJECTID = 'oxobjectid';
+
+    /**
+     * Hashed seo url (md5)
+     *
+     * char(32)
+     */
+    const OXIDENT = 'oxident';
+
+    /**
+     * Shop id (oxshops)
+     *
+     * int(11) = 1
+     */
+    const OXSHOPID = 'oxshopid';
+
+    /**
+     * Language id
+     *
+     * int(2) = 0
+     */
+    const OXLANG = 'oxlang';
+
+    /**
+     * Primary url, not seo encoded
+     *
+     * varchar(2048)
+     */
+    const OXSTDURL = 'oxstdurl';
+
+    /**
+     * Old seo url
+     *
+     * varchar(2048)
+     */
+    const OXSEOURL = 'oxseourl';
+
+    /**
+     * Record type
+     *
+     * enum(14)
+     */
+    const OXTYPE = 'oxtype';
+
+    /**
+     * Fixed
+     *
+     * tinyint(1) = 0
+     */
+    const OXFIXED = 'oxfixed';
+
+    /**
+     * Expired
+     *
+     * tinyint(1) = 0
+     */
+    const OXEXPIRED = 'oxexpired';
+
+    /**
+     * Params
+     *
+     * char(32)
+     */
+    const OXPARAMS = 'oxparams';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
  * @see \OxidEsales\Eshop\Core\Database\TABLE\OXSHOPS
  */
 namespace OxidEsales\Eshop\Core\Database\TABLE\OXSHOPS
@@ -4328,6 +5623,83 @@ namespace OxidEsales\Eshop\Core\Database\TABLE\OXSTATES
      * char(2)
      */
     const OXISOALPHA2 = 'oxisoalpha2';
+
+    /**
+     * Timestamp
+     *
+     * timestamp = CURRENT_TIMESTAMP
+     */
+    const OXTIMESTAMP = 'oxtimestamp';
+}
+
+/**
+ * @see \OxidEsales\Eshop\Core\Database\TABLE\OXTPLBLOCKS
+ */
+namespace OxidEsales\Eshop\Core\Database\TABLE\OXTPLBLOCKS
+{
+
+    /**
+     * Block id
+     *
+     * char(32)
+     */
+    const OXID = 'oxid';
+
+    /**
+     * Is active
+     *
+     * tinyint(1) = 1
+     */
+    const OXACTIVE = 'oxactive';
+
+    /**
+     * Shop id (oxshops)
+     *
+     * int(11) = 1
+     */
+    const OXSHOPID = 'oxshopid';
+
+    /**
+     * Shop theme id
+     *
+     * char(128)
+     */
+    const OXTHEME = 'oxtheme';
+
+    /**
+     * Template filename (with rel. path), where block is located
+     *
+     * char(255)
+     */
+    const OXTEMPLATE = 'oxtemplate';
+
+    /**
+     * Block name
+     *
+     * char(128)
+     */
+    const OXBLOCKNAME = 'oxblockname';
+
+    /**
+     * Sorting
+     *
+     * int(11)
+     */
+    const OXPOS = 'oxpos';
+
+    /**
+     * Module template filename, where block replacement is located
+     *
+     * char(255)
+     */
+    const OXFILE = 'oxfile';
+
+    /**
+     * Module, which uses this template
+     *
+     * varchar(100)
+     */
+    const OXMODULE = 'oxmodule';
 
     /**
      * Timestamp
@@ -4897,13 +6269,6 @@ namespace OxidEsales\Eshop\Core\Database\TABLE\OXVOUCHERS
 {
 
     /**
-     * Coupon id
-     *
-     * char(32)
-     */
-    const OXID = 'oxid';
-
-    /**
      * Date, when coupon was used (set on order complete)
      *
      * date
@@ -4951,6 +6316,13 @@ namespace OxidEsales\Eshop\Core\Database\TABLE\OXVOUCHERS
      * float(9)
      */
     const OXDISCOUNT = 'oxdiscount';
+
+    /**
+     * Coupon id
+     *
+     * char(32)
+     */
+    const OXID = 'oxid';
 
     /**
      * Timestamp
