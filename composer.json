@@ -25,9 +25,6 @@
 
     "php-fn/test": "^1"
   },
-  "config": {
-    "platform": {"php": "7.1"}
-  },
   "autoload": {
     "psr-4": {"Oxidio\\": ["src/Oxidio"]},
     "files": ["src/autoload-files.php"]
