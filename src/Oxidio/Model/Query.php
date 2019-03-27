@@ -285,7 +285,7 @@ class Query implements IteratorAggregate, Countable
      */
     public function total(): int
     {
-        $select = 'SELECT COUNT(`OXID`) AS total';
+        $select = 'SELECT COUNT(*) AS total';
         $from = "\nFROM `{$this->view}`";
         $where = $this->whereTerm ? "\nWHERE {$this->whereTerm}" : null;
         return (int) Oxidio\select($select . $from . $where)[0]['total'];
