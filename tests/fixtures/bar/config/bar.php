@@ -74,21 +74,32 @@ return [
             $io->success('bar');
         });
         $cli->command('db', function(fn\Cli\IO $io, string $url = null, string $filter = null) {
-            $schema = Oxidio\db($url)->schema;
+            $db     = Oxidio\db($url);
+            $schema = $db->schema;
             $io->title($schema->getName());
             foreach ($schema->getTables() as $table) {
                 if ($filter && stripos($table->getName(), $filter) === false) {
                     continue;
                 }
+
+                $total = $io->isVerbose() ? '(total=' . $db->query($table->getName())->total() . ')' : '';
+
                 $primary = $table->hasPrimaryKey() ? $table->getPrimaryKeyColumns() : [];
-                $io->section(fn\str('%s (%s)', $table->getName(), fn\map($primary)->string(',')));
+                $io->section(fn\str(
+                    '%s [%s] %s',
+                    $table->getName(),
+                    fn\map($primary)->string(','),
+                    $total
+                ));
+
+
                 $columns = fn\traverse($table->getColumns(), function(Column $column) {
                     return $column->toArray();
                 });
-                $io->isVerbose() && $io->table(fn\keys(reset($columns)), $columns);
+                $io->isVeryVerbose() && $io->table(fn\keys(reset($columns)), $columns);
             }
 
-            $io->isVeryVerbose() && $io->listing(Oxidio\Core\Database::all());
+            $io->isDebug() && $io->listing(Oxidio\Core\Database::all());
         }, ['filter']);
         return $cli;
     }),

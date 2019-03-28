@@ -9,6 +9,7 @@ use fn;
 use Doctrine\DBAL;
 use OxidEsales\Eshop\Core\Database\Adapter;
 use OxidEsales\Eshop\Core\DatabaseProvider;
+use Oxidio\Model\Query;
 
 /**
  * @property-read DBAL\Schema\Table[] $tables
@@ -87,5 +88,28 @@ class Database extends Adapter\Doctrine\Database
     protected function tables(): array
     {
         return $this->schema->getTables();
+    }
+
+    /**
+     * @param string      $sql
+     * @param callable ...$mapper
+     *
+     * @return fn\Map|array[]
+     */
+    public function __invoke($sql, callable ...$mapper): fn\Map
+    {
+        return fn\map($this->select((string)$sql), ...$mapper);
+    }
+
+    /**
+     * @param callable|string $from
+     * @param callable|array $mapper
+     * @param array[] $where
+     *
+     * @return Query
+     */
+    public function query($from = null, $mapper = null, ...$where): Query
+    {
+        return (new Query($from, $mapper, ...$where))->withDb($this);
     }
 }

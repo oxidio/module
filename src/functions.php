@@ -22,7 +22,7 @@ namespace Oxidio
      */
     function select($sql, callable ...$mapper)
     {
-        return fn\map(db()->select((string)$sql), ...$mapper);
+        return db()($sql, ...$mapper);
     }
 
     /**
@@ -32,7 +32,7 @@ namespace Oxidio
      */
     function query(...$args): Query
     {
-        return new Query(...$args);
+        return db()->query(...$args);
     }
 }
 

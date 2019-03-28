@@ -10,6 +10,7 @@ use fn;
 use Invoker\Exception\NotCallableException;
 use Invoker\Reflection\CallableReflection;
 use IteratorAggregate;
+use OxidEsales\Eshop\Core\Database\Adapter\DatabaseInterface;
 use OxidEsales\Eshop\Core\Model\BaseModel;
 use Oxidio;
 use ReflectionClass;
@@ -40,6 +41,7 @@ class Query implements IteratorAggregate, Countable
     private $orderTerm;
     private $limitTerm;
     private $mapper;
+    private $db;
 
     /**
      * @param callable|string $from
@@ -61,7 +63,12 @@ class Query implements IteratorAggregate, Countable
         } else if ($mapper) {
             $this->where($mapper, ...$where);
         }
+    }
 
+    public function withDb(DatabaseInterface $db): self
+    {
+        $this->db = $db;
+        return $this;
     }
 
     protected static function args(array $row, ReflectionParameter ...$params): \Generator
@@ -261,7 +268,8 @@ class Query implements IteratorAggregate, Countable
      */
     public function getIterator(): fn\Map
     {
-        return Oxidio\select($this, ...($this->mapper ? [$this->mapper] : []));
+        $db = $this->db ?: Oxidio\db();
+        return $db($this, ...($this->mapper ? [$this->mapper] : []));
     }
 
     /**
@@ -288,6 +296,8 @@ class Query implements IteratorAggregate, Countable
         $select = 'SELECT COUNT(*) AS total';
         $from = "\nFROM `{$this->view}`";
         $where = $this->whereTerm ? "\nWHERE {$this->whereTerm}" : null;
-        return (int) Oxidio\select($select . $from . $where)[0]['total'];
+
+        $db = $this->db ?: Oxidio\db();
+        return (int) $db($select . $from . $where)[0]['total'];
     }
 }
