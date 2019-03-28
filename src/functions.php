@@ -2,8 +2,6 @@
 /**
  * Copyright (C) oxidio. See LICENSE file for license details.
  */
-/** @noinspection PhpUnhandledExceptionInspection */
-/** @noinspection PhpDocMissingThrowsInspection */
 
 namespace Oxidio
 {
@@ -11,14 +9,9 @@ namespace Oxidio
     use OxidEsales\Eshop;
     use Oxidio\Model\Query;
 
-    /**
-     * @param int $fetchMode
-     *
-     * @return Eshop\Core\Database\Adapter\DatabaseInterface
-     */
-    function db($fetchMode = Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)
+    function db(...$args): Core\Database
     {
-        return Eshop\Core\DatabaseProvider::getDb($fetchMode);
+        return Core\Database::get(...$args);
     }
 
     /**

@@ -5,6 +5,7 @@
 
 namespace Oxidio\Module;
 
+use Doctrine\DBAL\Schema\Column;
 use OxidEsales\Eshop\Application\Controller\FrontendController;
 use OxidEsales\Eshop\Application\Model\ArticleList;
 use OxidEsales\Eshop\Core\Config;
@@ -12,6 +13,7 @@ use OxidEsales\Eshop\Core\SeoDecoder;
 use OxidEsales\Eshop\Core\Theme;
 use fn;
 use DI;
+use Oxidio;
 use OxidEsales\Eshop\Core\ViewConfig;
 use Oxidio\Bar\Core\BarSeoDecoder;
 use Oxidio\DI\SmartyTemplateVars;
@@ -71,6 +73,23 @@ return [
         $cli->command('bar', function(fn\Cli\IO $io) {
             $io->success('bar');
         });
+        $cli->command('db', function(fn\Cli\IO $io, string $url = null, string $filter = null) {
+            $schema = Oxidio\db($url)->schema;
+            $io->title($schema->getName());
+            foreach ($schema->getTables() as $table) {
+                if ($filter && stripos($table->getName(), $filter) === false) {
+                    continue;
+                }
+                $primary = $table->hasPrimaryKey() ? $table->getPrimaryKeyColumns() : [];
+                $io->section(fn\str('%s (%s)', $table->getName(), fn\map($primary)->string(',')));
+                $columns = fn\traverse($table->getColumns(), function(Column $column) {
+                    return $column->toArray();
+                });
+                $io->isVerbose() && $io->table(fn\keys(reset($columns)), $columns);
+            }
+
+            $io->isVeryVerbose() && $io->listing(Oxidio\Core\Database::all());
+        }, ['filter']);
         return $cli;
     }),
 
