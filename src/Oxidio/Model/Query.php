@@ -16,7 +16,6 @@ use ReflectionClass;
 use ReflectionParameter;
 
 /**
- * @property-read ReflectionParameter[] $params
  */
 class Query implements IteratorAggregate, Countable
 {
@@ -64,44 +63,42 @@ class Query implements IteratorAggregate, Countable
     {
         try {
             $params = CallableReflection::create($from)->getParameters();
-            $this->properties['params'] = array_slice($params, 1);
         } catch (NotCallableException $e) {
             return null;
         }
 
         if ($params[0]->isArray()) {
-            return function(array $row) use($from) {
-                $args = fn\values(static::args($row, ...$this->params));
+            return function(array $row) use($from, $params) {
+                $args = fn\values(static::args($row, ...array_slice($params, 1)));
                 return $from($row, ...$args);
             };
         }
 
         return ($class = $params[0]->getClass())
-            ? $this->fromCallableWithClass($from, $class) : function(array $row) use($from, $params) {
-                $args = fn\values(static::args($row, $params[0], ...$this->params));
+            ? $this->fromCallableWithClass($from, $class, array_slice($params, 1)) : function(array $row) use($from, $params) {
+                $args = fn\values(static::args($row, $params[0], ...array_slice($params, 1)));
                 return $from(...$args);
             };
-
     }
 
-    protected function fromCallableWithClass($from, ReflectionClass $class): callable
+    protected function fromCallableWithClass($from, ReflectionClass $class, array $params): callable
     {
         $class->hasMethod('getViewName') && $this->properties['view'] = oxNew($class->name)->getViewName();
         if ($class->hasMethod('load')) {
-            $this->params || $this->properties['columns'] = 'OXID';
-            return function(array $row) use($from, $class) {
+            $params || $this->properties['columns'] = 'OXID';
+            return function(array $row) use($from, $class, $params) {
                 /** @var BaseModel $model */
                 $model = oxNew($class->name);
                 if ($model->load($row['OXID'])) {
-                    $args = fn\values(static::args($row, ...$this->params));
+                    $args = fn\values(static::args($row, ...$params));
                     return $from($model, ...$args);
                 }
                 return null;
             };
         }
 
-        return function(array $row) use($from, $class) {
-            $args = fn\values(static::args($row, ...$this->params));
+        return function(array $row) use($from, $class, $params) {
+            $args = fn\values(static::args($row, ...$params));
             return $from(oxNew($class->getName(), $row), ...$args);
         };
     }
