@@ -73,19 +73,22 @@ class Database extends Adapter\Doctrine\Database
      */
     protected function property(string $name, bool $assert)
     {
-        if (method_exists($this, $name)) {
-            return $assert ? $this->$name() : true;
+        if (fn\hasKey($name, $this->properties)) {
+            return $assert ? $this->properties[$name] : true;
+        }
+        if (method_exists($this, "resolve$name")) {
+            return $assert ? $this->{"resolve$name"}() : true;
         }
         $assert && fn\fail($name);
         return false;
     }
 
-    protected function schema(): DBAL\Schema\Schema
+    protected function resolveSchema(): DBAL\Schema\Schema
     {
-        return $this->getConnection()->getSchemaManager()->createSchema();
+        return $this->properties['schema'] = $this->getConnection()->getSchemaManager()->createSchema();
     }
 
-    protected function tables(): array
+    protected function resolveTables(): array
     {
         return $this->schema->getTables();
     }

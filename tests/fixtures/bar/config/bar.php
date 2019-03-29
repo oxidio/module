@@ -5,18 +5,17 @@
 
 namespace Oxidio\Module;
 
-use Doctrine\DBAL\Schema\Column;
 use OxidEsales\Eshop\Application\Controller\FrontendController;
 use OxidEsales\Eshop\Application\Model\ArticleList;
 use OxidEsales\Eshop\Core\Config;
 use OxidEsales\Eshop\Core\SeoDecoder;
 use OxidEsales\Eshop\Core\Theme;
+use OxidEsales\Eshop\Core\ViewConfig;
+use Oxidio\DI\SmartyTemplateVars;
+
 use fn;
 use DI;
 use Oxidio;
-use OxidEsales\Eshop\Core\ViewConfig;
-use Oxidio\Bar\Core\BarSeoDecoder;
-use Oxidio\DI\SmartyTemplateVars;
 use Smarty;
 
 return [
@@ -35,7 +34,7 @@ return [
     ],
 
     EXTEND => [
-        SeoDecoder::class => BarSeoDecoder::class,
+        SeoDecoder::class => Oxidio\Bar\Core\BarSeoDecoder::class,
     ],
 
     BLOCKS   => [
@@ -64,8 +63,7 @@ return [
             }),
         ],
         Theme\LAYOUT_FOOTER => [
-            Theme\LAYOUT_FOOTER\BLOCK_MAIN => append(function() {
-            }),
+            Theme\LAYOUT_FOOTER\BLOCK_MAIN => append(function() {}),
         ],
     ],
 
@@ -73,36 +71,11 @@ return [
         $cli->command('bar', function(fn\Cli\IO $io) {
             $io->success('bar');
         });
-        $cli->command('db', function(fn\Cli\IO $io, string $url = null, string $filter = null) {
-            $db     = Oxidio\db($url);
-            $schema = $db->schema;
-            $io->title($schema->getName());
-            foreach ($schema->getTables() as $table) {
-                if ($filter && stripos($table->getName(), $filter) === false) {
-                    continue;
-                }
-
-                $total = $io->isVerbose() ? '(total=' . $db->query($table->getName())->total() . ')' : '';
-
-                $primary = $table->hasPrimaryKey() ? $table->getPrimaryKeyColumns() : [];
-                $io->section(fn\str(
-                    '%s [%s] %s',
-                    $table->getName(),
-                    fn\map($primary)->string(','),
-                    $total
-                ));
-
-
-                $columns = fn\traverse($table->getColumns(), function(Column $column) {
-                    return $column->toArray();
-                });
-                $io->isVeryVerbose() && $io->table(fn\keys(reset($columns)), $columns);
-            }
-
-            $io->isDebug() && $io->listing(Oxidio\Core\Database::all());
-        }, ['filter']);
+        $cli->command('db', Oxidio\Bar\Cli\Db::class , ['filter']);
         return $cli;
     }),
+
+    Oxidio\Bar\Cli\Db::class => DI\create(),
 
     MENU => [
         Menu\ADMIN => [ // merge
