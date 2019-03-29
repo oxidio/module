@@ -7,7 +7,6 @@ namespace Oxidio
 {
     use fn;
     use OxidEsales\Eshop;
-    use Oxidio\Model\Query;
 
     function db(...$args): Core\Database
     {
@@ -28,9 +27,9 @@ namespace Oxidio
     /**
      * @param mixed ...$args
      *
-     * @return Query
+     * @return Core\Query
      */
-    function query(...$args): Query
+    function query(...$args): Core\Query
     {
         return db()->query(...$args);
     }

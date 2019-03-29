@@ -3,7 +3,7 @@
  * Copyright (C) oxidio. See LICENSE file for license details.
  */
 
-namespace Oxidio\Model;
+namespace Oxidio\Core;
 
 use fn\test\assert;
 use Oxidio;

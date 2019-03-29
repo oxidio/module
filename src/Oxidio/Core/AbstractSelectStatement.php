@@ -3,35 +3,38 @@
  * Copyright (C) oxidio. See LICENSE file for license details.
  */
 
-namespace Oxidio\Model\Query;
+namespace Oxidio\Core;
 
+use Countable;
+use IteratorAggregate;
 use fn;
 use Oxidio;
 
 /**
- * @property-read Oxidio\Core\Database $db
+ * @property-read Database $db
  * @property-read int $limit
  * @property-read int $start
  * @property-read int $total
  * @property-read string $view
  * @property-read string $columns
  */
-trait SelectTrait
+abstract class AbstractSelectStatement implements IteratorAggregate, Countable
 {
     use fn\PropertiesReadOnlyTrait;
 
-    private $whereTerm;
-    private $orderTerm;
-    private $limitTerm;
-    private $mapper;
+    protected $data = [];
+    protected $whereTerm;
+    protected $orderTerm;
+    protected $limitTerm;
+    protected $mapper;
 
     /**
      * @inheritdoc
      */
     protected function property(string $name, bool $assert)
     {
-        if (fn\hasKey($name, $this->properties)) {
-            return $assert ? $this->properties[$name] : true;
+        if (fn\hasKey($name, $this->data)) {
+            return $assert ? $this->data[$name] : true;
         }
         if (method_exists($this, "resolve$name")) {
             return $assert ? $this->{"resolve$name"}() : true;
@@ -40,9 +43,14 @@ trait SelectTrait
         return false;
     }
 
+    /**
+     * @param Database $db
+     *
+     * @return $this
+     */
     public function withDb(Oxidio\Core\Database $db): self
     {
-        $this->properties['db'] = $db;
+        $this->data['db'] = $db;
         return $this;
     }
 
@@ -133,8 +141,8 @@ trait SelectTrait
      */
     public function limit($limit, $start = 0): self
     {
-        $this->properties['limit'] = $limit;
-        $this->properties['start'] = $start;
+        $this->data['limit'] = $limit;
+        $this->data['start'] = $start;
         $this->limitTerm = $this->buildLimit($limit, $start);
         return $this;
     }

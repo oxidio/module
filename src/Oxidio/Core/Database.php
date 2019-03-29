@@ -9,7 +9,6 @@ use fn;
 use Doctrine\DBAL;
 use OxidEsales\Eshop\Core\Database\Adapter;
 use OxidEsales\Eshop\Core\DatabaseProvider;
-use Oxidio\Model\Query;
 
 /**
  * @property-read DBAL\Schema\Table[] $tables

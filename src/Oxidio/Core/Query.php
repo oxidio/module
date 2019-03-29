@@ -3,13 +3,11 @@
  * Copyright (C) oxidio. See LICENSE file for license details.
  */
 
-namespace Oxidio\Model;
+namespace Oxidio\Core;
 
-use Countable;
 use fn;
 use Invoker\Exception\NotCallableException;
 use Invoker\Reflection\CallableReflection;
-use IteratorAggregate;
 use OxidEsales\Eshop\Core\Model\BaseModel;
 use Oxidio;
 use ReflectionClass;
@@ -17,10 +15,8 @@ use ReflectionParameter;
 
 /**
  */
-class Query implements IteratorAggregate, Countable
+class Query extends AbstractSelectStatement
 {
-    use Query\SelectTrait;
-
     /**
      * @param callable|string $from
      * @param callable|array $mapper
@@ -31,7 +27,7 @@ class Query implements IteratorAggregate, Countable
         if (fn\isCallable($from)) {
             $this->mapper = $this->fromCallable($from);
         } else {
-            $this->properties['view'] = $from;
+            $this->data['view'] = $from;
         }
 
         if (fn\isCallable($mapper)) {
@@ -83,9 +79,9 @@ class Query implements IteratorAggregate, Countable
 
     protected function fromCallableWithClass($from, ReflectionClass $class, array $params): callable
     {
-        $class->hasMethod('getViewName') && $this->properties['view'] = oxNew($class->name)->getViewName();
+        $class->hasMethod('getViewName') && $this->data['view'] = oxNew($class->name)->getViewName();
         if ($class->hasMethod('load')) {
-            $params || $this->properties['columns'] = 'OXID';
+            $params || $this->data['columns'] = 'OXID';
             return function(array $row) use($from, $class, $params) {
                 /** @var BaseModel $model */
                 $model = oxNew($class->name);
