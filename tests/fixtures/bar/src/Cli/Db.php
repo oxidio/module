@@ -30,10 +30,10 @@ class Db
             $io->section(fn\str(
                 '%s [%s] %s',
                 $table->getName(),
-                fn\map(self::primary($table))->string(','),
+                fn\map(Oxidio\Core\SimilarColumns::primary($table))->string(','),
                 $total
             ));
-            $io->isVerbose() && $io->listing($this->relations($table));
+            $io->isVerbose() && $io->listing($this->similar($table));
 
             $columns = fn\traverse($table->getColumns(), function(Schema\Column $column) {
                 return $column->toArray();
@@ -44,34 +44,13 @@ class Db
         $io->isDebug() && $io->listing($this->db::all());
     }
 
-    private static function primary(Schema\Table $table): array
-    {
-        return $table->hasPrimaryKey() ? $table->getPrimaryKeyColumns() : [];
-    }
-
-    private static function similar(Schema\Column $left, Schema\Column $right): bool
-    {
-        if ($left->getLength() !== $right->getLength()) {
-            return false;
-        }
-        return (string) $left->getType() === (string) $right->getType();
-    }
-
-    protected function relations(Schema\Table $left): array
+    protected function similar(Schema\Table $left): array
     {
         return fn\traverse((function() use($left) {
-            foreach (self::primary($left) as $name) {
-                $leftColumn = $left->getColumn($name);
-                foreach ($this->db->tables as $right) {
-                    $foreign = self::primary($right);
-                    foreach ($right->getColumns() as $rightColumn) {
-                        if (fn\hasValue($rightColumn->getName(), $foreign)) {
-                            continue;
-                        }
-                        if (self::similar($leftColumn, $rightColumn)) {
-                            yield "$name ~ {$rightColumn->getFullQualifiedName($right->getName())}";
-                        }
-                    }
+            foreach (Oxidio\Core\SimilarColumns::primary($left) as $name) {
+                $similar = new Oxidio\Core\SimilarColumns($this->db, $left, $left->getColumn($name));
+                foreach ($similar->queries() as $fqn => $query) {
+                    ($total = $query->total) && yield "$name ~ {$fqn} ({$total})";
                 }
             }
         })());

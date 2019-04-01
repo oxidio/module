@@ -61,7 +61,7 @@ abstract class AbstractSelectStatement implements IteratorAggregate, Countable
 
     protected function getColumnName($candidate): string
     {
-        return "`$candidate`";
+        return $candidate;
     }
 
     /**
@@ -162,7 +162,7 @@ abstract class AbstractSelectStatement implements IteratorAggregate, Countable
         return '*';
     }
 
-    protected function resolveView(): void
+    protected function resolveView()
     {
         fn\fail(__METHOD__);
     }
@@ -187,7 +187,7 @@ abstract class AbstractSelectStatement implements IteratorAggregate, Countable
     public function __toString()
     {
         $select = "SELECT {$this->columns}";
-        $from = "\nFROM `{$this->view}`";
+        $from = "\nFROM {$this->view}";
         $where = $this->whereTerm ? "\nWHERE {$this->whereTerm}" : null;
         $order = $this->orderTerm ? "\nORDER BY {$this->orderTerm}" : null;
         $limit = $this->limitTerm ? "\nLIMIT {$this->limitTerm}" : null;
@@ -227,7 +227,7 @@ abstract class AbstractSelectStatement implements IteratorAggregate, Countable
     protected function resolveTotal(): int
     {
         $select = 'SELECT COUNT(*) AS total';
-        $from = "\nFROM `{$this->view}`";
+        $from = "\nFROM {$this->view}";
         $where = $this->whereTerm ? "\nWHERE {$this->whereTerm}" : null;
 
         return (int) ($this->db)($select . $from . $where)[0]['total'];
