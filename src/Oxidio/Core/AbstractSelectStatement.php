@@ -11,7 +11,7 @@ use fn;
 use Oxidio;
 
 /**
- * @property-read Database $db
+ * @property-read callable $db
  * @property-read int $limit
  * @property-read int $start
  * @property-read int $total
@@ -44,11 +44,11 @@ abstract class AbstractSelectStatement implements IteratorAggregate, Countable
     }
 
     /**
-     * @param Database $db
+     * @param callable $db
      *
      * @return $this
      */
-    public function withDb(Oxidio\Core\Database $db): self
+    public function withDb(callable $db): self
     {
         $this->data['db'] = $db;
         return $this;

@@ -112,6 +112,13 @@ class Database extends Adapter\Doctrine\Database
      */
     public function query($from = null, $mapper = null, ...$where): Query
     {
-        return (new Query($from, $mapper, ...$where))->withDb($this);
+        $fetchMode = is_object($this->proxy) ? $this->proxy->fetchMode : $this->fetchMode;
+        return (new Query($from, $mapper, ...$where))->withDb(function(...$args) use($fetchMode) {
+            $temp = is_object($this->proxy) ? $this->proxy->fetchMode : $this->fetchMode;
+            $this->setFetchMode($fetchMode);
+            $map = $this(...$args);
+            $this->setFetchMode($temp);
+            return $map;
+        });
     }
 }
