@@ -1,0 +1,26 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Copyright (C) oxidio. See LICENSE file for license details.
+ */
+
+use OxidEsales\Eshop\Core\Module\ModuleList;
+use OxidEsales\Eshop\Core\Registry;
+
+call_user_func(function() {
+    $file = file_exists($file = __DIR__ . '/../../../autoload.php') ? $file :  __DIR__ . '/../vendor/autoload.php';
+    /** @noinspection PhpIncludeInspection */
+    exit(call_user_func(require $file, function() {
+        $cli = fn\cli(['cli.name' => 'oxidio/oxidio', 'cli.commands.default' => false]);
+
+        $cli->command('modules', function(fn\Cli\IO $io) {
+            $dir = Registry::getConfig()->getModulesDir();
+            /** @var \OxidEsales\Eshop\Core\Module\Module $module */
+            foreach (oxNew(ModuleList::class)->getModulesFromDir($dir) as $module) {
+                $io->writeln($module->getId());
+            }
+        });
+
+        return $cli->run();
+    }));
+});

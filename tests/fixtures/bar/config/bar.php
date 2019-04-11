@@ -6,6 +6,7 @@
 namespace Oxidio\Module;
 
 use OxidEsales\Eshop\Application\Controller\FrontendController;
+use OxidEsales\Eshop\Application\Model\Article;
 use OxidEsales\Eshop\Application\Model\ArticleList;
 use OxidEsales\Eshop\Core\Config;
 use OxidEsales\Eshop\Core\SeoDecoder;
