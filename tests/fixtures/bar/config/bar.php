@@ -72,7 +72,9 @@ return [
         $cli->command('bar', function(fn\Cli\IO $io) {
             $io->success('bar');
         });
-        $cli->command('db', Oxidio\Bar\Cli\Db::class , ['filter']);
+        $cli->command('db', Oxidio\Bar\Cli\Db::class , ['filter'], [
+            'url' => Oxidio\Bar\Cli\Db::urls()->keys()->string('|')
+        ]);
         return $cli;
     }),
 

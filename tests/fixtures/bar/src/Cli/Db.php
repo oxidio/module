@@ -17,6 +17,7 @@ class Db
     private $db;
 
     public function __invoke(fn\Cli\IO $io, string $url = null, string $filter = null) {
+        $url && $url = static::urls()[$url] ?? $url;
         $this->db = Oxidio\db($url);
         $schema = $this->db->schema;
         $io->title($schema->getName());
@@ -54,5 +55,16 @@ class Db
                 }
             }
         })());
+    }
+
+    public static function urls(): fn\Map
+    {
+        return fn\map($_ENV, function($url, &$var) {
+            if (strpos($var, 'DB_URL_') !== 0) {
+                return null;
+            }
+            $var = str_replace('_', '-', strtolower(substr($var, 7)));
+            return $url;
+        });
     }
 }
