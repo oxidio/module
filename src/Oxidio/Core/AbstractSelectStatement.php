@@ -110,7 +110,7 @@ abstract class AbstractSelectStatement implements IteratorAggregate, Countable
     /**
      * @param string[]|array[] ...$terms
      *
-     * @return self
+     * @return $this
      */
     public function orderBy(...$terms): self
     {
