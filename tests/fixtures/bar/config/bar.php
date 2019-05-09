@@ -72,13 +72,17 @@ return [
         $cli->command('bar', function(fn\Cli\IO $io) {
             $io->success('bar');
         });
-        $cli->command('db', Oxidio\Bar\Cli\Db::class , ['filter'], [
-            'url' => Oxidio\Bar\Cli\Db::urls()->keys()->string('|')
-        ]);
+
+        $urls = Oxidio\Bar\Cli\Db::urls()->keys()->string('|');
+
+        $cli->command('db', Oxidio\Bar\Cli\Db::class , ['filter'], ['db' => $urls]);
+        $cli->command('shop', Oxidio\Bar\Cli\Shop::class , [], ['db' => $urls]);
+
         return $cli;
     }),
 
     Oxidio\Bar\Cli\Db::class => DI\create(),
+    Oxidio\Bar\Cli\Shop::class => DI\create(),
 
     MENU => [
         Menu\ADMIN => [ // merge

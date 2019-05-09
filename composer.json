@@ -22,6 +22,7 @@
     "oxidio/project": "dev-master",
     "oxidio/module-foo": "^1",
     "oxidio/module-bar": "^1",
+    "phpdocumentor/reflection-docblock": "^4",
 
     "php-fn/test": "^1"
   },
