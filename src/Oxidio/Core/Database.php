@@ -9,6 +9,7 @@ use fn;
 use Doctrine\DBAL;
 use OxidEsales\Eshop\Core\Database\Adapter;
 use OxidEsales\Eshop\Core\DatabaseProvider;
+use PDO;
 
 /**
  * @property-read DBAL\Schema\Table[] $tables
@@ -60,7 +61,10 @@ class Database extends Adapter\Doctrine\Database
                 ]]);
                 $db->connect();
             }
-            $db->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
+            $db->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', DBAL\Types\Type::STRING);
+            if (($pdo = $db->getConnection()->getWrappedConnection()) instanceof PDO) {
+                $pdo->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
+            }
             static::$instances[$locator] = $db;
         }
         static::$instances[$locator]->setFetchMode($mode);
