@@ -4,21 +4,42 @@
  * Copyright (C) oxidio. See LICENSE file for license details.
  */
 
-use OxidEsales\Eshop\Core\Module\ModuleList;
+namespace Oxidio;
+
+use OxidEsales\Eshop\Core\Module;
 use OxidEsales\Eshop\Core\Registry;
+use fn;
 
 call_user_func(static function () {
     $file = file_exists($file = __DIR__ . '/../../../autoload.php') ? $file : __DIR__ . '/../vendor/autoload.php';
     /** @noinspection PhpIncludeInspection */
     exit(call_user_func(require $file, static function () {
-        $cli = fn\cli(['cli.name' => 'oxidio/oxidio', 'cli.commands.default' => false]);
-
-        $cli->command('modules', static function (fn\Cli\IO $io) {
-            $dir = Registry::getConfig()->getModulesDir();
-            /** @var \OxidEsales\Eshop\Core\Module\Module $module */
-            foreach (oxNew(ModuleList::class)->getModulesFromDir($dir) as $module) {
-                $io->writeln($module->getId());
+        $cli = fn\cli([
+            'cli.name' => 'oxidio/oxidio',
+            'cli.commands.default' => false,
+            'write' => static function(fn\Cli\IO $io) {
+                return static function($it, ...$args) use($io) {
+                    foreach (fn\tree(fn\isCallable($it) ? $it(...$args) : $it) as $line) {
+                        $io->writeln($line);
+                    }
+                };
             }
+        ]);
+
+        $cli->command('modules', static function (callable $write) {
+            $dir = Registry::getConfig()->getModulesDir();
+            $write(fn\map(oxNew(Module\ModuleList::class)->getModulesFromDir($dir), static function(Module\Module $module) {
+                return $module->getId();
+            }));
+        });
+
+        $cli->command('config', static function (callable $write, $shop = null) {
+            $write(fn\map(shop($shop)->config(), static function(array $rows, string $module) {
+                yield "\n---\n$module:";
+                foreach ($rows as $name => $row) {
+                    yield "  $name : " . json_encode($row['value'], JSON_PRETTY_PRINT);
+                }
+            }));
         });
 
         return $cli->run();

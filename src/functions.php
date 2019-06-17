@@ -33,6 +33,19 @@ namespace Oxidio
     {
         return db()->query(...$args);
     }
+
+    function shop($shop = null): Core\Shop
+    {
+        is_string($shop) && $shop = fn\traverse($_ENV ?? [], static function ($url, &$var) {
+            if (strpos($var, 'OXIDIO_SHOP_') !== 0) {
+                return null;
+            }
+            $var = str_replace('_', '-', strtolower(substr($var, 12)));
+            return $url;
+        })[$shop] ?? $shop;
+
+        return new Core\Shop($shop instanceof Core\Database ? $shop : db($shop));
+    }
 }
 
 namespace Oxidio\Module
