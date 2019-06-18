@@ -9,6 +9,7 @@ namespace Oxidio;
 use OxidEsales\Eshop\Core\Module;
 use OxidEsales\Eshop\Core\Registry;
 use fn;
+use Oxidio\Core\Extension;
 
 call_user_func(static function () {
     $file = file_exists($file = __DIR__ . '/../../../autoload.php') ? $file : __DIR__ . '/../vendor/autoload.php';
@@ -33,12 +34,12 @@ call_user_func(static function () {
             }));
         });
 
-        $cli->command('config', static function (callable $write, $shop = null) {
-            $write(fn\map(shop($shop)->config(), static function(array $rows, string $module) {
-                yield "\n---\n$module:";
-                foreach ($rows as $name => $row) {
-                    yield "  $name : " . json_encode($row['value'], JSON_PRETTY_PRINT);
+        $cli->command('shop:modules', static function (callable $write, $shop = null) {
+            $write(fn\map(shop($shop), static function(Extension $extension) {
+                if ($extension->type !== Extension::MODULE) {
+                    return;
                 }
+                yield fn\str('# %s: %s', $extension->id, $extension->active ? 'enabled' : 'disabled');
             }));
         });
 

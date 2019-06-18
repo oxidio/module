@@ -34,6 +34,11 @@ namespace Oxidio
         return db()->query(...$args);
     }
 
+    /**
+     * @param string|Core\Database $shop
+     *
+     * @return Core\Shop
+     */
     function shop($shop = null): Core\Shop
     {
         is_string($shop) && $shop = fn\traverse($_ENV ?? [], static function ($url, &$var) {

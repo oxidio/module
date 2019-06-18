@@ -6,12 +6,13 @@
 namespace Oxidio\Core;
 
 use fn;
+use IteratorAggregate;
 use OxidEsales\Eshop\Application\Model\Category;
 use OxidEsales\Eshop\Core\Database\TABLE;
 
 /**
  */
-class Shop
+class Shop implements IteratorAggregate
 {
     /**
      * @var string
@@ -58,7 +59,7 @@ class Shop
      */
     public function categories($where = [Category\PARENTID => self::CATEGORY_ROOT]): Query
     {
-        return $this->db->query(TABLE\OXCATEGORIES, function (Row $row) {
+        return $this->query(TABLE\OXCATEGORIES, function (Row $row) {
             return fn\mapKey(static::seo($row[Category\TITLE]))->andValue(
                 $row->withChildren($this->categories([Category\PARENTID => $row[Category\ID]]))
             );
@@ -82,41 +83,23 @@ class Shop
     }
 
     /**
-     * @param mixed ...$where
+     * @param callable|string $from
+     * @param callable|array $mapper
+     * @param array[] $where
      *
-     * @return fn\Map|array[]
+     * @return Query
      */
-    public function config(...$where): fn\Map
+    public function query($from = null, $mapper = null, ...$where): Query
     {
-        $from = fn\str('(SELECT ' .
-            fn\map([
-                '{c.mod} module',
-                '{c.var} name',
-                '{c.type} type',
-                "DECODE({c.val}, '{pass}') value",
-                '{cd.gr} gr',
-                '{cd.pos} pos',
-            ])->string(', ') .
-            ' FROM {c} LEFT JOIN {cd} ON {c.mod} = {cd.mod} AND {c.var} = {cd.var}) config',
-            [
-                'pass' => static::CONFIG_KEY,
-                'c' => TABLE\OXCONFIG . ' c',
-                'cd' => TABLE\OXCONFIGDISPLAY . ' cd',
-                'c.mod' => 'c.' . TABLE\OXCONFIG\OXMODULE,
-                'c.var' => 'c.' . TABLE\OXCONFIG\OXVARNAME,
-                'c.val' => 'c.' . TABLE\OXCONFIG\OXVARVALUE,
-                'c.type' => 'c.' . TABLE\OXCONFIG\OXVARTYPE,
-                'cd.mod' => 'cd.' . TABLE\OXCONFIGDISPLAY\OXCFGMODULE,
-                'cd.var' => 'cd.' . TABLE\OXCONFIGDISPLAY\OXCFGVARNAME,
-                'cd.gr' => 'cd.' . TABLE\OXCONFIGDISPLAY\OXGROUPING,
-                'cd.pos' => 'cd.' . TABLE\OXCONFIGDISPLAY\OXPOS,
-            ]
-        );
-        return fn\map($this->db->query($from, ...$where)->orderBy('module', 'gr', 'pos', 'name'),
-            static function(array $row) {
-                strpos($row['type'] , 'rr') && $row['value'] = unserialize($row['value'], [null]);
-                return fn\mapGroup((string)$row['module'])->andKey($row['name'])->andValue($row);
-            }
-        );
+        return $this->db->query($from, $mapper, ...$where);
+    }
+
+    /**
+     * @inheritDoc
+     * @return iterable|Extension[]
+     */
+    public function getIterator(): fn\Map
+    {
+        return Extension::all($this);
     }
 }
