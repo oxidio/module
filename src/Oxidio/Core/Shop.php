@@ -12,13 +12,16 @@ use OxidEsales\Eshop\Core\Database\TABLE;
 
 /**
  */
-class Shop implements IteratorAggregate
+class Shop implements IteratorAggregate, DataQueryInterface
 {
     /**
      * @var string
      */
     public const CATEGORY_ROOT = 'oxrootid';
 
+    /**
+     * @var string
+     */
     public const CONFIG_KEY = 'fq45QS09_fqyx09239QQ';
 
     /**
@@ -83,11 +86,7 @@ class Shop implements IteratorAggregate
     }
 
     /**
-     * @param callable|string $from
-     * @param callable|array $mapper
-     * @param array[] $where
-     *
-     * @return Query
+     * @inheritDoc
      */
     public function query($from = null, $mapper = null, ...$where): Query
     {

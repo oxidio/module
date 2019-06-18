@@ -15,7 +15,7 @@ use PDO;
  * @property-read DBAL\Schema\Table[] $tables
  * @property-read DBAL\Schema\Schema $schema
  */
-class Database extends Adapter\Doctrine\Database
+class Database extends Adapter\Doctrine\Database implements DataQueryInterface
 {
     use fn\PropertiesReadOnlyTrait;
     use DatabaseProxyTrait;
@@ -108,11 +108,7 @@ class Database extends Adapter\Doctrine\Database
     }
 
     /**
-     * @param callable|string $from
-     * @param callable|array $mapper
-     * @param array[] $where
-     *
-     * @return Query
+     * @inheritDoc
      */
     public function query($from = null, $mapper = null, ...$where): Query
     {
