@@ -13,12 +13,12 @@ use function Oxidio\shop;
 /**
  * @property-read string $id
  * @property-read string $type
- * @property-read string $path aModulePaths
  * @property-read string $version aModuleVersions
+ * @property bool $active aDisabledModules
+ * @property-read string $path aModulePaths
  * @property-read string[] $controllers aModuleControllers
  * @property-read array[] $events aModuleEvents
  * @property-read string[] $classes aModuleFiles|aModules|aModuleExtensions ['cl', 'ox-cl' => 'cl']
- * @property-read bool|null $active aDisabledModules
  * @property-read array $templates aModuleTemplates
  * @property-read array $files aModuleFiles
  * @property-read array $config
@@ -26,11 +26,39 @@ use function Oxidio\shop;
  */
 class Extension implements JsonSerializable
 {
-    use fn\PropertiesReadOnlyTrait;
+    use fn\PropertiesReadWriteTrait;
+
+    protected const DEFAULT = [
+        'id' => '',
+        'type' => self::MODULE,
+        'version' => null,
+        'active' => true,
+        'path' => null,
+        'config' => [],
+        'templates' => [],
+        'controllers' => [],
+        'events' => [],
+        'files' => [],
+    ];
 
     public const SHOP = '';
     public const MODULE = 'module';
     public const THEME = 'theme';
+
+    /**
+     * @var Shop
+     */
+    protected $shop;
+
+    /**
+     * @param Shop $shop
+     * @param iterable $data
+     */
+    public function __construct(Shop $shop, $data)
+    {
+        $this->shop = $shop;
+        $this->initProperties($data);
+    }
 
     /**
      * @param Shop $shop
@@ -111,21 +139,9 @@ class Extension implements JsonSerializable
         foreach (['aModuleEvents', 'aModuleFiles', 'aModulePaths', 'aModuleTemplates', 'aModuleControllers', 'aModuleVersions', 'aDisabledModules'] as $key) {
             unset($data[self::SHOP]['config'][$key]);
         }
-        return fn\map($data, static function (array $ext, $id) {
-            $obj = new static;
-            $obj->properties = $ext + [
-                'id' => $id,
-                'type' => static::MODULE,
-                'version' => null,
-                'active' => true,
-                'path' => null,
-                'config' => [],
-                'templates' => [],
-                'controllers' => [],
-                'events' => [],
-                'files' => [],
-            ];
-            return $obj;
+
+        return fn\map($data, static function (array $ext, $id) use ($shop) {
+            return new static($shop, $ext + ['id' => $id]);
         });
     }
 
@@ -134,17 +150,14 @@ class Extension implements JsonSerializable
      */
     public function jsonSerialize()
     {
-        return [
-            'id' => $this->id,
-            'type' => $this->type,
-            'version' => $this->version,
-            'active' => $this->active,
-            'path' => $this->path,
-            'config' => $this->config,
-            'templates' => $this->templates,
-            'controllers' => $this->controllers,
-            'events' => $this->events,
-            'files' => $this->files,
-        ];
+        return $this->properties;
+    }
+
+    protected function resolveActive(...$values)
+    {
+        if ($values) {
+            $this->properties['active'] = $values[0];
+        }
+        return $this->properties['active'];
     }
 }

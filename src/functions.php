@@ -41,6 +41,8 @@ namespace Oxidio
      */
     function shop($shop = null): Core\Shop
     {
+        static $cache = [];
+
         is_string($shop) && $shop = fn\traverse($_ENV ?? [], static function ($url, &$var) {
             if (strpos($var, 'OXIDIO_SHOP_') !== 0) {
                 return null;
@@ -48,8 +50,10 @@ namespace Oxidio
             $var = str_replace('_', '-', strtolower(substr($var, 12)));
             return $url;
         })[$shop] ?? $shop;
+        $db = $shop instanceof Core\Database ? $shop : db($shop);
+        $id = spl_object_hash($db);
 
-        return new Core\Shop($shop instanceof Core\Database ? $shop : db($shop));
+        return $cache[$id] ?? $cache[$id] = new Core\Shop($db);
     }
 }
 
