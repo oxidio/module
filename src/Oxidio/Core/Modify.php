@@ -50,24 +50,27 @@ class Modify extends AbstractConditionalStatement
      * INSERT INTO `view` (`c1`, `c2`) VALUES (:c1, :c2)
      *
      * @param iterable|callable ...$data
-     * @return array
+     *
+     * @return callable
      */
-    public function insert(...$data): array
+    public function insert(...$data): callable
     {
-        $result = [];
-        foreach ($data as $row) {
-            [$values, $types, $bindings] = $this->convertData($row);
+        return function(bool $dryRun = false) use($data) {
+            $result = [];
+            foreach ($data as $row) {
+                [$values, $types, $bindings] = $this->convertData($row);
 
-            $columns = implode(', ', array_keys($bindings));
-            $bindings = implode(', ', $bindings);
+                $columns = implode(', ', array_keys($bindings));
+                $bindings = implode(', ', $bindings);
 
-            $sql = "INSERT INTO {$this->view} (\n  {$columns}\n) VALUES (\n  {$bindings}\n)";
-            $count = ($this->db)($sql, $values, $types);
+                $sql = "INSERT INTO {$this->view} (\n  {$columns}\n) VALUES (\n  {$bindings}\n)";
+                $count = $dryRun ? 0 : ($this->db)($sql, $values, $types);
 
-            isset($result[$sql]) || $result[$sql] = 0;
-            $result[$sql] += $count;
-        }
-        return $result;
+                isset($result[$sql]) || $result[$sql] = 0;
+                $result[$sql] += $count;
+            }
+            return $result;
+        };
     }
 
     /**
@@ -79,20 +82,22 @@ class Modify extends AbstractConditionalStatement
      * @param iterable|callable $data
      * @param array ...$where
      *
-     * @return array
+     * @return callable
      */
-    public function update($data, ...$where): array
+    public function update($data, ...$where): callable
     {
-        $this->where(...$where);
-        [$values, $types, $bindings] = $this->convertData($data);
+        return function (bool $dryRun = false) use ($data, $where) {
+            $this->where(...$where);
+            [$values, $types, $bindings] = $this->convertData($data);
 
-        $set = fn\map($bindings, static function ($binding, $column) {
-            return "$column = $binding";
-        })->string(",\n  ");
+            $set = fn\map($bindings, static function ($binding, $column) {
+                return "$column = $binding";
+            })->string(",\n  ");
 
-        $sql = "UPDATE {$this->view} SET\n  {$set}{$this}";
+            $sql = "UPDATE {$this->view} SET\n  {$set}{$this}";
 
-        return [$sql => ($this->db)($sql, $values, $types)];
+            return [$sql => $dryRun ? 0 : ($this->db)($sql, $values, $types)];
+        };
     }
 
     /**
@@ -102,12 +107,14 @@ class Modify extends AbstractConditionalStatement
      *
      * @param array ...$where
      *
-     * @return array
+     * @return callable
      */
-    public function delete(...$where): array
+    public function delete(...$where): callable
     {
-        $this->where(...$where);
-        $sql = "DELETE FROM {$this->view}{$this}";
-        return [$sql => ($this->db)($sql)];
+        return function (bool $dryRun = false) use ($where) {
+            $this->where(...$where);
+            $sql = "DELETE FROM {$this->view}{$this}";
+            return [$sql => $dryRun ? 0 : ($this->db)($sql)];
+        };
     }
 }

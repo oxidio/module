@@ -31,16 +31,17 @@ class ModifyTest extends \PHPUnit\Framework\TestCase
 
         assert\equals(
             ["INSERT INTO view (\n  a, b, c, d\n) VALUES (\n  :a, :b, :c, :d\n)" => 1],
-            $modify->insert($values)
+            $modify->insert($values)()
         );
 
         assert\equals(
             ["UPDATE view SET\n  a = :a,\n  b = :b,\n  c = :c,\n  d = :d\nWHERE (foo = 'bar' AND bar = 'foo')" => 1],
-            $modify->update($values, ['foo' => 'bar', 'bar' => 'foo']));
+            $modify->update($values, ['foo' => 'bar', 'bar' => 'foo'])()
+        );
 
         assert\equals(
             ["DELETE FROM view\nWHERE (foo = 'bar' AND bar = 'foo')" => 1],
-            $modify->delete(['foo' => 'bar', 'bar' => 'foo'])
+            $modify->delete(['foo' => 'bar', 'bar' => 'foo'])()
         );
 
         assert\equals(
@@ -48,7 +49,7 @@ class ModifyTest extends \PHPUnit\Framework\TestCase
                 "INSERT INTO view (\n  a, b\n) VALUES (\n  :a, :b\n)" => 2,
                 "INSERT INTO view (\n  a, b, c\n) VALUES (\n  :a, :b, :c\n)" => 1,
             ],
-            $modify->insert(['a' => 1, 'b' => 1], ['a' => 2, 'b' => 2], ['a' => 3, 'b' => 3, 'c' => 3])
+            $modify->insert(['a' => 1, 'b' => 1], ['a' => 2, 'b' => 2], ['a' => 3, 'b' => 3, 'c' => 3])()
         );
     }
 }
