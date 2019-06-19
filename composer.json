@@ -24,6 +24,7 @@
     "oxidio/module-foo": "^1",
     "oxidio/module-bar": "^1",
     "phpdocumentor/reflection-docblock": "^4",
+    "symfony/yaml": "^3",
 
     "php-fn/test": "^1"
   },

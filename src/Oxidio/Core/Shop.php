@@ -12,7 +12,7 @@ use OxidEsales\Eshop\Core\Database\TABLE;
 
 /**
  */
-class Shop implements IteratorAggregate, DataQueryInterface
+class Shop implements IteratorAggregate, DataModificationInterface
 {
     /**
      * @var string
@@ -91,6 +91,14 @@ class Shop implements IteratorAggregate, DataQueryInterface
     public function query($from = null, $mapper = null, ...$where): Query
     {
         return $this->db->query($from, $mapper, ...$where);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function modify($view): Modify
+    {
+        return $this->db->modify($view);
     }
 
     /**

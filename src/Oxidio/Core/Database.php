@@ -15,7 +15,7 @@ use PDO;
  * @property-read DBAL\Schema\Table[] $tables
  * @property-read DBAL\Schema\Schema $schema
  */
-class Database extends Adapter\Doctrine\Database implements DataQueryInterface
+class Database extends Adapter\Doctrine\Database implements DataModificationInterface
 {
     use fn\PropertiesReadOnlyTrait;
     use DatabaseProxyTrait;
@@ -72,18 +72,14 @@ class Database extends Adapter\Doctrine\Database implements DataQueryInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    protected function property(string $name, bool $assert)
+    protected function propertyMethodInvoke(string $name)
     {
-        if (fn\hasKey($name, $this->properties)) {
-            return $assert ? $this->properties[$name] : true;
+        if (!fn\hasKey($name, $this->properties)) {
+            $this->properties[$name] = $this->{$this->propertyMethod($name)->name}();
         }
-        if (method_exists($this, "resolve$name")) {
-            return $assert ? $this->{"resolve$name"}() : true;
-        }
-        $assert && fn\fail($name);
-        return false;
+        return $this->properties[$name];
     }
 
     protected function resolveSchema(): DBAL\Schema\Schema
@@ -119,6 +115,22 @@ class Database extends Adapter\Doctrine\Database implements DataQueryInterface
             $map = $this(...$args);
             $this->setFetchMode($temp);
             return $map;
+        });
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function modify($view): Modify
+    {
+        $fetchMode = is_object($this->proxy) ? $this->proxy->fetchMode : $this->fetchMode;
+
+        return (new Modify($view))->withDb(function(...$args) use($fetchMode) {
+            $temp = is_object($this->proxy) ? $this->proxy->fetchMode : $this->fetchMode;
+            $this->setFetchMode($fetchMode);
+            $affected = $this->executeUpdate(...$args);
+            $this->setFetchMode($temp);
+            return $affected;
         });
     }
 }

@@ -6,10 +6,14 @@
 
 namespace Oxidio;
 
-use OxidEsales\Eshop\Core\Module;
-use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\Eshop\Core\{
+    Module,
+    Registry
+};
 use fn;
 use Oxidio\Core\Extension;
+use Symfony\Component\Yaml\Yaml;
+use Traversable;
 
 call_user_func(static function () {
     $file = file_exists($file = __DIR__ . '/../../../autoload.php') ? $file : __DIR__ . '/../vendor/autoload.php';
@@ -19,9 +23,15 @@ call_user_func(static function () {
             'cli.name' => 'oxidio/oxidio',
             'cli.commands.default' => false,
             'write' => static function(fn\Cli\IO $io) {
-                return static function($it, ...$args) use($io) {
-                    foreach (fn\tree(fn\isCallable($it) ? $it(...$args) : $it) as $line) {
-                        $io->writeln($line);
+                return static function($it, $format = 'yaml') use($io) {
+                    $it instanceof Traversable || $it = fn\map([$it]);
+                    foreach ($it as $line) {
+                        if ($format === 'yaml') {
+                            $line = Yaml::dump($line);
+                        } else if ($format === 'json') {
+                            json_encode($line, JSON_PRETTY_PRINT);
+                        }
+                        $io->writeln((string) $line);
                     }
                 };
             }
@@ -37,11 +47,13 @@ call_user_func(static function () {
         $cli->command('shop:modules', static function (callable $write, $shop = null) {
             $write(fn\map(shop($shop), static function(Extension $extension) {
                 if ($extension->type !== Extension::MODULE) {
-                    return;
+                    return null;
                 }
-                yield fn\str('# %s: %s', $extension->id, $extension->active ? 'enabled' : 'disabled');
+                return fn\str('# %s: %s', $extension->id, $extension->active ? 'enabled' : 'disabled');
             }));
         });
+
+        $cli->command('test:dml', require 'test-dml.php', ['action', 'name']);
 
         return $cli->run();
     }));
