@@ -6,6 +6,7 @@
 namespace Oxidio\Core;
 
 use fn;
+use JsonSerializable;
 use OxidEsales\Eshop\Core\Database\TABLE;
 use function Oxidio\shop;
 
@@ -19,10 +20,11 @@ use function Oxidio\shop;
  * @property-read string[] $classes aModuleFiles|aModules|aModuleExtensions ['cl', 'ox-cl' => 'cl']
  * @property-read bool|null $active aDisabledModules
  * @property-read array $templates aModuleTemplates
+ * @property-read array $files aModuleFiles
  * @property-read array $config
  *
  */
-class Extension
+class Extension implements JsonSerializable
 {
     use fn\PropertiesReadOnlyTrait;
 
@@ -113,15 +115,36 @@ class Extension
             $obj = new static;
             $obj->properties = $ext + [
                 'id' => $id,
-                'config' => [],
-                'events' => [],
-                'files' => [],
-                'path' => null,
+                'type' => static::MODULE,
                 'version' => null,
                 'active' => true,
-                'type' => static::MODULE,
+                'path' => null,
+                'config' => [],
+                'templates' => [],
+                'controllers' => [],
+                'events' => [],
+                'files' => [],
             ];
             return $obj;
         });
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'type' => $this->type,
+            'version' => $this->version,
+            'active' => $this->active,
+            'path' => $this->path,
+            'config' => $this->config,
+            'templates' => $this->templates,
+            'controllers' => $this->controllers,
+            'events' => $this->events,
+            'files' => $this->files,
+        ];
     }
 }

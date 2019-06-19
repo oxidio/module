@@ -6,12 +6,12 @@
 
 namespace Oxidio;
 
+use JsonSerializable;
 use OxidEsales\Eshop\Core\{
     Module,
     Registry
 };
 use fn;
-use Oxidio\Core\Extension;
 use Symfony\Component\Yaml\Yaml;
 use Traversable;
 
@@ -26,6 +26,7 @@ call_user_func(static function () {
                 return static function($it, $format = 'yaml') use($io) {
                     $it instanceof Traversable || $it = fn\map([$it]);
                     foreach ($it as $line) {
+                        $line = $line instanceof JsonSerializable ? $line->jsonSerialize() : $line;
                         if ($format === 'yaml') {
                             $line = Yaml::dump($line);
                         } else if ($format === 'json') {
@@ -44,14 +45,9 @@ call_user_func(static function () {
             }));
         });
 
-        $cli->command('shop:modules', static function (callable $write, $shop = null) {
-            $write(fn\map(shop($shop), static function(Extension $extension) {
-                if ($extension->type !== Extension::MODULE) {
-                    return null;
-                }
-                return fn\str('# %s: %s', $extension->id, $extension->active ? 'enabled' : 'disabled');
-            }));
-        });
+        $cli->command('shop', static function (callable $write, $property, $shop = null) {
+            $write(shop($shop)->$property);
+        }, ['property']);
 
         $cli->command('test:dml', require 'test-dml.php', ['action', 'name']);
 

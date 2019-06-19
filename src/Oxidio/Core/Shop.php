@@ -6,14 +6,18 @@
 namespace Oxidio\Core;
 
 use fn;
-use IteratorAggregate;
 use OxidEsales\Eshop\Application\Model\Category;
 use OxidEsales\Eshop\Core\Database\TABLE;
 
 /**
+ * @property-read array $config
+ * @property-read fn\Map|Extension[] $modules
+ * @property-read fn\Map|Extension[] $themes
  */
-class Shop implements IteratorAggregate, DataModificationInterface
+class Shop implements DataModificationInterface
 {
+    use fn\PropertiesReadOnlyTrait;
+
     /**
      * @var string
      */
@@ -102,11 +106,37 @@ class Shop implements IteratorAggregate, DataModificationInterface
     }
 
     /**
-     * @inheritDoc
-     * @return iterable|Extension[]
+     * @param string $name
+     *
+     * @return mixed
      */
-    public function getIterator(): fn\Map
+    protected function propertyMethodInvoke(string $name)
     {
-        return Extension::all($this);
+        if (!fn\hasKey($name, $this->properties)) {
+            $this->properties[$name] = $this->{$this->propertyMethod($name)->name}();
+        }
+        return $this->properties[$name];
+    }
+
+    protected function resolveExtensions(): array
+    {
+        return fn\traverse(Extension::all($this), static function (Extension $extension) {
+            return fn\mapGroup($extension->type)->andKey($extension->id)->andValue($extension);
+        });
+    }
+
+    protected function resolveModules(): fn\Map
+    {
+        return fn\map($this->propertyMethodInvoke('extensions')[Extension::MODULE] ?? []);
+    }
+
+    protected function resolveThemes(): fn\Map
+    {
+        return fn\map($this->propertyMethodInvoke('extensions')[Extension::THEME] ?? []);
+    }
+
+    protected function resolveConfig()
+    {
+        return $this->propertyMethodInvoke('extensions')[Extension::SHOP][Extension::SHOP]->config;
     }
 }
