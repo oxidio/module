@@ -6,14 +6,11 @@
 
 namespace Oxidio;
 
-use JsonSerializable;
 use OxidEsales\Eshop\Core\{
     Module,
     Registry
 };
 use fn;
-use Symfony\Component\Yaml\Yaml;
-use Traversable;
 
 call_user_func(static function () {
     $file = file_exists($file = __DIR__ . '/../../../autoload.php') ? $file : __DIR__ . '/../vendor/autoload.php';
@@ -22,31 +19,18 @@ call_user_func(static function () {
         $cli = fn\cli([
             'cli.name' => 'oxidio/oxidio',
             'cli.commands.default' => false,
-            'write' => static function(fn\Cli\IO $io) {
-                return static function($it, $format = 'yaml') use($io) {
-                    $it instanceof Traversable || $it = fn\map([$it]);
-                    foreach ($it as $line) {
-                        $line = $line instanceof JsonSerializable ? $line->jsonSerialize() : $line;
-                        if ($format === 'yaml') {
-                            $line = Yaml::dump($line);
-                        } else if ($format === 'json') {
-                            json_encode($line, JSON_PRETTY_PRINT);
-                        }
-                        $io->writeln((string) $line);
-                    }
-                };
-            }
         ]);
 
-        $cli->command('modules', static function (callable $write) {
+        $cli->command('modules', static function () {
             $dir = Registry::getConfig()->getModulesDir();
-            $write(fn\map(oxNew(Module\ModuleList::class)->getModulesFromDir($dir), static function(Module\Module $module) {
-                return $module->getId();
-            }));
+            foreach (oxNew(Module\ModuleList::class)->getModulesFromDir($dir) as $module) {
+                yield $module->getId();
+            }
         });
 
-        $cli->command('shop', static function (callable $write, $property, $shop = null) {
-            $write(shop($shop)->$property);
+        $cli->command('shop', static function ($property, $shop = null) {
+            shop($shop)->modules['oxidio/module-bar']->active = false;
+            yield (object)shop($shop)->$property;
         }, ['property']);
 
         $cli->command('test:dml', require 'test-dml.php', ['action', 'name']);
