@@ -8,7 +8,6 @@ namespace Oxidio\Core;
 use fn;
 use JsonSerializable;
 use OxidEsales\Eshop\Core\Database\TABLE;
-use function Oxidio\shop;
 
 /**
  * @property-read string $id
@@ -69,6 +68,7 @@ class Extension implements JsonSerializable
     {
         $from = fn\str('(SELECT ' .
             fn\map([
+                '{c.shop} shop',
                 '{c.mod} module',
                 '{c.var} name',
                 '{c.type} type',
@@ -78,10 +78,11 @@ class Extension implements JsonSerializable
             ])->string(', ') .
             ' FROM {c} LEFT JOIN {cd} ON {c.mod} = {cd.mod} AND {c.var} = {cd.var}) config',
             [
-                'pass' => $shop::CONFIG_KEY,
+                'pass' => $shop->configKey,
                 'c' => TABLE\OXCONFIG . ' c',
                 'cd' => TABLE\OXCONFIGDISPLAY . ' cd',
                 'c.mod' => 'c.' . TABLE\OXCONFIG\OXMODULE,
+                'c.shop' => 'c.' . TABLE\OXCONFIG\OXSHOPID,
                 'c.var' => 'c.' . TABLE\OXCONFIG\OXVARNAME,
                 'c.val' => 'c.' . TABLE\OXCONFIG\OXVARVALUE,
                 'c.type' => 'c.' . TABLE\OXCONFIG\OXVARTYPE,
@@ -92,7 +93,8 @@ class Extension implements JsonSerializable
             ]
         );
 
-        return fn\traverse(fn\map($shop->query($from)->orderBy('module', 'gr', 'pos', 'name'),
+        $query = $shop->query($from, ['shop' => $shop->id])->orderBy('module', 'gr', 'pos', 'name');
+        return fn\traverse(fn\map($query,
             static function (array $row) {
                 ['module' => $module, 'value' => $value, 'name' => $name] = $row;
                 strpos($row['type'], 'rr') && $value = unserialize($value, [null]);
@@ -111,12 +113,12 @@ class Extension implements JsonSerializable
     }
 
     /**
-     * @param Shop|null $shop
+     * @param Shop $shop
      * @return fn\Map|static[]
      */
-    public static function all(Shop $shop = null): fn\Map
+    public static function all(Shop $shop): fn\Map
     {
-        $data = static::shopData($shop ?: shop());
+        $data = static::shopData($shop);
         $conf = $data[self::SHOP]['config'] ?? [];
 
         $attr = function (array $data, $attr): array {
@@ -153,10 +155,16 @@ class Extension implements JsonSerializable
         return $this->properties;
     }
 
+    /**
+     * @see \OxidEsales\EshopCommunity\Core\Module\ModuleInstaller::deactivate
+     * @param mixed ...$values
+     * @return mixed
+     */
     protected function resolveActive(...$values)
     {
         if ($values) {
             $this->properties['active'] = $values[0];
+            $this->shop->save();
         }
         return $this->properties['active'];
     }

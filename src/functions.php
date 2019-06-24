@@ -36,10 +36,11 @@ namespace Oxidio
 
     /**
      * @param string|Core\Database $shop
+     * @param array $params
      *
      * @return Core\Shop
      */
-    function shop($shop = null): Core\Shop
+    function shop($shop = null, array $params = []): Core\Shop
     {
         static $cache = [];
 
@@ -51,9 +52,8 @@ namespace Oxidio
             return $url;
         })[$shop] ?? $shop;
         $db = $shop instanceof Core\Database ? $shop : db($shop);
-        $id = spl_object_hash($db);
-
-        return $cache[$id] ?? $cache[$id] = new Core\Shop($db);
+        $hash = md5(json_encode([spl_object_hash($db), $params]));
+        return $cache[$hash] ?? $cache[$hash] = new Core\Shop($db, $params);
     }
 }
 

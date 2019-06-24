@@ -27,7 +27,7 @@ class Query extends AbstractSelectStatement
         if (fn\isCallable($from)) {
             $this->mapper = $this->fromCallable($from);
         } else {
-            $this->data['view'] = $from;
+            $this->props['view'] = $from;
         }
 
         if (fn\isCallable($mapper)) {
@@ -79,7 +79,7 @@ class Query extends AbstractSelectStatement
 
     protected function fromCallableWithClass($from, ReflectionClass $class, array $params): callable
     {
-        $class->hasMethod('getViewName') && $this->data['view'] = oxNew($class->name)->getViewName();
+        $class->hasMethod('getViewName') && $this->props['view'] = oxNew($class->name)->getViewName();
         if ($class->hasMethod('load')) {
             $params || $this->data['columns'] = 'OXID';
             return function(array $row) use($from, $class, $params) {

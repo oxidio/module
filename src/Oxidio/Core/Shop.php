@@ -6,13 +6,18 @@
 namespace Oxidio\Core;
 
 use fn;
+use Oxidio;
+use Generator;
 use OxidEsales\Eshop\Application\Model\Category;
 use OxidEsales\Eshop\Core\Database\TABLE;
 
 /**
+ * @property-read string $configKey
+ * @property-read string $id
  * @property-read array $config
  * @property-read fn\Map|Extension[] $modules
  * @property-read fn\Map|Extension[] $themes
+ * @property-read callable[] $modifications
  */
 class Shop implements DataModificationInterface
 {
@@ -26,7 +31,8 @@ class Shop implements DataModificationInterface
     /**
      * @var string
      */
-    public const CONFIG_KEY = 'fq45QS09_fqyx09239QQ';
+    protected const DEFAULT_CONFIG_KEY = 'fq45QS09_fqyx09239QQ';
+    protected const DEFAULT_ID = 1;
 
     /**
      * @var array
@@ -49,14 +55,23 @@ class Shop implements DataModificationInterface
     /**
      * @var Database
      */
-    private $db;
+    protected $db;
+
+    /**
+     * @var bool
+     */
+    private $dirty = false;
+
+    protected $transaction = [];
 
     /**
      * @param Database $db
+     * @param array $params
      */
-    public function __construct(Database $db)
+    public function __construct(Database $db, array $params = [])
     {
         $this->db = $db;
+        $this->properties = $params + ['configKey' => self::DEFAULT_CONFIG_KEY];
     }
 
     /**
@@ -105,6 +120,42 @@ class Shop implements DataModificationInterface
         return $this->db->modify($view);
     }
 
+    public function save(): bool
+    {
+        if ($dirty = $this->dirty) {
+            return $dirty;
+        }
+
+        $this->dirty = true;
+        $table = $this->modify(TABLE\OXCONFIG);
+        $this->transaction[] = $table->map($this->modulesConfig(), function(Modify $table, $value, $name) {
+            yield $table->update([
+                TABLE\OXCONFIG\OXVARVALUE => function($column) use($value) {
+                    return ["ENCODE(:$column, '{$this->configKey}')" => serialize($value)];
+                },
+            ], [
+                TABLE\OXCONFIG\OXMODULE => Extension::SHOP,
+                TABLE\OXCONFIG\OXSHOPID => $this->id,
+                TABLE\OXCONFIG\OXVARNAME => $name
+            ]);
+        });
+
+        return $dirty;
+    }
+
+    public function commit(bool $commit = true): Generator
+    {
+        $transaction = $this->transaction;
+        $this->transaction = [];
+        foreach ($transaction as $modify) {
+            if (($modified = $modify(!$commit)) instanceof Generator) {
+                yield from $modified;
+            } else {
+                yield $modified;
+            }
+        }
+    }
+
     /**
      * @param string $name
      *
@@ -138,5 +189,19 @@ class Shop implements DataModificationInterface
     protected function resolveConfig()
     {
         return $this->propertyMethodInvoke('extensions')[Extension::SHOP][Extension::SHOP]->config;
+    }
+
+    protected function resolveId()
+    {
+        return $this->query(TABLE\OXSHOPS, function($id) {
+            return $id;
+        })->orderBy(TABLE\OXSHOPS\OXID)->limit(1)[0] ?? static::DEFAULT_ID;
+    }
+
+    protected function modulesConfig(): Generator
+    {
+        yield 'aDisabledModules' => fn\map($this->modules, function(Extension  $module) {
+            return $module->active ? null : $module->id;
+        })->sort()->values;
     }
 }

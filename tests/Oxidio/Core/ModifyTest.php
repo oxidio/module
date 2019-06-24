@@ -51,5 +51,14 @@ class ModifyTest extends \PHPUnit\Framework\TestCase
             ],
             $modify->insert(['a' => 1, 'b' => 1], ['a' => 2, 'b' => 2], ['a' => 3, 'b' => 3, 'c' => 3])()
         );
+
+        assert\equals([
+            "INSERT INTO view (\n  a, b\n) VALUES (\n  :a, ENCODE(:b, 'pass')\n)" => 1
+        ], $modify->insert([
+            'a' => 'A',
+            'b' => function($column) {
+                return ["ENCODE(:$column, 'pass')" => null];
+            },
+        ])());
     }
 }

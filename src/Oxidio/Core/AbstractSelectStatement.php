@@ -5,6 +5,7 @@
 
 namespace Oxidio\Core;
 
+use ArrayAccess;
 use Countable;
 use IteratorAggregate;
 use fn;
@@ -18,11 +19,36 @@ use Oxidio;
  * @property-read string $view
  * @property-read string $columns
  */
-abstract class AbstractSelectStatement extends AbstractConditionalStatement implements IteratorAggregate, Countable
+abstract class AbstractSelectStatement extends AbstractConditionalStatement implements
+    ArrayAccess,
+    IteratorAggregate,
+    Countable
 {
+    use fn\ArrayAccessTrait;
+
     protected $orderTerm;
     protected $limitTerm;
     protected $mapper;
+
+    /**
+     * @return array
+     */
+    protected function data(): array
+    {
+        if (!isset($this->props['rows'])) {
+            $this->props['rows'] = fn\traverse($this->props['it'] ?? $this->getIterator());
+        }
+        return $this->props['rows'];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function where(...$terms)
+    {
+        unset($this->props['rows']);
+        return parent::where(...$terms);
+    }
 
     /**
      * @param string[]|array[] ...$terms
@@ -31,6 +57,7 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
      */
     public function orderBy(...$terms): self
     {
+        unset($this->props['rows']);
         $this->orderTerm = $this->buildOrderBy($terms);
         return $this;
     }
@@ -58,8 +85,9 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
      */
     public function limit($limit, $start = 0): self
     {
-        $this->data['limit'] = $limit;
-        $this->data['start'] = $start;
+        unset($this->props['rows']);
+        $this->props['limit'] = $limit;
+        $this->props['start'] = $start;
         $this->limitTerm = $this->buildLimit($limit, $start);
         return $this;
     }
@@ -114,7 +142,8 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
      */
     public function getIterator(): fn\Map
     {
-        return ($this->db)($this, ...($this->mapper ? [$this->mapper] : []));
+        unset($this->props['rows']);
+        return $this->props['it'] = ($this->db)($this, ...($this->mapper ? [$this->mapper] : []));
     }
 
     /**

@@ -6,6 +6,7 @@
 namespace Oxidio\Core;
 
 use fn;
+use Generator;
 use Oxidio;
 use PDO;
 
@@ -18,7 +19,7 @@ class Modify extends AbstractConditionalStatement
      */
     public function __construct($view)
     {
-        $this->data['view'] = (string) $view;
+        $this->props['view'] = (string)$view;
     }
 
     /**
@@ -32,13 +33,21 @@ class Modify extends AbstractConditionalStatement
         $bindings = [];
 
         foreach (fn\isCallable($data) ? $data($this) : $data as $column => $value) {
+            if (fn\isCallable($value)) {
+                $result = $value($column);
+                $binding = key($result);
+                $value = current($result);
+            } else {
+                $binding = ":$column";
+            }
+
             $values[$column] = $value;
             if (is_bool($value)) {
                 $types[$column] = PDO::PARAM_BOOL;
             } elseif ($value === null) {
                 $types[$column] = PDO::PARAM_NULL;
             }
-            $bindings[$column] = ":$column";
+            $bindings[$column] = $binding;
         }
 
         return [$values, $types, $bindings];
@@ -47,7 +56,7 @@ class Modify extends AbstractConditionalStatement
     /**
      * @see \Doctrine\DBAL\Connection::insert
      *
-     * INSERT INTO `view` (`c1`, `c2`) VALUES (:c1, :c2)
+     * INSERT INTO `view` (`c1`, `c2`) VALUES (:c1, ENCODE(:c2, 'phrase'))
      *
      * @param iterable|callable ...$data
      *
@@ -55,7 +64,7 @@ class Modify extends AbstractConditionalStatement
      */
     public function insert(...$data): callable
     {
-        return function(bool $dryRun = false) use($data) {
+        return function (bool $dryRun = false) use ($data) {
             $result = [];
             foreach ($data as $row) {
                 [$values, $types, $bindings] = $this->convertData($row);
@@ -76,8 +85,7 @@ class Modify extends AbstractConditionalStatement
     /**
      * @see \Doctrine\DBAL\Connection::update
      *
-     * UPDATE `view` SET `c1` = :c1, `c2` = :c2 WHERE `c3` = :c3
-     *
+     * UPDATE `view` SET `c1` = :c1, `c2` = ENCODE(:c2, 'phrase') WHERE `c3` = :c3
      *
      * @param iterable|callable $data
      * @param array ...$where
@@ -115,6 +123,24 @@ class Modify extends AbstractConditionalStatement
             $this->where(...$where);
             $sql = "DELETE FROM {$this->view}{$this}";
             return [$sql => $dryRun ? 0 : ($this->db)($sql)];
+        };
+    }
+
+
+    /**
+     * @param iterable $iterable
+     * @param callable $factory
+     *
+     * @return callable
+     */
+    public function map(iterable $iterable, callable $factory): callable
+    {
+        return function (bool $dryRun = false) use ($iterable, $factory): Generator {
+            foreach ($iterable as $key => $value) {
+                foreach ($factory($this, $value, $key) as $callback) {
+                    yield $callback($dryRun);
+                }
+            }
         };
     }
 }

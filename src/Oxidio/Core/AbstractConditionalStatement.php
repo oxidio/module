@@ -17,17 +17,17 @@ abstract class AbstractConditionalStatement
     use fn\PropertiesReadOnlyTrait;
 
     protected $whereTerm;
-    protected $data = [];
+    protected $props = [];
 
     /**
      * @inheritDoc
      */
     protected function propertyMethodInvoke(string $name)
     {
-        if (!fn\hasKey($name, $this->data)) {
-            $this->data[$name] = $this->{$this->propertyMethod($name)->name}();
+        if (!fn\hasKey($name, $this->props)) {
+            $this->props[$name] = $this->{$this->propertyMethod($name)->name}();
         }
-        return $this->data[$name];
+        return $this->props[$name];
     }
 
     /**
@@ -37,7 +37,7 @@ abstract class AbstractConditionalStatement
      */
     public function withDb(callable $db): self
     {
-        $this->data['db'] = $db;
+        $this->props['db'] = $db;
         return $this;
     }
 
@@ -56,7 +56,7 @@ abstract class AbstractConditionalStatement
      *
      * @return $this
      */
-    public function where(...$terms): self
+    public function where(...$terms)
     {
         $this->whereTerm = $this->buildWhere($terms);
         return $this;
