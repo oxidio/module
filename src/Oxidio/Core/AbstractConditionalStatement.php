@@ -11,12 +11,12 @@ use Oxidio;
 /**
  * @property-read callable $db
  * @property-read string $view
+ * @property-read array $whereTerms
  */
 abstract class AbstractConditionalStatement
 {
     use fn\PropertiesReadOnlyTrait;
 
-    protected $whereTerm;
     protected $props = [];
 
     /**
@@ -41,11 +41,6 @@ abstract class AbstractConditionalStatement
         return $this;
     }
 
-    protected function resolveDb(): Oxidio\Core\Database
-    {
-        return Oxidio\db();
-    }
-
     protected function getColumnName($candidate): string
     {
         return $candidate;
@@ -54,22 +49,23 @@ abstract class AbstractConditionalStatement
     /**
      * @param array ...$terms
      *
-     * @return $this
+     * @return static
      */
     public function where(...$terms)
     {
-        $this->whereTerm = $this->buildWhere($terms);
+        $this->props['whereTerms'] = array_filter($terms);
         return $this;
     }
 
     /**
      * @param array $terms
+     * @param string $prefix
      *
      * @return string
      */
-    public function buildWhere(array $terms): string
+    public function buildWhere(array $terms, string $prefix = "\nWHERE "): string
     {
-        return implode(' OR ', fn\traverse($terms, function ($term) {
+        $where = implode(' OR ', fn\traverse($terms, function ($term) {
             if ($term = is_iterable($term) ? implode(' AND ', fn\traverse($term, function($candidate, $column) {
                 $value = $candidate;
                 $operator = null;
@@ -92,6 +88,7 @@ abstract class AbstractConditionalStatement
             }
             return null;
         }));
+        return $where ? $prefix . $where : $where;
     }
 
     protected function resolveView(): void
@@ -99,11 +96,21 @@ abstract class AbstractConditionalStatement
         fn\fail(__METHOD__);
     }
 
+    public function resolveDb(): void
+    {
+        fn\fail(__METHOD__);
+    }
+
+    public function resolveWhereTerms(): array
+    {
+        return [];
+    }
+
     /**
      * @inheritdoc
      */
     public function __toString()
     {
-        return $this->whereTerm ? "\nWHERE {$this->whereTerm}" : '';
+        return $this->buildWhere($this->whereTerms);
     }
 }

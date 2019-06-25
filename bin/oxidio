@@ -52,6 +52,7 @@ call_user_func(static function () {
         }, ['modules']);
 
         $cli->command('test:dml', require 'test-dml.php', ['action', 'name']);
+        $cli->command('test:query', require 'test-query.php', ['columns']);
 
         return $cli->run();
     }));

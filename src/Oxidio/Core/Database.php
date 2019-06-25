@@ -62,9 +62,6 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
                 $db->connect();
             }
             $db->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', DBAL\Types\Type::STRING);
-            if (($pdo = $db->getConnection()->getWrappedConnection()) instanceof PDO) {
-                $pdo->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
-            }
             static::$instances[$locator] = $db;
         }
         static::$instances[$locator]->setFetchMode($mode);
@@ -89,10 +86,14 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
 
     protected function resolveTables(): array
     {
-        return $this->schema->getTables();
+        return fn\traverse($this->schema->getTables(), function(DBAL\Schema\Table $table) {
+            return fn\mapValue($table)->andKey($table->getName());
+        });
     }
 
     /**
+     * @deprecated
+     *
      * @param string      $sql
      * @param callable ...$mapper
      *
@@ -108,14 +109,15 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
      */
     public function query($from = null, $mapper = null, ...$where): Query
     {
-        $fetchMode = is_object($this->proxy) ? $this->proxy->fetchMode : $this->fetchMode;
-        return (new Query($from, $mapper, ...$where))->withDb(function(...$args) use($fetchMode) {
-            $temp = is_object($this->proxy) ? $this->proxy->fetchMode : $this->fetchMode;
-            $this->setFetchMode($fetchMode);
-            $map = $this(...$args);
-            $this->setFetchMode($temp);
-            return $map;
-        });
+        return (new Query($from, $mapper, ...$where))->withDb($this->fix(function($mode, $query, ...$args) {
+            $this->setFetchMode($mode);
+            if ($query instanceof Query && $query->orderTerms) {
+                $it = new SelectStatementIterator($query, $this, $mode);
+            } else {
+                $it = $this->select((string) $query);
+            }
+            return new fn\Map($it, ...$args);
+        }));
     }
 
     /**
@@ -123,14 +125,20 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
      */
     public function modify($view): Modify
     {
-        $fetchMode = is_object($this->proxy) ? $this->proxy->fetchMode : $this->fetchMode;
+        return (new Modify($view))->withDb($this->fix(function($mode, ...$args) {
+            $this->setFetchMode($mode);
+            return $this->executeUpdate(...$args);
+        }));
+    }
 
-        return (new Modify($view))->withDb(function(...$args) use($fetchMode) {
+    public function fix(callable $callable)
+    {
+        $fetchMode = is_object($this->proxy) ? $this->proxy->fetchMode : $this->fetchMode;
+        return function(...$args) use($callable, $fetchMode) {
             $temp = is_object($this->proxy) ? $this->proxy->fetchMode : $this->fetchMode;
-            $this->setFetchMode($fetchMode);
-            $affected = $this->executeUpdate(...$args);
+            $result = $callable($fetchMode, ...$args);
             $this->setFetchMode($temp);
-            return $affected;
-        });
+            return $result;
+        };
     }
 }

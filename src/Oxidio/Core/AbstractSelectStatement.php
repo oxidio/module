@@ -12,12 +12,11 @@ use fn;
 use Oxidio;
 
 /**
- * @property-read callable $db
  * @property-read int $limit
  * @property-read int $start
  * @property-read int $total
- * @property-read string $view
  * @property-read string $columns
+ * @property-read array orderTerms
  */
 abstract class AbstractSelectStatement extends AbstractConditionalStatement implements
     ArrayAccess,
@@ -26,8 +25,6 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
 {
     use fn\ArrayAccessTrait;
 
-    protected $orderTerm;
-    protected $limitTerm;
     protected $mapper;
 
     /**
@@ -58,13 +55,19 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
     public function orderBy(...$terms): self
     {
         unset($this->props['rows']);
-        $this->orderTerm = $this->buildOrderBy($terms);
+        $this->props['orderTerms'] = array_filter($terms);
         return $this;
     }
 
-    public function buildOrderBy(array $terms): string
+    /**
+     * @param array $terms
+     * @param string $prefix
+     *
+     * @return string
+     */
+    public function buildOrderBy(array $terms, string $prefix = "\nORDER BY "): string
     {
-        return implode(', ', fn\traverse($terms, function ($term) {
+        $order = implode(', ', fn\traverse($terms, function ($term) {
             return implode(', ',
                 fn\traverse(is_iterable($term) ? $term : (array)$term, function ($direction, $property) {
                     if (is_numeric($property)) {
@@ -75,6 +78,8 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
                     return "{$this->getColumnName($property)} {$direction}";
                 }));
         }));
+
+        return $order ? $prefix . $order : $order;
     }
 
     /**
@@ -88,23 +93,7 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
         unset($this->props['rows']);
         $this->props['limit'] = $limit;
         $this->props['start'] = $start;
-        $this->limitTerm = $this->buildLimit($limit, $start);
         return $this;
-    }
-
-    protected function resolveLimit(): int
-    {
-        return 0;
-    }
-
-    protected function resolveStart(): int
-    {
-        return 0;
-    }
-
-    protected function resolveColumns(): string
-    {
-        return '*';
     }
 
     /**
@@ -126,13 +115,23 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
      */
     public function __toString()
     {
-        $select = "SELECT {$this->columns}";
-        $from = "\nFROM {$this->view}";
-        $where = $this->whereTerm ? "\nWHERE {$this->whereTerm}" : null;
-        $order = $this->orderTerm ? "\nORDER BY {$this->orderTerm}" : null;
-        $limit = $this->limitTerm ? "\nLIMIT {$this->limitTerm}" : null;
+        return $this->getSql($this->start, $this->limit);
+    }
 
-        return $select . $from . $where . $order . $limit;
+    /**
+     * @param int $start
+     * @param int $limit
+     * @return string
+     */
+    public function getSql($start, $limit = 50): string
+    {
+        $limitTerm = $this->buildLimit($limit, $start);
+        $limitTerm = $limitTerm ? "\nLIMIT {$limitTerm}" : null;
+
+        return "SELECT {$this->columns}\nFROM {$this->view}"
+            . $this->buildWhere($this->whereTerms)
+            . $this->buildOrderBy($this->orderTerms)
+            . $limitTerm;
     }
 
     /**
@@ -167,10 +166,30 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
      */
     protected function resolveTotal(): int
     {
-        $select = 'SELECT COUNT(*) AS total';
-        $from = "\nFROM {$this->view}";
-        $where = $this->whereTerm ? "\nWHERE {$this->whereTerm}" : null;
+        return (int) ($this->db)(
+            'SELECT COUNT(*) AS total' .
+            "\nFROM {$this->view}" .
+            $this->buildWhere($this->whereTerms)
+        )[0]['total'];
+    }
 
-        return (int) ($this->db)($select . $from . $where)[0]['total'];
+    protected function resolveLimit(): int
+    {
+        return 0;
+    }
+
+    protected function resolveStart(): int
+    {
+        return 0;
+    }
+
+    protected function resolveColumns(): string
+    {
+        return '*';
+    }
+
+    public function resolveOrderTerms(): array
+    {
+        return [];
     }
 }

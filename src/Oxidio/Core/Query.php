@@ -6,6 +6,7 @@
 namespace Oxidio\Core;
 
 use fn;
+use Generator;
 use Invoker\Exception\NotCallableException;
 use Invoker\Reflection\CallableReflection;
 use OxidEsales\Eshop\Core\Model\BaseModel;
@@ -38,7 +39,7 @@ class Query extends AbstractSelectStatement
         }
     }
 
-    protected static function args(array $row, ReflectionParameter ...$params): \Generator
+    protected static function args(array $row, ReflectionParameter ...$params): Generator
     {
         foreach ($params as $param) {
             $name = $param->getName();
@@ -81,7 +82,7 @@ class Query extends AbstractSelectStatement
     {
         $class->hasMethod('getViewName') && $this->props['view'] = oxNew($class->name)->getViewName();
         if ($class->hasMethod('load')) {
-            $params || $this->data['columns'] = 'OXID';
+            $params || $this->props['columns'] = 'OXID';
             return function(array $row) use($from, $class, $params) {
                 /** @var BaseModel $model */
                 $model = oxNew($class->name);
