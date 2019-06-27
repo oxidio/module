@@ -7,7 +7,6 @@
     {"type": "path", "url": "tests/fixtures/foo"},
     {"type": "path", "url": "tests/fixtures/bar"}
   ],
-
   "require": {
     "php-fn/php-fn": "^2.0",
     "php-fn/cli": "^2.0",
@@ -19,10 +18,10 @@
   },
   "require-dev": {
     "oxid-esales/oxideshop-demodata-ce": "^6",
-    "oxidio/project": "dev-master",
+    "oxidio/project": "^1.0",
+    "oxidio/module-seo": "^1.0",
     "oxidio/module-foo": "^1",
     "oxidio/module-bar": "^1",
-    "symfony/yaml": "^3",
 
     "php-fn/test": "^1"
   },
@@ -32,5 +31,12 @@
   },
   "autoload-dev": {
     "psr-4": {"Oxidio\\": ["tests/Oxidio"]}
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.x-dev"
+    }
   }
 }
