@@ -9,9 +9,8 @@
   ],
 
   "require": {
-    "php-fn/php-fn": "^2",
-    "php-fn/di": "^2",
-    "php-fn/cli": "^2",
+    "php-fn/php-fn": "^2.0",
+    "php-fn/cli": "^2.0",
     "symfony/filesystem": "^3",
 
     "php": ">=7.1",
@@ -23,7 +22,6 @@
     "oxidio/project": "dev-master",
     "oxidio/module-foo": "^1",
     "oxidio/module-bar": "^1",
-    "phpdocumentor/reflection-docblock": "^4",
     "symfony/yaml": "^3",
 
     "php-fn/test": "^1"
