@@ -9,7 +9,6 @@ use fn;
 use Doctrine\DBAL;
 use OxidEsales\Eshop\Core\Database\Adapter;
 use OxidEsales\Eshop\Core\DatabaseProvider;
-use PDO;
 
 /**
  * @property-read DBAL\Schema\Table[] $tables
@@ -17,7 +16,7 @@ use PDO;
  */
 class Database extends Adapter\Doctrine\Database implements DataModificationInterface
 {
-    use fn\PropertiesReadOnlyTrait;
+    use fn\PropertiesTrait\ReadOnly;
     use DatabaseProxyTrait;
 
     /**
@@ -68,22 +67,20 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
         return static::$instances[$locator];
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function propertyMethodInvoke(string $name)
-    {
-        if (!fn\hasKey($name, $this->properties)) {
-            $this->properties[$name] = $this->{$this->propertyMethod($name)->name}();
-        }
-        return $this->properties[$name];
-    }
 
+    /**
+     * @see $schema
+     * @return DBAL\Schema\Schema
+     */
     protected function resolveSchema(): DBAL\Schema\Schema
     {
-        return $this->properties['schema'] = $this->getConnection()->getSchemaManager()->createSchema();
+        return $this->getConnection()->getSchemaManager()->createSchema();
     }
 
+    /**
+     * @see $tables
+     * @return array
+     */
     protected function resolveTables(): array
     {
         return fn\traverse($this->schema->getTables(), function(DBAL\Schema\Table $table) {

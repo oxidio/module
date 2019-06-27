@@ -15,20 +15,7 @@ use Oxidio;
  */
 abstract class AbstractConditionalStatement
 {
-    use fn\PropertiesReadOnlyTrait;
-
-    protected $props = [];
-
-    /**
-     * @inheritDoc
-     */
-    protected function propertyMethodInvoke(string $name)
-    {
-        if (!fn\hasKey($name, $this->props)) {
-            $this->props[$name] = $this->{$this->propertyMethod($name)->name}();
-        }
-        return $this->props[$name];
-    }
+    use fn\PropertiesTrait\ReadOnly;
 
     /**
      * @param callable $db
@@ -37,7 +24,7 @@ abstract class AbstractConditionalStatement
      */
     public function withDb(callable $db): self
     {
-        $this->props['db'] = $db;
+        $this->properties['db'] = $db;
         return $this;
     }
 
@@ -53,7 +40,7 @@ abstract class AbstractConditionalStatement
      */
     public function where(...$terms)
     {
-        $this->props['whereTerms'] = array_filter($terms);
+        $this->properties['whereTerms'] = array_filter($terms);
         return $this;
     }
 

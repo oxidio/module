@@ -19,7 +19,7 @@ class Modify extends AbstractConditionalStatement
      */
     public function __construct($view)
     {
-        $this->props['view'] = (string)$view;
+        $this->properties['view'] = (string)$view;
     }
 
     /**

@@ -21,7 +21,7 @@ use OxidEsales\Eshop\Core\Database\TABLE;
  */
 class Shop implements DataModificationInterface
 {
-    use fn\PropertiesReadOnlyTrait;
+    use fn\PropertiesTrait\ReadOnly;
 
     /**
      * @var string
@@ -157,18 +157,8 @@ class Shop implements DataModificationInterface
     }
 
     /**
-     * @param string $name
-     *
-     * @return mixed
+     * @return array
      */
-    protected function propertyMethodInvoke(string $name)
-    {
-        if (!fn\hasKey($name, $this->properties)) {
-            $this->properties[$name] = $this->{$this->propertyMethod($name)->name}();
-        }
-        return $this->properties[$name];
-    }
-
     protected function resolveExtensions(): array
     {
         return fn\traverse(Extension::all($this), static function (Extension $extension) {
@@ -176,21 +166,37 @@ class Shop implements DataModificationInterface
         });
     }
 
+    /**
+     * @see $modules
+     * @return fn\Map
+     */
     protected function resolveModules(): fn\Map
     {
-        return fn\map($this->propertyMethodInvoke('extensions')[Extension::MODULE] ?? []);
+        return fn\map($this->extensions[Extension::MODULE] ?? []);
     }
 
+    /**
+     * @see $themes
+     * @return fn\Map
+     */
     protected function resolveThemes(): fn\Map
     {
-        return fn\map($this->propertyMethodInvoke('extensions')[Extension::THEME] ?? []);
+        return fn\map($this->extensions[Extension::THEME] ?? []);
     }
 
+    /**
+     * @see $config
+     * @return mixed
+     */
     protected function resolveConfig()
     {
-        return $this->propertyMethodInvoke('extensions')[Extension::SHOP][Extension::SHOP]->config;
+        return $this->extensions[Extension::SHOP][Extension::SHOP]->config ?? [];
     }
 
+    /**
+     * @see $id
+     * @return mixed
+     */
     protected function resolveId()
     {
         return $this->query(TABLE\OXSHOPS, function($id) {

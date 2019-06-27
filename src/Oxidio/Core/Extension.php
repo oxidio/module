@@ -25,13 +25,13 @@ use OxidEsales\Eshop\Core\Database\TABLE;
  */
 class Extension implements JsonSerializable
 {
-    use fn\PropertiesReadWriteTrait;
+    use fn\PropertiesTrait;
+    use fn\PropertiesTrait\Init;
 
     protected const DEFAULT = [
         'id' => '',
         'type' => self::MODULE,
         'version' => null,
-        'active' => true,
         'path' => null,
         'config' => [],
         'templates' => [],
@@ -156,6 +156,7 @@ class Extension implements JsonSerializable
     }
 
     /**
+     * @see $active
      * @see \OxidEsales\EshopCommunity\Core\Module\ModuleInstaller::deactivate
      * @param mixed ...$values
      * @return mixed
@@ -164,8 +165,8 @@ class Extension implements JsonSerializable
     {
         if ($values) {
             $this->properties['active'] = $values[0];
-            $this->shop->save();
+            return $this->shop->save();
         }
-        return $this->properties['active'];
+        return $this->properties['active'] ?? true;
     }
 }

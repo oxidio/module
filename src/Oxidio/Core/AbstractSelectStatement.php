@@ -32,10 +32,10 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
      */
     protected function data(): array
     {
-        if (!isset($this->props['rows'])) {
-            $this->props['rows'] = fn\traverse($this->props['it'] ?? $this->getIterator());
+        if (!isset($this->properties['rows'])) {
+            $this->properties['rows'] = fn\traverse($this->properties['it'] ?? $this->getIterator());
         }
-        return $this->props['rows'];
+        return $this->properties['rows'];
     }
 
     /**
@@ -43,7 +43,7 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
      */
     public function where(...$terms)
     {
-        unset($this->props['rows']);
+        unset($this->properties['rows']);
         return parent::where(...$terms);
     }
 
@@ -54,8 +54,8 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
      */
     public function orderBy(...$terms): self
     {
-        unset($this->props['rows']);
-        $this->props['orderTerms'] = array_filter($terms);
+        unset($this->properties['rows']);
+        $this->properties['orderTerms'] = array_filter($terms);
         return $this;
     }
 
@@ -90,9 +90,9 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
      */
     public function limit($limit, $start = 0): self
     {
-        unset($this->props['rows']);
-        $this->props['limit'] = $limit;
-        $this->props['start'] = $start;
+        unset($this->properties['rows']);
+        $this->properties['limit'] = $limit;
+        $this->properties['start'] = $start;
         return $this;
     }
 
@@ -141,8 +141,8 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
      */
     public function getIterator(): fn\Map
     {
-        unset($this->props['rows']);
-        return $this->props['it'] = ($this->db)($this, ...($this->mapper ? [$this->mapper] : []));
+        unset($this->properties['rows']);
+        return $this->properties['it'] = ($this->db)($this, ...($this->mapper ? [$this->mapper] : []));
     }
 
     /**
