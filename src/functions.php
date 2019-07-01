@@ -19,9 +19,9 @@ namespace Oxidio
      *
      * @return fn\Map|array[]
      */
-    function select($sql, callable ...$mapper)
+    function select($sql, callable ...$mapper): fn\Map
     {
-        return db()($sql, ...$mapper);
+        return fn\map(db()->select((string)$sql), ...$mapper);
     }
 
     /**

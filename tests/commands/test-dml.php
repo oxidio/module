@@ -13,7 +13,7 @@ use OxidEsales\Eshop\Core\{
 /**
  * Test dml functionality
  *
- * @param string|null $action
+ * @param string|null $action insert|update|delete
  * @param string|null $name
  * @param string|null $shop
  * @param bool $dryRun
@@ -34,7 +34,7 @@ return static function (string $action = null, string $name = null, string $shop
         yield (object)$modify->update([TABLE\OXCONFIG\OXTIMESTAMP => null], $where)($dryRun);
     } else if ($action === 'delete') {
         yield (object)$modify->delete($where)($dryRun);
-    } else {
-        yield (object)shop($shop)->query(TABLE\OXCONFIG, [TABLE\OXCONFIG\OXID => ['LIKE', 'test:%']]);
     }
+
+    yield (object)shop($shop)->query(TABLE\OXCONFIG, [TABLE\OXCONFIG\OXID => ['LIKE', 'test:%']]);
 };

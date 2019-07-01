@@ -18,8 +18,8 @@
   },
   "require-dev": {
     "oxid-esales/oxideshop-demodata-ce": "^6",
-    "oxidio/project": "^1.0",
-    "oxidio/module-seo": "^1.0",
+    "oxidio/project": "1.x-dev",
+    "oxidio/module-seo": "1.x-dev",
     "oxidio/module-foo": "^1",
     "oxidio/module-bar": "^1",
 
@@ -34,6 +34,9 @@
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
+  "bin": [
+    "bin/oxidio"
+  ],
   "extra": {
     "branch-alias": {
       "dev-master": "1.x-dev"
