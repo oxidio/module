@@ -17,7 +17,7 @@ return [
             $cli->command('meta:theme', require 'commands/meta-theme.php');
         } catch (DatabaseException $e) {
         } finally {
-            $cli->command('shop:deactivate-modules', require 'commands/shop-deactivate-module.php', ['modules']);
+            $cli->command('shop:modules', require 'commands/shop-modules.php', ['modules']);
         }
         return $cli;
     },

@@ -128,9 +128,9 @@ class Shop implements DataModificationInterface
 
         $this->dirty = true;
         $table = $this->modify(TABLE\OXCONFIG);
-        $this->transaction[] = $table->map($this->modulesConfig(), function(Modify $table, $value, $name) {
+        $this->transaction[] = $table->map($this->modulesConfig(), function (Modify $table, $value, $name) {
             yield $table->update([
-                TABLE\OXCONFIG\OXVARVALUE => function($column) use($value) {
+                TABLE\OXCONFIG\OXVARVALUE => function ($column) use($value) {
                     return ["ENCODE(:$column, '{$this->configKey}')" => serialize($value)];
                 },
             ], [
@@ -138,6 +138,18 @@ class Shop implements DataModificationInterface
                 TABLE\OXCONFIG\OXSHOPID => $this->id,
                 TABLE\OXCONFIG\OXVARNAME => $name
             ]);
+        });
+
+        $this->transaction[] = $table->map($this->modules, function (Modify $table, Extension $module) {
+            if ($module->id && $module->status === $module::STATUS_REMOVED) {
+                yield $table->delete([
+                    TABLE\OXCONFIG\OXSHOPID => $this->id,
+                    TABLE\OXCONFIG\OXMODULE => "{$module->type}:{$module->id}",
+                ], [
+                    TABLE\OXCONFIG\OXSHOPID => $this->id,
+                    TABLE\OXCONFIG\OXMODULE => $module->id,
+                ]);
+            }
         });
 
         return $dirty;
@@ -206,8 +218,14 @@ class Shop implements DataModificationInterface
 
     protected function modulesConfig(): Generator
     {
-        yield 'aDisabledModules' => fn\map($this->modules, function(Extension  $module) {
-            return $module->active ? null : $module->id;
+        yield 'aDisabledModules' => fn\map($this->modules, function(Extension $module) {
+            return $module->status === $module::STATUS_INACTIVE ? $module->id : null;
         })->sort()->values;
+
+        foreach (Extension::CONFIG_KEYS as $key => $property) {
+            yield $key => fn\map($this->modules, function(Extension $module) use($property) {
+                return $module->status === $module::STATUS_ACTIVE && $module->$property ? $module->$property : null;
+            })->sort(fn\Map\Sort::KEYS)->traverse;
+        }
     }
 }

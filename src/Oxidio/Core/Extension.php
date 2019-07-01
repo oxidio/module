@@ -10,16 +10,16 @@ use JsonSerializable;
 use OxidEsales\Eshop\Core\Database\TABLE;
 
 /**
+ * @property string $status
  * @property-read string $id
  * @property-read string $type
- * @property-read string $version aModuleVersions
- * @property bool $active aDisabledModules
- * @property-read string $path aModulePaths
- * @property-read string[] $controllers aModuleControllers
- * @property-read array[] $events aModuleEvents
+ * @property-read string $version
+ * @property-read string $path
+ * @property-read string[] $controllers
+ * @property-read array[] $events
  * @property-read string[] $classes aModuleFiles|aModules|aModuleExtensions ['cl', 'ox-cl' => 'cl']
- * @property-read array $templates aModuleTemplates
- * @property-read array $files aModuleFiles
+ * @property-read array $templates
+ * @property-read array $files
  * @property-read array $config
  *
  */
@@ -28,11 +28,25 @@ class Extension implements JsonSerializable
     use fn\PropertiesTrait;
     use fn\PropertiesTrait\Init;
 
+    public const STATUS_ACTIVE = 'active';
+    public const STATUS_INACTIVE = 'inactive';
+    public const STATUS_REMOVED = 'removed';
+
+    public const CONFIG_KEYS = [
+        'aModuleEvents' => 'events',
+        'aModuleFiles' => 'files',
+        'aModulePaths' => 'path',
+        'aModuleTemplates' => 'templates',
+        'aModuleControllers' => 'controllers',
+        'aModuleVersions' => 'version',
+    ];
+
     protected const DEFAULT = [
         'id' => '',
         'type' => self::MODULE,
         'version' => null,
         'path' => null,
+        'status' => self::STATUS_ACTIVE,
         'config' => [],
         'templates' => [],
         'controllers' => [],
@@ -134,11 +148,12 @@ class Extension implements JsonSerializable
             $attr($conf['aModulePaths'] ?? [], 'path'),
             $attr($conf['aModuleTemplates'] ?? [], 'templates'),
             $attr($conf['aModuleControllers'] ?? [], 'controllers'),
-            $versions = $attr($conf['aModuleVersions'] ?? [], 'version'),
-            array_fill_keys($conf['aDisabledModules'] ?? [], ['active' => false])
+            $attr($conf['aModuleVersions'] ?? [], 'version'),
+            array_fill_keys($conf['aDisabledModules'] ?? [], ['status' => static::STATUS_INACTIVE])
         );
 
-        foreach (['aModuleEvents', 'aModuleFiles', 'aModulePaths', 'aModuleTemplates', 'aModuleControllers', 'aModuleVersions', 'aDisabledModules'] as $key) {
+        unset($data[self::SHOP]['config']['aDisabledModules']);
+        foreach (fn\keys(self::CONFIG_KEYS) as $key) {
             unset($data[self::SHOP]['config'][$key]);
         }
 
@@ -156,17 +171,18 @@ class Extension implements JsonSerializable
     }
 
     /**
-     * @see $active
+     * @see $status
      * @see \OxidEsales\EshopCommunity\Core\Module\ModuleInstaller::deactivate
+     *
      * @param mixed ...$values
      * @return mixed
      */
-    protected function resolveActive(...$values)
+    protected function resolveStatus(...$values)
     {
         if ($values) {
-            $this->properties['active'] = $values[0];
+            $this->properties['status'] = $values[0];
             return $this->shop->save();
         }
-        return $this->properties['active'] ?? true;
+        return $this->properties['status'] ?? static::STATUS_ACTIVE;
     }
 }
