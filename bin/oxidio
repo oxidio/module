@@ -13,7 +13,7 @@ call_user_func(static function () {
             'cli.name' => $package['name'],
             'cli.version' => $package['version'],
             'cli.commands.default' => false,
-        ], $package['dir'] . 'bin/di.php')->get(fn\Cli::class);
+        ], (new Oxidio\DI\RegistryResolver)->container, $package['dir'] . 'bin/di.php')->get(fn\Cli::class);
         return $cli->run();
     }));
 });

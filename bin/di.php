@@ -3,18 +3,22 @@
  * Copyright (C) oxidio. See LICENSE file for license details.
  */
 
-use OxidEsales\EshopCommunity\Setup\Dispatcher;
+use OxidEsales\EshopCommunity\{Core\Exception\DatabaseException, Setup\Dispatcher};
 use Psr\Container\ContainerInterface;
 
 return [
     fn\Cli::class => static function(ContainerInterface $container) {
         $cli = fn\cli($container);
-
-        $cli->command('setup:views', require 'commands/setup-views.php');
-        $cli->command('setup:shop', require 'commands/setup-shop.php', ['action']);
-        $cli->command('meta:model', require 'commands/meta-model.php');
-        $cli->command('meta:theme', require 'commands/meta-theme.php');
-
+        try {
+            Oxidio\shop()->id;
+            $cli->command('setup:views', require 'commands/setup-views.php');
+            $cli->command('setup:shop', require 'commands/setup-shop.php', ['action']);
+            $cli->command('meta:model', require 'commands/meta-model.php');
+            $cli->command('meta:theme', require 'commands/meta-theme.php');
+        } catch (DatabaseException $e) {
+        } finally {
+            $cli->command('shop:deactivate-modules', require 'commands/shop-deactivate-module.php', ['modules']);
+        }
         return $cli;
     },
 
