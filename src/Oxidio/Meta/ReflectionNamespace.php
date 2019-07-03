@@ -7,7 +7,6 @@ namespace Oxidio\Meta;
 
 use Generator;
 use Reflector;
-use fn;
 
 /**
  * @property-read ReflectionConstant[] $constants
@@ -61,7 +60,8 @@ class ReflectionNamespace implements Reflector
     {
         yield '/**';
         foreach ($this->docBlock as $line) {
-            yield " * $line";
+            $line = trim($line);
+            yield $line ? " * $line" : ' *';
         }
         yield ' */';
         yield 'namespace ' . substr($this->name, 0, -1);

@@ -28,15 +28,24 @@ class ReflectionConstant implements Reflector
     }
 
     /**
+     * @see $namespace
+     * @return ReflectionNamespace
+     */
+    protected function resolveNamespace(): ReflectionNamespace
+    {
+        $name = $this->properties['name'] ?? null;
+        $last = strrpos($name, '\\');
+        $last = substr($name, 0, $last);
+        return ReflectionNamespace::get($last)->add('constants', $this);
+    }
+
+    /**
      * @see $name
      * @return string
      */
     protected function resolveName(): string
     {
         $name = $this->properties['name'] ?? null;
-        $last = strrpos($name, '\\');
-        $last = substr($name, 0, $last);
-        $this->properties['namespace'] = ReflectionNamespace::get($last)->add('constants', $this);
         $isReserved = fn\hasValue(strtolower($this->namespace->relative($name)), fn\Composer\DIPackages::RESERVED);
         return $isReserved ? $name . '_' : $name;
     }
@@ -54,7 +63,8 @@ class ReflectionConstant implements Reflector
     {
         yield '    /**';
         foreach ($this->docBlock as $line) {
-            yield "     * $line";
+            $line = trim($line);
+            yield $line ? "     * $line" : '     *';
         }
         yield '     */';
         yield "    const {$this->shortName} = {$this->value};";

@@ -172,19 +172,19 @@ class EditionClass
      * @see $tableNs
      * @return ReflectionNamespace
      */
-    protected function resolveTableNs()
+    protected function resolveTableNs(): ReflectionNamespace
     {
-        return ReflectionNamespace::get($this->properties['ns'] ?? null);
+        return ReflectionNamespace::get($this->properties['tableNs'] ?? null);
     }
 
     /**
      * @see $fieldNs
      * @return ReflectionNamespace
      */
-    protected function resolveFieldNs()
+    protected function resolveFieldNs(): ReflectionNamespace
     {
         $use = substr($this->tableNs, 0, -1);
-        return ReflectionNamespace::get(($this->properties['ns'] ?? null) ?: $this->name, ['use' => [$use]]);
+        return ReflectionNamespace::get(($this->properties['fieldNs'] ?? null) ?: $this->name, ['use' => [$use]]);
     }
 
     /**
@@ -212,7 +212,7 @@ class EditionClass
             foreach ($this->instance->getFieldNames() as $fieldName) {
                 $name = strpos($fieldName, 'ox') === 0  ? substr($fieldName, 2) : $fieldName;
                 $name = strtoupper($prefix . $name);
-                yield $fieldName => ReflectionConstant::get("{$this->fieldNs}{$name}", [
+                yield $fieldName => ReflectionConstant::get([$this->fieldNs, $name], [
                     'value'    => "'$fieldName'",
                     'docBlock' => ["@see \\{$this->name}"]
                 ]);

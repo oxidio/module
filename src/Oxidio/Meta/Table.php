@@ -29,6 +29,8 @@ class Table
         return $details[$this->name][$detail] ?? null;
     }
 
+    protected const DEFAULT = ['const' => null, 'class' => null, 'columns' => null];
+
     /**
      * @see $const
      * @return ReflectionConstant
@@ -36,7 +38,7 @@ class Table
     public function resolveConst(): ReflectionConstant
     {
         $table = strtoupper($this->name);
-        return ReflectionConstant::get("{$this->class->tableNs}{$table}", [
+        return ReflectionConstant::get([$this->class->tableNs, $table], [
             'value'    => "'{$this->name}'",
             'docBlock' => [
                 "{$this->comment} [{$this->engine}]",
@@ -86,7 +88,7 @@ class Table
                 'isPrimaryKey'    => $column->primary_key,
                 'isAutoIncrement' => $column->auto_increment,
                 'length'          => $column->max_length,
-                'default'         => $column->has_default ? $column->default_value : null,
+                'default'         => $column->has_default ?? null ? $column->default_value : null,
             ];
         }
 

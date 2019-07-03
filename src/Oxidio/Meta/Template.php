@@ -36,7 +36,7 @@ class Template
 
             $this->const->add('docBlock', 'blocks:', "@see \\{$this->const}\\{$block}");
 
-            $const = ReflectionConstant::get("{$this->const}\\{$block}", [
+            $const = ReflectionConstant::get([$this->const, $block], [
                 'value' => "'{$value}'",
             ]);
             $const->namespace->add('docBlock', "@see \\{$this->const}");

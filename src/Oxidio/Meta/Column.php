@@ -20,6 +20,7 @@ class Column
     use ReflectionTrait;
 
     protected const DEFAULT = [
+        'const'           => null,
         'table'           => null,
         'comment'         => null,
         'type'            => null,
@@ -29,6 +30,14 @@ class Column
         'default'         => null,
         'name'            => null,
     ];
+
+    /**
+     * @inheritdoc
+     */
+    public function __construct(array $data = [])
+    {
+        $this->initProperties($data);
+    }
 
     /**
      * @see $const
@@ -42,7 +51,7 @@ class Column
 
         $tableConst = $this->table->const;
 
-        $const = ReflectionConstant::get("$tableConst\\" . strtoupper($this->name), [
+        $const = ReflectionConstant::get([$tableConst, strtoupper($this->name)], [
             'value'    => "'{$this->name}'",
             'docBlock' => [$this->comment, '', $type]]
         );

@@ -77,12 +77,12 @@ return static function (
         if (isset($tables[$table])) {
             continue;
         }
-        Table::create($table, ['class' => $class]);
+        Table::get($table, ['class' => $class]);
         $io->isVerbose() && $io->writeln("table $table has no class");
     }
 
-    $tablesConst && ReflectionConstant::create($dbNs . '\\TABLES', [
-        'value' => fn\map((function() {
+    $tablesConst && ReflectionConstant::get($dbNs . '\\TABLES', [
+        'value' => fn\map(static function () {
             yield '[';
             foreach (Table::cached() as $table) {
                 $ns = $table->const->namespace->shortName . $table->const->shortName;
@@ -94,8 +94,9 @@ return static function (
                 yield '        ],';
             }
             yield '    ]';
-        })())->string,
+        })->string,
     ])->namespace->add('use', $tableNs);
+
 
     $io->writeln([
         '<?php',

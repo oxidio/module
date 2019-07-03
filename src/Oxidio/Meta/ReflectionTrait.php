@@ -38,6 +38,15 @@ trait ReflectionTrait
     }
 
     /**
+     * @see $name
+     * @return string
+     */
+    protected function resolveName(): string
+    {
+        return (string)($this->properties['name'] ?? null);
+    }
+
+    /**
      * @param array $args
      * @return fn\Map|self[]
      */
@@ -58,13 +67,16 @@ trait ReflectionTrait
     }
 
     /**
-     * @param string $name
+     * @param string|string[] $name
      * @param array $properties
      *
      * @return static
      */
-    public static function get(string $name, array $properties = []): self
+    public static function get($name, array $properties = []): self
     {
+        is_iterable($name) && $name = fn\map($name, static function($part) {
+            return trim($part, '\\') ?: null;
+        })->string('\\');
         return self::$cache[$name] ?? self::$cache[$name] = self::create($name, $properties);
     }
 
