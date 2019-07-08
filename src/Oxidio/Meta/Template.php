@@ -20,7 +20,7 @@ class Template
 {
     use ReflectionTrait;
 
-    protected const DEFAULT = ['namespace' => null, 'path' => null, 'name' => null];
+    protected const DEFAULT = ['path' => null];
 
     /**
      * @see $blocks

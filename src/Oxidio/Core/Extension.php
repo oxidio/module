@@ -70,7 +70,7 @@ class Extension implements JsonSerializable
     public function __construct(Shop $shop, $data)
     {
         $this->shop = $shop;
-        $this->initProperties($data);
+        $this->propsInit($data);
     }
 
     /**

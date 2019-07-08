@@ -32,14 +32,6 @@ class Column
     ];
 
     /**
-     * @inheritdoc
-     */
-    public function __construct(array $data = [])
-    {
-        $this->initProperties($data);
-    }
-
-    /**
      * @see $const
      * @return ReflectionConstant
      */

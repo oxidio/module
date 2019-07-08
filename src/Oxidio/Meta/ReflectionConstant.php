@@ -19,7 +19,7 @@ class ReflectionConstant implements Reflector
 {
     use ReflectionTrait;
 
-    protected const DEFAULT = ['docBlock' => [], 'value' => null, 'name' => null];
+    protected const DEFAULT = ['docBlock' => [], 'value' => null];
 
     public function setValue($value, $export = false): self
     {

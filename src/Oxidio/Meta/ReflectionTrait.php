@@ -6,7 +6,6 @@
 namespace Oxidio\Meta;
 
 use fn;
-use Generator;
 
 /**
  * @property-read string $name
@@ -17,25 +16,9 @@ trait ReflectionTrait
     use fn\PropertiesTrait\Init;
 
     /**
-     * @inheritDoc
-     */
-    protected function propertyGenerate(string $property, $value): Generator
-    {
-        yield $property => $value instanceof Generator ? fn\traverse($value) : $value;
-    }
-
-    /**
      * @var self[]
      */
     private static $cache = [];
-
-    /**
-     * @inheritdoc
-     */
-    public function __construct(array $properties = [])
-    {
-        $this->initProperties($properties);
-    }
 
     /**
      * @see $name

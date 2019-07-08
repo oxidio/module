@@ -6,7 +6,6 @@
 namespace Oxidio\Meta;
 
 use fn;
-use Generator;
 use ReflectionClass;
 
 use OxidEsales\Eshop\{
@@ -203,28 +202,30 @@ class EditionClass
 
     /**
      * @see $fields
-     * @return Generator
+     * @return fn\Map
      */
-    protected function resolveFields(): Generator
+    protected function resolveFields(): fn\Map
     {
-        if ($this->reflection->isSubclassOf(BaseModel::class)) {
-            $prefix = $this->fieldNs->shortName === $this->shortName . '\\' ? '' : $this->shortName . '_';
-            foreach ($this->instance->getFieldNames() as $fieldName) {
-                $name = strpos($fieldName, 'ox') === 0  ? substr($fieldName, 2) : $fieldName;
-                $name = strtoupper($prefix . $name);
-                yield $fieldName => ReflectionConstant::get([$this->fieldNs, $name], [
-                    'value'    => "'$fieldName'",
-                    'docBlock' => ["@see \\{$this->name}"]
-                ]);
+        return fn\map(function () {
+            if ($this->reflection->isSubclassOf(BaseModel::class)) {
+                $prefix = $this->fieldNs->shortName === $this->shortName . '\\' ? '' : $this->shortName . '_';
+                foreach ($this->instance->getFieldNames() as $fieldName) {
+                    $name = strpos($fieldName, 'ox') === 0  ? substr($fieldName, 2) : $fieldName;
+                    $name = strtoupper($prefix . $name);
+                    yield $fieldName => ReflectionConstant::get([$this->fieldNs, $name], [
+                        'value'    => "'$fieldName'",
+                        'docBlock' => ["@see \\{$this->name}"]
+                    ]);
+                }
             }
-        }
+        });
     }
 
     /**
      * @see $template
      * @return string|null
      */
-    protected function resolveTemplate()
+    protected function resolveTemplate(): ?string
     {
         return $this->instance instanceof BaseController ? $this->instance->getTemplateName() : null;
     }
