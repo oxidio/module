@@ -46,7 +46,7 @@ class Table
     public function resolveConst(): ReflectionConstant
     {
         $table = strtoupper($this->name);
-        return ReflectionConstant::get([$this->class->tableNs, $table], [
+        return $this->provider->const([$this->class->tableNs, $table], [
             'value'    => "'{$this->name}'",
             'docBlock' => [
                 "{$this->comment} [{$this->engine}]",
@@ -82,7 +82,7 @@ class Table
     {
         $columns = [];
         $nls     = [];
-        foreach (Oxidio\db()->metaColumns($this->name) as $column) {
+        foreach ($this->provider->db->metaColumns($this->name) as $column) {
             $name = strtolower($column->name);
             if (is_numeric(substr($name, ($last = strrpos($name, '_')) + 1))) {
                 $nls[substr($name, 0, $last)] = true;
@@ -100,9 +100,9 @@ class Table
             ];
         }
 
-        return fn\traverse($columns, static function(array $column, $name) use($nls) {
+        return fn\traverse($columns, function(array $column, $name) use($nls) {
             $column['type'] .= (($nls[$name] ?? false) ? '-i18n' : '');
-            return Column::create($name, $column);
+            return new Column($this->provider, ['name' => $name] + $column);
         });
     }
 }

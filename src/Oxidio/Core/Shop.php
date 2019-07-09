@@ -17,7 +17,7 @@ use OxidEsales\Eshop\Core\Database\TABLE;
  * @property-read array $config
  * @property-read fn\Map|Extension[] $modules
  * @property-read fn\Map|Extension[] $themes
- * @property-read callable[] $modifications
+ * @property-read Database $db
  */
 class Shop implements DataModificationInterface
 {
@@ -53,11 +53,6 @@ class Shop implements DataModificationInterface
     ];
 
     /**
-     * @var Database
-     */
-    protected $db;
-
-    /**
      * @var bool
      */
     private $dirty = false;
@@ -70,8 +65,7 @@ class Shop implements DataModificationInterface
      */
     public function __construct(Database $db, array $params = [])
     {
-        $this->db = $db;
-        $this->properties = $params + ['configKey' => self::DEFAULT_CONFIG_KEY];
+        $this->properties = ['db' => $db] + $params + ['configKey' => self::DEFAULT_CONFIG_KEY];
     }
 
     /**
@@ -228,4 +222,6 @@ class Shop implements DataModificationInterface
             })->sort(fn\Map\Sort::KEYS)->traverse;
         }
     }
+
+
 }

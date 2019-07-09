@@ -92,7 +92,7 @@ class EditionClass
             $ref = $parent;
         }
         return fn\map($parents, function(string $class) {
-            return strpos($class, $this->edition) === 0 ? static::get($class) : null;
+            return strpos($class, $this->edition) === 0 ? $this->provider->class($class) : null;
         });
     }
 
@@ -117,7 +117,7 @@ class EditionClass
     protected function resolveParent(): ?self
     {
         $parent = $this->reflection->getParentClass();
-        return $parent ? static::get($parent->getName()) : null;
+        return $parent ? $this->provider->class($parent->getName()) : null;
     }
 
     /**
@@ -147,7 +147,7 @@ class EditionClass
         static $packages;
         if ($packages === null) {
             $packages = fn\map(self::PACKAGES)->sort(function(string $left, string $right) {
-                return static::get($left)->derivation->count() - static::get($right)->derivation->count();
+                return $this->provider->class($left)->derivation->count() - $this->provider->class($right)->derivation->count();
             }, fn\Map\Sort::KEYS | fn\Map\Sort::REVERSE)->traverse;
         }
         foreach ($packages as $baseClass => $package) {
@@ -181,7 +181,7 @@ class EditionClass
      */
     protected function resolveTableNs(): ReflectionNamespace
     {
-        return ReflectionNamespace::get($this->properties['tableNs'] ?? null);
+        return $this->provider->ns($this->properties['tableNs'] ?? null);
     }
 
     /**
@@ -191,7 +191,7 @@ class EditionClass
     protected function resolveFieldNs(): ReflectionNamespace
     {
         $use = substr($this->tableNs, 0, -1);
-        return ReflectionNamespace::get(($this->properties['fieldNs'] ?? null) ?: $this->name, ['use' => [$use]]);
+        return $this->provider->ns(($this->properties['fieldNs'] ?? null) ?: $this->name, ['use' => [$use]]);
     }
 
     /**
@@ -201,7 +201,7 @@ class EditionClass
     protected function resolveTable(): ?Table
     {
         if (($model = $this->instance) && $model instanceof BaseModel && $tableName = $model->getCoreTableName()) {
-            $table = Table::get($tableName, ['class' => $this]);
+            $table = $this->provider->table($tableName, ['class' => $this]);
             $table->const->add('docBlock', "@see \\{$this->name}::__construct");
             return $table;
         }
@@ -220,7 +220,7 @@ class EditionClass
                 foreach ($this->instance->getFieldNames() as $fieldName) {
                     $name = strpos($fieldName, 'ox') === 0  ? substr($fieldName, 2) : $fieldName;
                     $name = strtoupper($prefix . $name);
-                    yield $fieldName => ReflectionConstant::get([$this->fieldNs, $name], [
+                    yield $fieldName => $this->provider->const([$this->fieldNs, $name], [
                         'value'    => "'$fieldName'",
                         'docBlock' => ["@see \\{$this->name}"]
                     ]);

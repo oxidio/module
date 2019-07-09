@@ -3,13 +3,11 @@
  * Copyright (C) oxidio. See LICENSE file for license details.
  */
 
-namespace Oxidio\Cli;
+namespace Oxidio;
 
 use fn\{Cli\IO};
 use fn;
 use OxidEsales\Eshop\Core\Theme;
-use Oxidio\Meta\ReflectionNamespace;
-use Oxidio\Meta\Template;
 
 /**
  * Analyze and generate theme namespace constants (templates, blocks, includes)
@@ -29,7 +27,10 @@ return static function (
     string $themeNs = Theme::class,
     string $glob = '**/*.tpl'
 ) {
-    foreach (Template::find($basePath . $glob, ['namespace' => $themeNs]) as $template) {
+
+    $provider = new Meta\Provider(['themeNs' => $themeNs]);
+
+    foreach ($provider->templates($basePath . $glob) as $template) {
         if ($filterBlock && !$template->blocks) {
             continue;
         }
@@ -59,7 +60,7 @@ return static function (
         '',
     ]);
 
-    foreach (ReflectionNamespace::all() as $namespace) {
+    foreach ($provider->namespaces as $namespace) {
         foreach ($namespace->toPhp() as $line) {
             $io->writeln($line);
         }

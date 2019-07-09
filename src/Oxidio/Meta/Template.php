@@ -5,8 +5,6 @@
 
 namespace Oxidio\Meta;
 
-use Generator;
-use Webmozart\Glob\Glob;
 use fn;
 
 /**
@@ -36,7 +34,7 @@ class Template
 
             $this->const->add('docBlock', 'blocks:', "@see \\{$this->const}\\{$block}");
 
-            $const = ReflectionConstant::get([$this->const, $block], [
+            $const = $this->provider->const([$this->const, $block], [
                 'value' => "'{$value}'",
             ]);
             $const->namespace->add('docBlock', "@see \\{$this->const}");
@@ -49,8 +47,8 @@ class Template
      */
     protected function resolveIncludes(): array
     {
-        return fn\traverse($this->tags('include', 'file'), function(string $name) {
-            return static::get($name);
+        return fn\traverse($this->tags('include', 'file'), function (string $name) {
+            return $this->provider->template($name);
         });
     }
 
@@ -64,7 +62,7 @@ class Template
             return "@see $template";
         });
 
-        return ReflectionConstant::get($this->namespace . self::unify($this->name), [
+        return $this->provider->const($this->namespace . self::unify($this->name), [
             'value'    => var_export($this->name, true),
             'docBlock' => $includes ? ['includes:'] + $includes : [],
         ]);
@@ -76,23 +74,7 @@ class Template
      */
     protected function resolveNamespace(): ReflectionNamespace
     {
-        return ReflectionNamespace::get((string)($this->properties['namespace'] ?? null));
-    }
-
-    /**
-     * @param string $glob
-     *
-     * @param array $properties
-     * @return Generator|self[]
-     */
-    public static function find(string $glob, array $properties = []): Generator
-    {
-        $basePath = Glob::getBasePath($glob);
-        $offset   = strlen($basePath) + 1;
-        foreach (Glob::glob($glob) as $path) {
-            $name = substr($path, $offset);
-            yield $name => static::get($name, ['path' => $path] + $properties);
-        }
+        return $this->provider->ns((string)($this->properties['namespace'] ?? null));
     }
 
     private static function unify(string $string = null): string

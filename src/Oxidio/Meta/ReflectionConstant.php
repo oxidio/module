@@ -6,7 +6,6 @@
 namespace Oxidio\Meta;
 
 use Generator;
-use Reflector;
 use fn;
 
 /**
@@ -15,7 +14,7 @@ use fn;
  * @property-read string              $shortName
  * @property-read string              $value
  */
-class ReflectionConstant implements Reflector
+class ReflectionConstant
 {
     use ReflectionTrait;
 
@@ -36,7 +35,7 @@ class ReflectionConstant implements Reflector
         $name = $this->properties['name'] ?? null;
         $last = strrpos($name, '\\');
         $last = substr($name, 0, $last);
-        return ReflectionNamespace::get($last)->add('constants', $this);
+        return $this->provider->ns($last)->add('constants', $this);
     }
 
     /**

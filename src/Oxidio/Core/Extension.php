@@ -64,12 +64,12 @@ class Extension implements JsonSerializable
     protected $shop;
 
     /**
-     * @param Shop $shop
+     * @param Shop $provider
      * @param iterable $data
      */
-    public function __construct(Shop $shop, $data)
+    public function __construct(Shop $provider, $data)
     {
-        $this->shop = $shop;
+        $this->shop = $provider;
         $this->propsInit($data);
     }
 

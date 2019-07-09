@@ -6,7 +6,6 @@
 namespace Oxidio\Meta;
 
 use Generator;
-use Reflector;
 
 /**
  * @property-read ReflectionConstant[] $constants
@@ -14,7 +13,7 @@ use Reflector;
  * @property-read string[]             $docBlock
  * @property-read string[]             $use
  */
-class ReflectionNamespace implements Reflector
+class ReflectionNamespace
 {
     use ReflectionTrait;
 
@@ -43,17 +42,6 @@ class ReflectionNamespace implements Reflector
     {
         $parts = array_filter(explode('\\', $this->name));
         return end($parts) . '\\';
-    }
-
-    /**
-     * @param array $args
-     * @return self[]
-     */
-    public static function all(...$args): iterable
-    {
-        return self::cached(...$args)->sort(static function(self $left, self $right) {
-            return (count($left->use) - count($right->use)) ?: strcmp($left, $right);
-        });
     }
 
     public function toPhp(): Generator

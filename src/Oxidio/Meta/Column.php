@@ -52,7 +52,7 @@ class Column
 
         $tableConst = $this->table->const;
 
-        $const = ReflectionConstant::get([$tableConst, strtoupper($this->name)], [
+        $const = $this->provider->const([$tableConst, strtoupper($this->name)], [
             'value'    => "'{$this->name}'",
             'docBlock' => [$this->comment, '', $type]]
         );

@@ -15,20 +15,21 @@ trait ReflectionTrait
     use fn\PropertiesTrait\ReadOnly;
     use fn\PropertiesTrait\Init;
 
+    /**
+     * @var Provider
+     */
+    protected $provider;
+
     protected function init(): void
     {
     }
 
-    public function __construct(iterable $properties = [])
+    public function __construct(Provider $provider, iterable $properties = [])
     {
+        $this->provider = $provider;
         $this->propsInit($properties);
         $this->init();
     }
-
-    /**
-     * @var self[]
-     */
-    private static $cache = [];
 
     /**
      * @see $name
@@ -37,15 +38,6 @@ trait ReflectionTrait
     protected function resolveName(): string
     {
         return (string)($this->properties['name'] ?? null);
-    }
-
-    /**
-     * @param array $args
-     * @return fn\Map|self[]
-     */
-    public static function cached(...$args): fn\Map
-    {
-        return fn\map(self::$cache, ...$args);
     }
 
     public function add(string $property, ...$lines): self
@@ -60,36 +52,10 @@ trait ReflectionTrait
     }
 
     /**
-     * @param string|string[] $name
-     * @param array $properties
-     *
-     * @return static
-     */
-    public static function get($name, array $properties = []): self
-    {
-        is_iterable($name) && $name = fn\map($name, static function($part) {
-            return trim($part, '\\') ?: null;
-        })->string('\\');
-        return self::$cache[$name] ?? self::$cache[$name] = self::create($name, $properties);
-    }
-
-    public static function create(string $name, array $properties = []): self
-    {
-        return new static(array_merge($properties, ['name' => $name]));
-    }
-
-    /**
      * @inheritdoc
      */
     public function __toString()
     {
         return $this->name;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public static function export(): void
-    {
     }
 }

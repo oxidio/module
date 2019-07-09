@@ -15,6 +15,7 @@ return [
             $cli->command('setup:shop', require 'commands/setup-shop.php', ['action']);
             $cli->command('meta:model', require 'commands/meta-model.php');
             $cli->command('meta:theme', require 'commands/meta-theme.php');
+            $cli->command('meta:test', require 'commands/meta-test.php');
         } catch (DatabaseException $e) {
         } finally {
             $cli->command('shop:modules', require 'commands/shop-modules.php', ['modules']);

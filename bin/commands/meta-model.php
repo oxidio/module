@@ -3,14 +3,12 @@
  * Copyright (C) oxidio. See LICENSE file for license details.
  */
 
-namespace Oxidio\Cli;
+namespace Oxidio;
 
 use fn\{Cli\IO};
 use fn;
 use OxidEsales\Eshop\Core\Field;
 use OxidEsales\Eshop\Core\Model\BaseModel;
-use Oxidio;
-use Oxidio\Meta\{EditionClass, ReflectionConstant, ReflectionNamespace, Table};
 
 /**
  * Analyze and generate model namespace constants (tables, columns, fields)
@@ -22,6 +20,7 @@ use Oxidio\Meta\{EditionClass, ReflectionConstant, ReflectionNamespace, Table};
  * @param string $filter         Filter classes by pattern
  * @param string $dbNs           Namespace for database constants [OxidEsales\Eshop\Core\Database]
  * @param string $fieldNs        Namespace for field constants [OxidEsales\Eshop\Core\Field]
+ * @param string $db
  */
 return static function (
     IO $io,
@@ -30,10 +29,11 @@ return static function (
     bool $tablesConst = false,
     string $filter = null,
     string $dbNs = 'OxidEsales\\Eshop\\Core\\Database',
-    string $fieldNs = Field::class
+    string $fieldNs = Field::class,
+    string $db = null
 ) {
 
-    $onVerbose = static function (IO $io, EditionClass $class): void {
+    $onVerbose = static function (IO $io, Meta\EditionClass $class): void {
         $io->title($class->name);
         $io->table(['property', 'value'], [
             ['package', $class->package],
@@ -49,9 +49,9 @@ return static function (
 
     $tableNs = $dbNs . '\\TABLE';
 
-    $shop = new Oxidio\Meta\Shop(['tableNs' => $tableNs, 'fieldNs' => $fieldNs]);
+    $provider = new Meta\Provider(['tableNs' => $tableNs, 'fieldNs' => $fieldNs, 'db' => $db]);
 
-    foreach ($shop->classes as $name => $class) {
+    foreach ($provider->classes as $name => $class) {
         if ($filter && stripos($class->package, $filter) === false) {
             continue;
         }
@@ -64,16 +64,16 @@ return static function (
         $io->isVerbose() && $onVerbose($io, $class);
     }
 
-    foreach ($shop->tables as $table) {
+    foreach ($provider->tables as $table) {
         if ($table->class->name === BaseModel::class) {
             $io->isVerbose() && $io->writeln("table $table has no class");
         }
     }
 
-    $tablesConst && ReflectionConstant::get($dbNs . '\\TABLES', [
-        'value' => fn\map(static function () {
+    $tablesConst && $provider->const($dbNs . '\\TABLES', [
+        'value' => fn\map(static function () use($provider) {
             yield '[';
-            foreach (Table::cached() as $table) {
+            foreach ($provider->tables as $table) {
                 $ns = $table->const->namespace->shortName . $table->const->shortName;
                 yield "        $ns => [";
                 foreach ($table->columns as $column) {
@@ -98,7 +98,7 @@ return static function (
         '',
     ]);
 
-    foreach (ReflectionNamespace::all() as $namespace) {
+    foreach ($provider->namespaces as $namespace) {
         foreach ($namespace->toPhp() as $line) {
             $io->writeln($line);
         }
