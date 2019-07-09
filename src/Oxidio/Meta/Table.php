@@ -20,6 +20,14 @@ class Table
 {
     use ReflectionTrait;
 
+    /**
+     * @inheritDoc
+     */
+    protected function init(): void
+    {
+        $this->columns;
+    }
+
     private function detail($detail): ?string
     {
         static $details;

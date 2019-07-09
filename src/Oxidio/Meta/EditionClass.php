@@ -48,6 +48,14 @@ class EditionClass
     use ReflectionTrait;
 
     /**
+     * @inheritDoc
+     */
+    protected function init(): void
+    {
+        $this->table;
+    }
+
+    /**
      * @var string[]
      */
     private const PACKAGES = [

@@ -15,6 +15,16 @@ trait ReflectionTrait
     use fn\PropertiesTrait\ReadOnly;
     use fn\PropertiesTrait\Init;
 
+    protected function init(): void
+    {
+    }
+
+    public function __construct(iterable $properties = [])
+    {
+        $this->propsInit($properties);
+        $this->init();
+    }
+
     /**
      * @var self[]
      */

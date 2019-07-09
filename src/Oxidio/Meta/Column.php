@@ -31,6 +31,15 @@ class Column
         'name'            => null,
     ];
 
+
+    /**
+     * @inheritDoc
+     */
+    protected function init(): void
+    {
+        $this->const;
+    }
+
     /**
      * @see $const
      * @return ReflectionConstant

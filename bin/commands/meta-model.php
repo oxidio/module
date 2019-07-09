@@ -9,10 +9,8 @@ use fn\{Cli\IO};
 use fn;
 use OxidEsales\Eshop\Core\Field;
 use OxidEsales\Eshop\Core\Model\BaseModel;
-use OxidEsales\Facts\Facts;
-use OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
 use Oxidio;
-use Oxidio\Meta\{Column, EditionClass, ReflectionConstant, ReflectionNamespace, Table};
+use Oxidio\Meta\{EditionClass, ReflectionConstant, ReflectionNamespace, Table};
 
 /**
  * Analyze and generate model namespace constants (tables, columns, fields)
@@ -50,10 +48,10 @@ return static function (
     };
 
     $tableNs = $dbNs . '\\TABLE';
-    foreach (fn\keys((new UnifiedNameSpaceClassMapProvider(new Facts))->getClassMap()) as $name) {
 
-        $class = EditionClass::get($name, ['tableNs' => $tableNs, 'fieldNs' => $fieldNs]);
+    $shop = new Oxidio\Meta\Shop(['tableNs' => $tableNs, 'fieldNs' => $fieldNs]);
 
+    foreach ($shop->classes as $name => $class) {
         if ($filter && stripos($class->package, $filter) === false) {
             continue;
         }
@@ -64,21 +62,12 @@ return static function (
             continue;
         }
         $io->isVerbose() && $onVerbose($io, $class);
-
-        $class->table && fn\traverse($class->table->columns, function(Column $column) {
-            $column->const;
-        });
     }
 
-    $tables = Table::cached();
-    $class  = EditionClass::get(BaseModel::class, ['tableNs' => $tableNs, 'fieldNs' => $fieldNs]);
-    foreach (Oxidio\db()->tables as $table) {
-        $table = $table->getName();
-        if (isset($tables[$table])) {
-            continue;
+    foreach ($shop->tables as $table) {
+        if ($table->class->name === BaseModel::class) {
+            $io->isVerbose() && $io->writeln("table $table has no class");
         }
-        Table::get($table, ['class' => $class]);
-        $io->isVerbose() && $io->writeln("table $table has no class");
     }
 
     $tablesConst && ReflectionConstant::get($dbNs . '\\TABLES', [
