@@ -8,11 +8,16 @@ namespace Oxidio\Core;
 use fn\test\assert;
 use fn;
 use Oxidio;
+use OxidEsales\Eshop\{
+    Core\Database\TABLE,
+    Core\Database\TABLE\OXCOUNTRY
+};
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Modify
  */
-class ModifyTest extends \PHPUnit\Framework\TestCase
+class ModifyTest extends TestCase
 {
     /**
      * @covers ::insert
@@ -60,5 +65,95 @@ class ModifyTest extends \PHPUnit\Framework\TestCase
                 return ["ENCODE(:$column, 'pass')" => null];
             },
         ])());
+    }
+
+    /**
+     * @covers ::insert
+     * @covers ::update
+     * @covers ::delete
+     * @covers ::map
+     * @covers ::replace
+     */
+    public function testIntegration(): void
+    {
+        assert\type(Shop::class, $shop = Oxidio\shop());
+        assert\type(Modify::class, $modify = $shop->modify(TABLE\OXCOUNTRY));
+
+        assert\type('callable', $modify->delete([OXCOUNTRY\OXID => ['LIKE', 'test-%']]));
+        self::assertCommit([['DELETE|LIKE' => 0]], $shop->commit());
+        assert\same(0, $shop->query(TABLE\OXCOUNTRY, [OXCOUNTRY\OXID => ['LIKE', 'test-%']])->total);
+
+        assert\type(
+            'callable',
+            $modify->insert(
+                [OXCOUNTRY\OXID => 'test-a', OXCOUNTRY\OXTITLE => 'test-a'],
+                [OXCOUNTRY\OXID => 'test-b', OXCOUNTRY\OXTITLE => 'test-b'],
+                [OXCOUNTRY\OXID => 'test-c', OXCOUNTRY\OXTITLE => 'test-c', OXCOUNTRY\OXACTIVE => true]
+            )
+        );
+        self::assertCommit([['INSERT INTO' => 2, 'INSERT INTO|active' => 1]], $shop->commit());
+        self::assertCommit([], $shop->commit());
+        assert\type(
+            'callable',
+            $modify->update([OXCOUNTRY\OXSHORTDESC => 'test'], [OXCOUNTRY\OXID => ['LIKE', 'test-%']])
+        );
+        self::assertCommit([['UPDATE' => 3]], $shop->commit());
+
+        assert\type(
+            'callable',
+            $modify->map(['test-d' => 'test-D', 'test-c' => 'test-C'], static function (Modify $modify, $value, $key) {
+                yield $modify->insert([OXCOUNTRY\OXID => "$key-first", OXCOUNTRY\OXTITLE => "$value-first"]);
+                yield $modify->insert([OXCOUNTRY\OXTITLE => "$value-second", OXCOUNTRY\OXID => "$key-second"]);
+                yield $modify->update(
+                    [OXCOUNTRY\OXTITLE => function ($column) { return "UPPER($column)";}],
+                    [OXCOUNTRY\OXID => ['LIKE', "$key-%"]]
+                );
+            })
+        );
+        self::assertCommit([
+            ['INSERT|id,' => 1],
+            ['INSERT|title,' => 1],
+            ['UPDATE|= UPPER(' => 2],
+            ['INSERT|id,' => 1],
+            ['INSERT|title,' => 1],
+            ['UPDATE|= UPPER(' => 2],
+        ], $shop->commit());
+
+        assert\same(1, $shop->query(TABLE\OXCOUNTRY, [OXCOUNTRY\OXTITLE => 'TEST-C-FIRST'])->total);
+
+        $modify->replace(static function () {
+            yield 'test-a' => [OXCOUNTRY\OXTITLE => 'test-a-replaced'];
+            yield 'test-e' => [OXCOUNTRY\OXTITLE => 'test-e-new', OXCOUNTRY\OXACTIVE => true];
+            yield 'test-b' => null;
+        }, OXCOUNTRY\OXID);
+
+        self::assertCommit([[
+            'INSERT' => 2,
+            'INSERT|active' => 1,
+            'DELETE' => 1,
+        ]], $shop->commit());
+
+        $modify->delete([OXCOUNTRY\OXID => ['LIKE', 'test-%']]);
+        self::assertCommit([['DELETE|LIKE' => 7]], $shop->commit());
+    }
+
+    private static function assertCommit(array $expected, iterable $commit): void
+    {
+        $commit = fn\traverse($commit, static function (array $counts) {
+            return fn\map($counts, static function (int $count, string $sql) {
+                return ['sql' => $sql, 'count' => $count];
+            })->values;
+        });
+        assert\same(count($expected), count($commit));
+        foreach ($expected as $i => $counts) {
+            $j = 0;
+            foreach ($counts as $sql => $count) {
+                assert\same($count, $commit[$i][$j]['count'] ?? null);
+                foreach (explode('|', $sql) as $token) {
+                    self::assertStringContainsString($token, $commit[$i][$j]['sql'] ?? null);
+                }
+                $j++;
+            }
+        }
     }
 }

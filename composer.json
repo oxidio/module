@@ -23,7 +23,7 @@
     "oxidio/module-foo": "^1",
     "oxidio/module-bar": "^1",
 
-    "php-fn/test": "^1"
+    "php-fn/test": "2.x-dev"
   },
   "autoload": {
     "psr-4": {"Oxidio\\": ["src/Oxidio"]},

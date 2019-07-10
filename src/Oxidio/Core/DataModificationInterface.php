@@ -13,8 +13,9 @@ interface DataModificationInterface extends DataQueryInterface
 {
     /**
      * @param string $view
+     * @param callable ...$observers
      *
      * @return Modify
      */
-    public function modify($view): Modify;
+    public function modify($view, callable ...$observers): Modify;
 }

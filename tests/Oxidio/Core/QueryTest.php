@@ -8,10 +8,11 @@ namespace Oxidio\Core;
 use fn\test\assert;
 use Oxidio;
 use OxidEsales\Eshop\Application\Model;
+use PHPUnit\Framework\TestCase;
 
 /**
  */
-class QueryTest extends \PHPUnit\Framework\TestCase
+class QueryTest extends TestCase
 {
     public function testToString(): void
     {

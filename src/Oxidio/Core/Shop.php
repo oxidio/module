@@ -32,6 +32,10 @@ class Shop implements DataModificationInterface
      * @var string
      */
     protected const DEFAULT_CONFIG_KEY = 'fq45QS09_fqyx09239QQ';
+
+    /**
+     * @var int|string
+     */
     protected const DEFAULT_ID = 1;
 
     /**
@@ -109,9 +113,11 @@ class Shop implements DataModificationInterface
     /**
      * @inheritDoc
      */
-    public function modify($view): Modify
+    public function modify($view, callable ...$observers): Modify
     {
-        return $this->db->modify($view);
+        return $this->db->modify($view, function (callable $action) {
+            $this->transaction[] = $action;
+        }, ...$observers);
     }
 
     public function save(): bool
@@ -122,9 +128,9 @@ class Shop implements DataModificationInterface
 
         $this->dirty = true;
         $table = $this->modify(TABLE\OXCONFIG);
-        $this->transaction[] = $table->map($this->modulesConfig(), function (Modify $table, $value, $name) {
+        $table->map($this->modulesConfig(), function (Modify $table, $value, $name) {
             yield $table->update([
-                TABLE\OXCONFIG\OXVARVALUE => function ($column) use($value) {
+                TABLE\OXCONFIG\OXVARVALUE => function ($column) use ($value) {
                     return ["ENCODE(:$column, '{$this->configKey}')" => serialize($value)];
                 },
             ], [
@@ -134,7 +140,7 @@ class Shop implements DataModificationInterface
             ]);
         });
 
-        $this->transaction[] = $table->map($this->modules, function (Modify $table, Extension $module) {
+        $table->map($this->modules, function (Modify $table, Extension $module) {
             if ($module->id && $module->status === $module::STATUS_REMOVED) {
                 yield $table->delete([
                     TABLE\OXCONFIG\OXSHOPID => $this->id,
@@ -222,6 +228,4 @@ class Shop implements DataModificationInterface
             })->sort(fn\Map\Sort::KEYS)->traverse;
         }
     }
-
-
 }
