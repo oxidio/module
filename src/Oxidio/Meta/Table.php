@@ -19,6 +19,7 @@ use Oxidio;
 class Table
 {
     use ReflectionTrait;
+    protected const DEFAULT = ['const' => null, 'class' => null, 'columns' => null];
 
     /**
      * @inheritDoc
@@ -31,13 +32,11 @@ class Table
     private function detail($detail): ?string
     {
         static $details;
-        $details || $details = fn\traverse(Oxidio\db()->tables, function(SchemaTable $table) {
+        $details || $details = fn\traverse($this->provider->db->tables, function(SchemaTable $table) {
             return fn\mapKey($table->getName())->andValue($table->getOptions());
         });
         return $details[$this->name][$detail] ?? null;
     }
-
-    protected const DEFAULT = ['const' => null, 'class' => null, 'columns' => null];
 
     /**
      * @see $const
