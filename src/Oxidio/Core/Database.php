@@ -89,19 +89,6 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
     }
 
     /**
-     * @deprecated
-     *
-     * @param string      $sql
-     * @param callable ...$mapper
-     *
-     * @return fn\Map|array[]
-     */
-    public function __invoke($sql, callable ...$mapper): fn\Map
-    {
-        return fn\map($this->select((string)$sql), ...$mapper);
-    }
-
-    /**
      * @inheritDoc
      */
     public function query($from = null, $mapper = null, ...$where): Query
