@@ -7,7 +7,7 @@ namespace Oxidio\Meta;
 
 use fn;
 use Generator;
-use OxidEsales\Eshop\Core\Model\BaseModel;
+use OxidEsales\Eshop\{Core, Core\Model\BaseModel};
 use OxidEsales\Facts\Facts;
 use OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
 use Oxidio;
@@ -22,11 +22,11 @@ use Webmozart\Glob\Glob;
  * @property-read Table[] $tables
  * @property-read ReflectionNamespace[] $namespaces
  *
- * @method table(string|array $name, iterable $props = []): Table
- * @method class(string|array $name, iterable $props = []): EditionClass
- * @method ns(string|array $name, iterable $props = []): ReflectionNamespace
- * @method const(string|array $name, iterable $props = []): ReflectionConstant
- * @method template(string|array $name, iterable $props = []): Template
+ * @method Table table(string|array $name, iterable $props = [])
+ * @method EditionClass class(string|array $name, iterable $props = [])
+ * @method ReflectionNamespace ns(string|array $name, iterable $props = [])
+ * @method ReflectionConstant const(string|array $name, iterable $props = [])
+ * @method Template template(string|array $name, iterable $props = [])
  */
 class Provider
 {
@@ -84,7 +84,7 @@ class Provider
      */
     protected function resolveTableNs(): ReflectionNamespace
     {
-        return $this->ns($this->properties['tableNs'] ?? null);
+        return $this->ns($this->properties['tableNs'] ?? Core\Database\TABLE::class);
     }
 
     /**
