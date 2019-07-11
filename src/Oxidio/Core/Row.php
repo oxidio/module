@@ -8,10 +8,11 @@ namespace Oxidio\Core;
 use ArrayAccess;
 use fn;
 use IteratorAggregate;
+use JsonSerializable;
 
 /**
  */
-class Row implements ArrayAccess, IteratorAggregate
+class Row implements ArrayAccess, IteratorAggregate, JsonSerializable
 {
     use fn\ArrayAccessTrait;
 
@@ -44,5 +45,47 @@ class Row implements ArrayAccess, IteratorAggregate
     public function getIterator()
     {
         return fn\map($this->children);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize()
+    {
+        return $this->data;
+    }
+
+    /**
+     * @param mixed ...$args
+     * @return mixed|fn\Map\Value|null
+     */
+    public function __invoke(...$args)
+    {
+        if (!$args) {
+            return $this->data;
+        }
+
+        if (count($args) > 1) {
+            return fn\mapKey($this[$args[0]] ?? null)->andValue($this[$args[1]] ?? null);
+        }
+        if (is_iterable($args[0])) {
+            $array = [];
+            foreach ($args[0] as $column => $alias) {
+                is_int($column) && $column = $alias;
+                if ($this->offsetExists($column)) {
+                    $array[$alias] = $this[$column];
+                }
+            }
+            return $array;
+        }
+        return $this[$args[0]] ?? null;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string)($this['oxid'] ?? null);
     }
 }
