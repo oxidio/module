@@ -65,10 +65,15 @@ abstract class AbstractConditionalStatement
                 if ($value === null) {
                     $value = 'NULL';
                     $operator = $operator ?: 'IS';
+                } else if (is_iterable($value)) {
+                    $value = '(' . fn\map($value, function ($entry) {
+                        return "'{$entry}'";
+                    })->string(', ') . ')';
                 } else {
                     $value = "'{$value}'";
-                    $operator = $operator ?: '=';
                 }
+
+                $operator = $operator ?: '=';
                 return "{$this->getColumnName($column)} {$operator} {$value}";
             })) : $term) {
                 return "($term)";

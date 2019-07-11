@@ -7,13 +7,19 @@ namespace Oxidio\Core;
 
 use fn\test\assert;
 use Oxidio;
+
 use OxidEsales\Eshop\Application\Model;
 use PHPUnit\Framework\TestCase;
 
 /**
+ * @coversDefaultClass Query
  */
 class QueryTest extends TestCase
 {
+    /**
+     * @covers Query::__toString
+     * @covers Query::buildWhere
+     */
     public function testToString(): void
     {
         assert\same(
@@ -27,11 +33,12 @@ class QueryTest extends TestCase
         );
 
         assert\same(
-            "SELECT *\nFROM view\nWHERE (c1 > '0' AND c2 < '1') OR (c3 IS NULL AND c4 LIKE '%')",
+            "SELECT *\nFROM view\nWHERE (c1 > '0' AND c2 < '1') OR (c3 IS NULL AND c4 LIKE '%') OR (c5 IN ('in1', 'in2'))",
             (string) Oxidio\query(
                 'view',
                 ['c1' => ['>', 0], 'c2' => ['<', 'value' => 1]],
-                [['column' => 'c3', 'value' => null], 'c4' => ['value' => '%', 'op' => 'LIKE']]
+                [['column' => 'c3', 'value' => null], 'c4' => ['value' => '%', 'op' => 'LIKE']],
+                ['c5' => ['IN', ['in1', 'in2']]]
             )
         );
 
