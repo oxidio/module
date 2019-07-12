@@ -5,10 +5,14 @@
 
 namespace Oxidio\Core;
 
+use fn;
 use fn\test\assert;
-use Oxidio;
-
+use OxidEsales\Eshop\Core\{
+    Database\TABLE\OXCOUNTRY,
+    Database\TABLE
+};
 use OxidEsales\Eshop\Application\Model;
+use Oxidio;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -76,5 +80,25 @@ class QueryTest extends TestCase
             "SELECT OXID\nFROM oxv_oxcategories_de\nWHERE (oxactive = '1')\nORDER BY oxleft ASC",
             (string) Oxidio\query(function(Model\Category $category) {}, ['oxactive' => 1])->orderBy('oxleft')
         );
+    }
+
+    /**
+     * @covers ::jsonSerialize
+     */
+    public function testJsonSerialize(): void
+    {
+        $map = Oxidio\query(TABLE\OXCOUNTRY, function (Row $row) {
+            $row();
+            $row('c');
+            $row(['c']);
+            $row(['c' => 'a']);
+            $row('k', 'v');
+
+            return $row(OXCOUNTRY\OXISOALPHA2, OXCOUNTRY\OXISOALPHA3);
+
+            return fn\mapKey($row[OXCOUNTRY\OXISOALPHA2])->andValue($row[OXCOUNTRY\OXISOALPHA3]);
+        }, [OXCOUNTRY\OXISOALPHA2 => ['IN', ['DE', 'CH', 'NO']]])->orderBy(OXCOUNTRY\OXISOALPHA2);
+
+        assert\equals(json_encode(['CH' => 'CHE', 'DE' => 'DEU', 'NO' => 'NOR']), json_encode($map));
     }
 }
