@@ -42,18 +42,18 @@ namespace Oxidio
      */
     function shop($shop = null, array $params = []): Core\Shop
     {
-        static $cache = [];
+        return Functions::shop(...func_get_args());
+    }
 
-        is_string($shop) && $shop = fn\traverse($_ENV ?? [], static function ($url, &$var) {
-            if (strpos($var, 'OXIDIO_SHOP_') !== 0) {
-                return null;
-            }
-            $var = str_replace('_', '-', strtolower(substr($var, 12)));
-            return $url;
-        })[$shop] ?? $shop;
-        $db = $shop instanceof Core\Database ? $shop : db($shop);
-        $hash = md5(json_encode([spl_object_hash($db), $params]));
-        return $cache[$hash] ?? $cache[$hash] = new Core\Shop($db, $params);
+    /**
+     * @param string $package
+     * @param string|callable|array ...$args
+     *
+     * @return fn\Cli
+     */
+    function cli(string $package = null, ...$args): fn\Cli
+    {
+        return Functions::cli(...func_get_args());
     }
 }
 
