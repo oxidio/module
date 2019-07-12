@@ -9,6 +9,7 @@ use ArrayAccess;
 use Countable;
 use IteratorAggregate;
 use fn;
+use JsonSerializable;
 use Oxidio;
 
 /**
@@ -20,6 +21,7 @@ use Oxidio;
  */
 abstract class AbstractSelectStatement extends AbstractConditionalStatement implements
     ArrayAccess,
+    JsonSerializable,
     IteratorAggregate,
     Countable
 {
@@ -159,6 +161,14 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
         }
 
         return $count;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize()
+    {
+        return $this->data();
     }
 
     /**
