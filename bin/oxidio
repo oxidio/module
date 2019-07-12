@@ -8,12 +8,6 @@ call_user_func(static function () {
     $file = file_exists($file = __DIR__ . '/../../../autoload.php') ? $file :  __DIR__ . '/../vendor/autoload.php';
     /** @noinspection PhpIncludeInspection */
     exit(call_user_func(require $file, static function () {
-        $package = fn\PACKAGES[fn\VENDOR\OXIDIO\OXIDIO];
-        $cli = fn\di([
-            'cli.name' => $package['name'],
-            'cli.version' => $package['version'],
-            'cli.commands.default' => false,
-        ], (new Oxidio\DI\RegistryResolver)->container, $package['dir'] . 'bin/di.php')->get(fn\Cli::class);
-        return $cli->run();
+        return Oxidio\cli(fn\VENDOR\OXIDIO\OXIDIO, 'bin/di.php')->run();
     }));
 });

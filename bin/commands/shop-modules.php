@@ -11,15 +11,21 @@ use Generator;
 /**
  * Show/modify shop modules
  *
- * @param string $shop e.g. prod|dev|test
+ * @param Core\Shop $shop
  * @param bool $commit
  * @param bool $invert
  * @param string $status inactive|removed
  * @param array $modules
  * @return Generator
  */
-return static function ($shop = null, bool $commit = false, bool $invert = false, string $status = '', ...$modules): Generator {
-    yield fn\traverse(shop($shop)->modules, function (Core\Extension $module) use ($modules, $status, $invert) {
+return static function (
+    Core\Shop $shop,
+    bool $commit = false,
+    bool $invert = false,
+    string $status = '',
+    ...$modules
+): Generator {
+    yield fn\traverse($shop->modules, function (Core\Extension $module) use ($modules, $status, $invert) {
         return [
             'id' => $module->id,
             'version' => $module->version,
@@ -30,7 +36,7 @@ return static function ($shop = null, bool $commit = false, bool $invert = false
         ];
     });
 
-    foreach (shop($shop)->commit($commit) as $result) {
+    foreach ($shop->commit($commit) as $result) {
         yield fn\io((object)$result, fn\Cli\IO::VERBOSITY_VERBOSE);
     }
 };
