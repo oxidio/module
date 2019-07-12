@@ -45,6 +45,9 @@ class Modify extends AbstractConditionalStatement
         $bindings = [];
 
         foreach (fn\isCallable($data) ? $data($this) : $data as $column => $value) {
+            if (is_iterable($value)) {
+                continue;
+            }
             if (fn\isCallable($value)) {
                 if (!is_array($result = $value($column))) {
                     $bindings[$column] = $result;
