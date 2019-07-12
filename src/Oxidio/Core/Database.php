@@ -12,6 +12,7 @@ use OxidEsales\Eshop\Core\DatabaseProvider;
 
 /**
  * @property-read DBAL\Schema\Table[] $tables
+ * @property-read DBAL\Schema\View[] $views
  * @property-read DBAL\Schema\Schema $schema
  */
 class Database extends Adapter\Doctrine\Database implements DataModificationInterface
@@ -86,6 +87,15 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
         return fn\traverse($this->schema->getTables(), function(DBAL\Schema\Table $table) {
             return fn\mapValue($table)->andKey($table->getName());
         });
+    }
+
+    /**
+     * @see $views
+     * @return array
+     */
+    protected function resolveViews(): array
+    {
+        return $this->getConnection()->getSchemaManager()->listViews();
     }
 
     /**
