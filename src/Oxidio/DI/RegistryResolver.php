@@ -6,30 +6,7 @@
 namespace Oxidio\DI;
 
 use Generator;
-use OxidEsales\Eshop\Core\{
-    Config,
-    ConfigFile,
-    InputValidator,
-    Language,
-    PictureHandler,
-    Registry,
-    Request,
-    Routing\ControllerClassNameResolver,
-    SeoDecoder,
-    SeoEncoder,
-    Session,
-    Utils,
-    UtilsCount,
-    UtilsDate,
-    UtilsFile,
-    UtilsObject,
-    UtilsPic,
-    UtilsServer,
-    UtilsString,
-    UtilsUrl,
-    UtilsView,
-    UtilsXml
-};
+use OxidEsales\Eshop\Core;
 use Psr\{Container\ContainerInterface, Log\LoggerInterface};
 use ReflectionParameter;
 use fn;
@@ -45,28 +22,28 @@ class RegistryResolver
      * @var string[]
      */
     public const DEFINITIONS = [
-        Config::class => 'getConfig',
-        Session::class => 'getSession',
-        Language::class => 'getLang',
-        Utils::class => 'getUtils',
-        UtilsObject::class => 'getUtilsObject',
-        InputValidator::class => 'getInputValidator',
-        PictureHandler::class => 'getPictureHandler',
-        Request::class => 'getRequest',
-        SeoEncoder::class => 'getSeoEncoder',
-        SeoDecoder::class => 'getSeoDecoder',
-        UtilsCount::class => 'getUtilsCount',
-        UtilsDate::class => 'getUtilsDate',
-        UtilsFile::class => 'getUtilsFile',
-        UtilsPic::class => 'getUtilsPic',
-        UtilsServer::class => 'getUtilsServer',
-        UtilsString::class => 'getUtilsString',
-        UtilsUrl::class => 'getUtilsUrl',
-        UtilsXml::class => 'getUtilsXml',
-        UtilsView::class => 'getUtilsView',
-        ControllerClassNameResolver::class => 'getControllerClassNameResolver',
+        Core\Config::class => 'getConfig',
+        Core\Session::class => 'getSession',
+        Core\Language::class => 'getLang',
+        Core\Utils::class => 'getUtils',
+        Core\UtilsObject::class => 'getUtilsObject',
+        Core\InputValidator::class => 'getInputValidator',
+        Core\PictureHandler::class => 'getPictureHandler',
+        Core\Request::class => 'getRequest',
+        Core\SeoEncoder::class => 'getSeoEncoder',
+        Core\SeoDecoder::class => 'getSeoDecoder',
+        Core\UtilsCount::class => 'getUtilsCount',
+        Core\UtilsDate::class => 'getUtilsDate',
+        Core\UtilsFile::class => 'getUtilsFile',
+        Core\UtilsPic::class => 'getUtilsPic',
+        Core\UtilsServer::class => 'getUtilsServer',
+        Core\UtilsString::class => 'getUtilsString',
+        Core\UtilsUrl::class => 'getUtilsUrl',
+        Core\UtilsXml::class => 'getUtilsXml',
+        Core\UtilsView::class => 'getUtilsView',
+        Core\Routing\ControllerClassNameResolver::class => 'getControllerClassNameResolver',
         LoggerInterface::class => 'getLogger',
-        ConfigFile::class => 'get',
+        Core\ConfigFile::class => 'get',
     ];
 
     /**
@@ -77,7 +54,7 @@ class RegistryResolver
     {
         $defs = fn\traverse(static::DEFINITIONS, static function (string $method, string $class) {
             return static function () use($method, $class) {
-                return Registry::$method($class);
+                return Core\Registry::$method($class);
             };
         });
         return fn\di($defs);
