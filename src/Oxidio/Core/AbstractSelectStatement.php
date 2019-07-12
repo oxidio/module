@@ -32,10 +32,10 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
      */
     protected function data(): array
     {
-        if (!isset($this->properties['rows'])) {
-            $this->properties['rows'] = fn\traverse($this->properties['it'] ?? $this->getIterator());
+        if ($this->data === null) {
+            $this->data = fn\traverse($this->properties['it'] ?? $this->getIterator());
         }
-        return $this->properties['rows'];
+        return $this->data;
     }
 
     /**
@@ -43,7 +43,7 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
      */
     public function where(...$terms)
     {
-        unset($this->properties['rows']);
+        $this->data = null;
         return parent::where(...$terms);
     }
 
@@ -54,7 +54,7 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
      */
     public function orderBy(...$terms): self
     {
-        unset($this->properties['rows']);
+        $this->data = null;
         $this->properties['orderTerms'] = array_filter($terms);
         return $this;
     }
@@ -90,7 +90,7 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
      */
     public function limit($limit, $start = 0): self
     {
-        unset($this->properties['rows']);
+        $this->data = null;
         $this->properties['limit'] = $limit;
         $this->properties['start'] = $start;
         return $this;
@@ -141,7 +141,7 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
      */
     public function getIterator(): fn\Map
     {
-        unset($this->properties['rows']);
+        $this->data = null;
         return $this->properties['it'] = ($this->db)($this, ...($this->mapper ? [$this->mapper] : []));
     }
 
