@@ -27,8 +27,7 @@ use Oxidio\Core\Shop;
  * @param bool $commit
  * @return Generator
  */
-return static function (string $shop = null, bool $commit = false): Generator {
-    $shop = shop($shop);
+return static function (Core\Shop $shop, bool $commit = false): Generator {
     $eu = ['BE', 'DK', 'FI', 'FR', 'IT', 'LI', 'LU', 'NL', 'AT', 'PL', 'SE', 'HU'];
     $de = ['DE'];
     $ch = ['CH'];

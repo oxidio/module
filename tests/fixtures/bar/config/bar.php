@@ -40,10 +40,10 @@ return [
 
     BLOCKS   => [
         Theme\LAYOUT_BASE   => [
-            Theme\LAYOUT_BASE\BLOCK_HEAD_META_ROBOTS  => prepend(function() {
+            Theme\LAYOUT_BASE\BLOCK_HEAD_META_ROBOTS  => prepend(function () {
 
             }),
-            Theme\LAYOUT_BASE\BLOCK_HEAD_TITLE => overwrite(function(
+            Theme\LAYOUT_BASE\BLOCK_HEAD_TITLE => overwrite(function (
                 FrontendController $ctrl,
                 SmartyTemplateVars $vars,
                 Smarty $smarty,
@@ -64,22 +64,21 @@ return [
             }),
         ],
         Theme\LAYOUT_FOOTER => [
-            Theme\LAYOUT_FOOTER\BLOCK_MAIN => append(function() {}),
+            Theme\LAYOUT_FOOTER\BLOCK_MAIN => append(function () {}),
         ],
     ],
 
-    CLI   => DI\decorate(function(fn\Cli $cli) {
+    CLI   => static function(fn\Cli $cli) {
         $cli->command('bar', function(fn\Cli\IO $io) {
             $io->success('bar');
         });
 
-        $urls = Oxidio\Bar\Cli\Db::urls()->keys()->string('|');
 
-        $cli->command('db', Oxidio\Bar\Cli\Db::class , ['filter'], ['db' => $urls]);
-        $cli->command('shop', Oxidio\Bar\Cli\Shop::class , [], ['db' => $urls]);
+        $cli->command('db', Oxidio\Bar\Cli\Db::class , ['filter']);
+        $cli->command('shop', Oxidio\Bar\Cli\Shop::class);
 
         return $cli;
-    }),
+    },
 
     Oxidio\Bar\Cli\Db::class => DI\create(),
     Oxidio\Bar\Cli\Shop::class => DI\create(),

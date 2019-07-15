@@ -5,6 +5,7 @@
 
 namespace Oxidio\Module;
 
+use Oxidio;
 use fn;
 use Generator;
 use JsonSerializable;
@@ -17,11 +18,14 @@ use Invoker\ParameterResolver;
 
 /**
  * @property-read string $id
+ * @property-read fn\Package $package
  * @property-read fn\Cli $cli
+ * @property-read fn\DI\Container $container
+ * @property-read fn\DI\Invoker $invoker
  */
 class Module implements JsonSerializable
 {
-    use fn\DI\PropertiesReadOnlyTrait;
+    use fn\PropertiesTrait\ReadOnly;
 
     /**
      * @var static[]
@@ -29,39 +33,46 @@ class Module implements JsonSerializable
     private static $cache = [];
 
     /**
-     * @var fn\DI\Container
+     * @see $package
+     * @return fn\Package
      */
-    protected $container;
+    protected function resolvePackage(): fn\Package
+    {
+        return fn\package($this->id);
+    }
 
     /**
-     * @var fn\DI\Invoker
+     * @see $container
+     * @return fn\DI\Container
      */
-    private $invoker;
+    protected function resolveContainer(): fn\DI\Container
+    {
+        $package = $this->package;
+        ($di = $package->extra['di'] ?? []) && $di = $package->file($di);
+        return fn\di([
+            ID => $this->id,
+            self::class => $this,
+        ], $di,  fn\Composer\DIClassLoader::instance()->getContainer());
+    }
+
+    /**
+     * @see $cli
+     * @return fn\Cli
+     */
+    protected function resolveCli(): fn\Cli
+    {
+        $cli = Oxidio\cli($this->package, $this->container);
+        $this->container->set(get_class($cli), $cli);
+        $this->container->set(CLI, $this->get(CLI, $cli));
+        return $cli;
+    }
 
     /**
      * @param string $id
      */
     public function __construct(string $id)
     {
-        $package = (fn\PACKAGES[$id] ?? []) + [
-            CLI => function() {
-                return fn\cli($this->container, [
-                    'cli.name' => $this->get(TITLE),
-                    'cli.version' => $this->getVersion(),
-                    'cli.commands.default' => false,
-                ]);
-            }
-        ];
-
-        ($di = $package['extra']['di'] ?? []) && $di = $package['dir'] . $di;
-        $this->container = fn\di($package, $di, fn\Composer\DIClassLoader::instance()->getContainer());
-        $this->container->set(self::class, $this);
-        $this->container->set(ID, $id);
-    }
-
-    private function getVersion(): string
-    {
-        return implode('.', array_slice(explode('.', $this->get(VERSION)), 0, -1));
+        $this->properties['id'] = $id;
     }
 
     private function getBlocks(): Blocks
@@ -88,21 +99,23 @@ class Module implements JsonSerializable
     public function get($name, $default = null)
     {
         if (is_iterable($name)) {
-            return fn\traverse($name, function($default, $name) {
+            return fn\traverse($name, function ($default, $name) {
                 if (is_numeric($name)) {
                     $name    = $default;
                     $default = fn\mapNull();
                 }
-                return fn\mapKey($name)->andValue($this->$name ?? $default);
+                return fn\mapKey($name)->andValue(
+                    $this->container->has($name) ? $this->container->get($name) : ($this->$name ?? $default)
+                );
             });
         }
-        return $this->$name ?? $default;
+        return $this->container->has($name) ? $this->container->get($name) : ($this->$name ?? $default);
     }
 
     public function renderBlock(string $file): string
     {
         if ($block = $this->getBlocks()->get($file)) {
-            return (string) $this->getInvoker()->call($block->callback);
+            return (string) $this->invoker->call($block->callback);
         }
         return '';
     }
@@ -110,17 +123,18 @@ class Module implements JsonSerializable
     public function renderApp($menuKey): string
     {
         if ($menu = $this->getMenu(true)[$menuKey] ?? null) {
-            return (string) $this->getInvoker()->call($menu->callback);
+            return (string) $this->invoker->call($menu->callback);
         }
         return '';
     }
 
     /**
+     * @see $invoker
      * @return fn\DI\Invoker
      */
-    public function getInvoker(): fn\DI\Invoker
+    protected function resolveInvoker(): fn\DI\Invoker
     {
-        return $this->invoker ?: $this->invoker = new fn\DI\Invoker(
+        return new fn\DI\Invoker(
             new SmartyTemplateVars,
             new ParameterResolver\AssociativeArrayResolver,
             $this->container,
@@ -180,7 +194,7 @@ class Module implements JsonSerializable
         ])->string);
     }
 
-    private function resolveParams($key, MenuNode ...$nodes): void
+    private function params($key, MenuNode ...$nodes): void
     {
         foreach ($nodes as $node) {
             $node->params = fn\traverse($node->params, function($value) use($key) {
@@ -200,7 +214,7 @@ class Module implements JsonSerializable
             $key,
             fn\Map\Path $it
         ) use($flatten) {
-            $this->resolveParams($key, $menu, ...$menu->tabs, ...$menu->buttons);
+            $this->params($key, $menu, ...$menu->tabs, ...$menu->buttons);
             if ($flatten || !$it->getDepth()) {
                 return $menu;
             }
@@ -213,13 +227,13 @@ class Module implements JsonSerializable
      */
     public function jsonSerialize()
     {
-        $author = $this->get('authors')[0] ?? [];
+        $author = $this->package->authors[0] ?? [];
         return [
             ID          => $this->id,
             TITLE       => $this->get(TITLE, $this->id),
-            DESCRIPTION => $this->get(DESCRIPTION),
-            URL         => $this->get(URL, $this->get('homepage')),
-            VERSION     => $this->getVersion(),
+            DESCRIPTION => $this->get(DESCRIPTION, $this->package->description),
+            URL         => $this->get(URL, $this->package->homepage),
+            VERSION     => $this->get(VERSION, $this->package->version()),
             AUTHOR      => $this->get(AUTHOR, $author['name'] ?? null),
             EMAIL       => $this->get(EMAIL, $author['email'] ?? null),
             SETTINGS    => new Settings($this->get(SETTINGS, [])),

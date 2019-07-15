@@ -21,14 +21,13 @@ class Db
     /**
      * show database information
      *
-     * @param fn\Cli\IO   $io
-     * @param string|null $db
+     * @param Oxidio\Core\Database $db
+     * @param fn\Cli\IO $io
      * @param string|null $filter
      */
-    public function __invoke(fn\Cli\IO $io, string $db = null, string $filter = null)
+    public function __invoke(Oxidio\Core\Database $db, fn\Cli\IO $io, string $filter = null)
     {
-        $db && $db = static::urls()[$db] ?? $db;
-        $this->db = Oxidio\db($db);
+        $this->db = $db;
         $schema   = $this->db->schema;
         $io->title($schema->getName());
         foreach ($schema->getTables() as $table) {
@@ -53,17 +52,6 @@ class Db
         }
 
         $io->isDebug() && $io->listing($this->db::all());
-    }
-
-    public static function urls(): fn\Map
-    {
-        return fn\map($_ENV, function ($url, &$var) {
-            if (strpos($var, 'DB_URL_') !== 0) {
-                return null;
-            }
-            $var = str_replace('_', '-', strtolower(substr($var, 7)));
-            return $url;
-        });
     }
 
     protected function similar(Schema\Table $left): array

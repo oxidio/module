@@ -48,62 +48,44 @@ class Functions
     }
 
     /**
-     * @param string $package
+     * @param fn\Package|string|array $package
      * @param string|callable|array ...$args
      *
      * @return fn\Cli
      */
-    public static function cli(string $package = null, ...$args): fn\Cli
+    public static function cli($package, ...$args): fn\Cli
     {
-        $lib = $package ? fn\PACKAGES[$package] ?? [] : [];
-        $libDir = $lib['dir'] ?? null;
+        $cli = fn\cli(
+            $package,
+            (new DI\RegistryResolver)->container,
+            [
+                InputInterface::class => static function (): ArgvInput {
+                    return new ArgvInput;
+                },
 
-        $fns    = [];
-        $config = [];
-        foreach ($args as $arg) {
-            if (fn\isCallable($arg)) {
-                $fns[] = $arg;
-            } else {
-                $config[] = is_string($arg) && $libDir && $arg[0] !== DIRECTORY_SEPARATOR ? $libDir . $arg : $arg;
-            }
+                Core\Shop::class => static function (InputInterface $input): Core\Shop {
+                    return static::shop($input->hasOption('shop') ? $input->getOption('shop') : null);
+                },
+
+                Core\Database::class => static function (Core\Shop $shop): Core\Database {
+                    return $shop->db;
+                },
+            ],
+            ...$args
+        );
+
+        if ($urls = implode(' | ', fn\keys(static::shopUrls()))) {
+            $urls = "[ $urls ]";
         }
 
-        return fn\di((new DI\RegistryResolver)->container, [
-            'cli.name' => $lib['name'] ?? null,
-            'cli.version' => $lib['version'] ?? null,
-            'cli.commands.default' => false,
+        $cli->getDefinition()->addOption(new InputOption(
+            '--shop',
+            's',
+            InputOption::VALUE_REQUIRED,
+            "Shop url 'mysql://<user>:<pass>@<host>:3306/<db>'" .
+            "\nor entries from the .env file 'OXIDIO_SHOP_*' {$urls}"
+        ));
 
-            InputInterface::class => static function (): ArgvInput {
-                return new ArgvInput;
-            },
-
-            Core\Shop::class => static function (InputInterface $input): Core\Shop {
-                return static::shop($input->hasOption('shop') ? $input->getOption('shop') : null);
-            },
-
-            fn\Cli::class => static function(fn\DI\Container $container) use ($fns) {
-                $cli = fn\cli($container);
-                if ($urls = implode(' | ', fn\keys(static::shopUrls()))) {
-                    $urls = "[ $urls ]";
-                }
-                $cli->getDefinition()->addOption(new InputOption(
-                    '--shop',
-                    's',
-                    InputOption::VALUE_REQUIRED,
-                    "Shop url 'mysql://<user>:<pass>@<host>:3306/<db>'" .
-                    "\nor entries from the .env file 'OXIDIO_SHOP_*' {$urls}"
-                ));
-
-                $container->set(fn\Cli::class, $cli);
-                foreach ($fns as $fn) {
-                    $result = $container->call($fn);
-                    foreach (is_iterable($result) ? $result : [] as $name => $command) {
-                        $cli->command($name, ...array_values(is_array($command) ? $command : [$command]));
-                    }
-                }
-                return $cli;
-            },
-
-        ], ...$config)->get(fn\Cli::class);
+        return $cli;
     }
 }

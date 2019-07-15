@@ -13,16 +13,16 @@ use OxidEsales\Eshop\Core\{
 /**
  * Test dml functionality
  *
+ * @param Core\Shop $shop
  * @param string|null $action insert|update|delete
  * @param string|null $name
- * @param string|null $shop
  * @param bool $dryRun
  *
  * @return Generator
  */
-return static function (string $action = null, string $name = null, string $shop = null, bool $dryRun = false) {
+return static function (Core\Shop $shop, string $action = null, string $name = null, bool $dryRun = false) {
     $where = [TABLE\OXCONFIG\OXID => "test:$name"];
-    $modify = shop($shop)->modify(TABLE\OXCONFIG);
+    $modify = $shop->modify(TABLE\OXCONFIG);
 
     if ($action === 'insert') {
         yield (object)$modify->insert([
@@ -36,5 +36,5 @@ return static function (string $action = null, string $name = null, string $shop
         yield (object)$modify->delete($where)($dryRun);
     }
 
-    yield (object)shop($shop)->query(TABLE\OXCONFIG, [TABLE\OXCONFIG\OXID => ['LIKE', 'test:%']]);
+    yield (object)$shop->query(TABLE\OXCONFIG, [TABLE\OXCONFIG\OXID => ['LIKE', 'test:%']]);
 };

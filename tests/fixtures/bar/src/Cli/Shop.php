@@ -14,14 +14,11 @@ class Shop
     /**
      * test Oxidio\Core\Shop component
      *
-     * @param fn\Cli\IO   $io
-     * @param string|null $db
+     * @param fn\Cli\IO $io
+     * @param Oxidio\Core\Shop $shop
      */
-    public function __invoke(fn\Cli\IO $io, $db = null)
+    public function __invoke(fn\Cli\IO $io, Oxidio\Core\Shop $shop)
     {
-        $db && $db = Db::urls()[$db] ?? $db;
-        $shop = new Oxidio\Core\Shop(Oxidio\db($db));
-
         foreach (fn\flatten($shop->categories()) as $key => $cat) {
             $io->writeln(str_replace(['-', '/'], '_', strtoupper($key)) . ' : ' . $cat[Category\TITLE]);
         }

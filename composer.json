@@ -23,7 +23,7 @@
     "oxidio/module-foo": "^1",
     "oxidio/module-bar": "^1",
 
-    "php-fn/test": "2.x-dev"
+    "php-fn/test": "^2.0"
   },
   "autoload": {
     "psr-4": {"Oxidio\\": ["src/Oxidio"]},
@@ -41,5 +41,8 @@
     "branch-alias": {
       "dev-master": "1.x-dev"
     }
+  },
+  "scripts": {
+    "test": "php -d error_reporting=22527 vendor/bin/phpunit tests/"
   }
 }

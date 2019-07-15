@@ -46,12 +46,12 @@ namespace Oxidio
     }
 
     /**
-     * @param string $package
+     * @param fn\Package|string|array $package
      * @param string|callable|array ...$args
      *
      * @return fn\Cli
      */
-    function cli(string $package = null, ...$args): fn\Cli
+    function cli($package = null, ...$args): fn\Cli
     {
         return Functions::cli(...func_get_args());
     }
@@ -111,7 +111,7 @@ namespace Oxidio\Module
         $menu->class    = App::class;
         $menu->callback = $callable;
         $menu->params   = [
-            /* @see Module::resolveParams */
+            /* @see Module::params */
             APP => function(Module $module, $menuKey) {
                 return $module->id . ":{$menuKey}";
             }

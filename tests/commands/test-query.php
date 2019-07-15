@@ -15,7 +15,7 @@ use Oxidio\Core\Row;
 /**
  * Test query functionality
  *
- * @param string|null $shop
+ * @param Core\Shop $shop
  * @param string[] $columns
  * @param string $from
  * @param string[] $order
@@ -25,17 +25,17 @@ use Oxidio\Core\Row;
  * @return Generator
  */
 return static function (
-    string $shop = null,
+    Core\Shop $shop,
     string $from = TABLE\OXCONFIG,
     array $columns = [TABLE\OXCONFIG\OXID],
     array $order = [TABLE\OXCONFIG\OXID],
     int $limit = 0,
     int $start = 0
 ) {
-    $query = shop($shop)->query($from, function(array $row) use($columns, $shop) {
+    $query = $shop->query($from, function(array $row) use($columns, $shop) {
 
         // fails if PDO::MYSQL_ATTR_USE_BUFFERED_QUERY is disabled
-        fn\traverse(shop($shop)->query(TABLE\OXSHOPS));
+        fn\traverse($shop->query(TABLE\OXSHOPS));
 
         if (!$columns) {
             return $row;
