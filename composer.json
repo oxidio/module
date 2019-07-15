@@ -22,7 +22,7 @@
     "oxidio/module-seo": "1.x-dev",
     "oxidio/module-foo": "^1",
     "oxidio/module-bar": "^1",
-
+    "php-coveralls/php-coveralls": "^2.1",
     "php-fn/test": "^2.0"
   },
   "autoload": {

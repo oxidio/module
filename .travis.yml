@@ -1,0 +1,19 @@
+language: php
+
+php:
+  - 7.1
+  - 7.2
+  - 7.3
+
+sudo: false
+
+before_script:
+  - composer install --no-plugins
+  - vendor/bin/oxidio-install
+
+script:
+  - mkdir -p build/logs
+  - vendor/bin/phpunit tests --coverage-clover build/logs/clover.xml --whitelist src
+
+after_success:
+  - travis_retry php vendor/bin/php-coveralls -v
