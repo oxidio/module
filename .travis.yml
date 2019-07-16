@@ -16,8 +16,9 @@ before_script:
   - echo "DB_NAME=oxidio" >> .env
   - echo "DB_USER=root" >> .env
   - echo "DB_PASSWORD=" >> .env
+  - echo "DB_STATE=ok" >> .env
   - vendor/bin/oxidio-install
-  - vendor/bin/oxidio-db vendor/oxid-esales/oxideshop-demodata-ce/src/*sql
+  - vendor/bin/oxidio-db vendor/oxidio/shop/source/Setup/Sql/database_schema.sql vendor/oxidio/shop/source/Setup/Sql/initial_data.sql
 
 script:
   - mkdir -p build/logs
@@ -25,3 +26,6 @@ script:
 
 after_success:
   - travis_retry php vendor/bin/php-coveralls -v
+
+after_failure:
+  - cat source/log/*log
