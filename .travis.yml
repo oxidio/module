@@ -12,14 +12,12 @@ sudo: false
 
 before_script:
   - composer install --no-plugins
-  - |
-    echo "127.0.0.1
-    oxidio
-    root
-
-    ok
-    https://localhost" | vendor/bin/oxidio-env
+  - echo "DB_HOST=127.0.0.1" > .env
+  - echo "DB_NAME=oxidio" >> .env
+  - echo "DB_USER=root" >> .env
+  - echo "DB_PASSWORD=" >> .env
   - vendor/bin/oxidio-install
+  - vendor/bin/oxidio-db vendor/oxid-esales/oxideshop-demodata-ce/src/*sql
 
 script:
   - mkdir -p build/logs
