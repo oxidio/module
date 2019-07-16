@@ -5,10 +5,20 @@ php:
   - 7.2
   - 7.3
 
+services:
+  - mysql
+
 sudo: false
 
 before_script:
   - composer install --no-plugins
+  - |
+    echo "127.0.0.1
+    oxidio
+    root
+
+    ok
+    https://localhost" | vendor/bin/oxidio-env
   - vendor/bin/oxidio-install
 
 script:

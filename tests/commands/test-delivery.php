@@ -11,10 +11,9 @@ use OxidEsales\Eshop\Core\{
     Database\TABLE\OXDELIVERYSET as SET,
     Database\TABLE\OXPAYMENTS
 };
-use Oxidio\Core\Shop;
 
 /**
- * @param Shop|string $shop
+ * @param Core\Shop $shop
  * @param bool $commit
  * @return Generator
  */
