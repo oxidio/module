@@ -15,7 +15,6 @@ before_script:
   - echo "DB_HOST=127.0.0.1" > .env
   - echo "DB_NAME=oxidio" >> .env
   - echo "DB_USER=root" >> .env
-  - echo "DB_PASSWORD=" >> .env
   - echo "DB_STATE=ok" >> .env
   - vendor/bin/oxidio-install
   - vendor/bin/oxidio-db vendor/oxidio/shop/source/Setup/Sql/database_schema.sql vendor/oxidio/shop/source/Setup/Sql/initial_data.sql
