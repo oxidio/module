@@ -69,7 +69,12 @@ class Shop implements DataModificationInterface
      */
     public function __construct(Database $db, array $params = [])
     {
-        $this->properties = ['db' => $db] + $params + ['configKey' => self::DEFAULT_CONFIG_KEY];
+        $this->properties = ['db' => $db] + $params + ['configKey' => self::DEFAULT_CONFIG_KEY, 'locator' => null];
+    }
+
+    public function __toString()
+    {
+        return (string)($this->locator ?? '');
     }
 
     /**

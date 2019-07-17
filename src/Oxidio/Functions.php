@@ -7,11 +7,7 @@ namespace Oxidio;
 
 use fn;
 use OxidEsales\Eshop;
-use Symfony\Component\Console\Input\{
-    ArgvInput,
-    InputInterface,
-    InputOption
-};
+use Symfony\Component\Console\Input\{ArgvInput, InputInterface, InputOption};
 
 class Functions
 {
@@ -34,17 +30,35 @@ class Functions
     }
 
     /**
-     * @param string|Core\Database $shop
+     * @param string|Core\Database $locator
      * @param array $params
      *
      * @return Core\Shop
      */
-    public static function shop($shop = null, array $params = []): Core\Shop
+    public static function shop($locator = null, array $params = []): Core\Shop
     {
-        is_string($shop) && $shop = self::shopUrls()[$shop] ?? $shop;
+        if (is_string($locator) && $shop = self::shopUrls()[$locator] ?? null) {
+            $params += ['locator' => $locator];
+        } else {
+            $shop = $locator;
+        }
         $db = $shop instanceof Core\Database ? $shop : Core\Database::get($shop);
         $hash = md5(json_encode([spl_object_hash($db), $params]));
         return self::$shops[$hash] ?? self::$shops[$hash] = new Core\Shop($db, $params);
+    }
+
+    private static function shopOption(): InputOption
+    {
+        if ($urls = implode(' | ', fn\keys(static::shopUrls()))) {
+            $urls = "[ $urls ]";
+        }
+        return new InputOption(
+            '--shop',
+            null,
+            InputOption::VALUE_REQUIRED,
+            "Shop url 'mysql://<user>:<pass>@<host>:3306/<db>'" .
+            "\nor entries from the .env file 'OXIDIO_SHOP_*' {$urls}"
+        );
     }
 
     /**
@@ -53,14 +67,15 @@ class Functions
      *
      * @return fn\Cli
      */
-    public static function cli($package, ...$args): fn\Cli
+    public static function cli($package = null, ...$args): fn\Cli
     {
         $cli = fn\cli(
-            $package,
+            $package ?? [],
             (new DI\RegistryResolver)->container,
             [
-                InputInterface::class => static function (): ArgvInput {
-                    return new ArgvInput;
+                InputInterface::class => static function (fn\Cli $cli) : ArgvInput {
+                    ($def = $cli->getDefinition())->addOption(self::shopOption());
+                    return new ArgvInput(null, $def);
                 },
 
                 Core\Shop::class => static function (InputInterface $input): Core\Shop {
@@ -73,19 +88,7 @@ class Functions
             ],
             ...$args
         );
-
-        if ($urls = implode(' | ', fn\keys(static::shopUrls()))) {
-            $urls = "[ $urls ]";
-        }
-
-        $cli->getDefinition()->addOption(new InputOption(
-            '--shop',
-            's',
-            InputOption::VALUE_REQUIRED,
-            "Shop url 'mysql://<user>:<pass>@<host>:3306/<db>'" .
-            "\nor entries from the .env file 'OXIDIO_SHOP_*' {$urls}"
-        ));
-
+        $cli->getDefinition()->hasOption('shop') || $cli->getDefinition()->addOption(self::shopOption());
         return $cli;
     }
 }
