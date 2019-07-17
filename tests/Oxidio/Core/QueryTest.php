@@ -20,10 +20,6 @@ use PHPUnit\Framework\TestCase;
  */
 class QueryTest extends TestCase
 {
-    /**
-     * @covers \Oxidio\Core\Query::__toString
-     * @covers \Oxidio\Core\Query::buildWhere
-     */
     public function testToString(): void
     {
         assert\same(
@@ -82,9 +78,6 @@ class QueryTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Oxidio\Core\Query::jsonSerialize
-     */
     public function testJsonSerialize(): void
     {
         $map = Oxidio\query(TABLE\OXCOUNTRY, function (Row $row) {

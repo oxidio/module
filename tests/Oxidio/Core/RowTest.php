@@ -35,7 +35,6 @@ class RowTest extends TestCase
     }
 
     /**
-     * @covers \Oxidio\Core\Row::__invoke
      * @dataProvider providerInvoke
      *
      * @param $expected
@@ -48,18 +47,12 @@ class RowTest extends TestCase
         assert\equals($expected, $row(...$args));
     }
 
-    /**
-     * @covers \Oxidio\Core\Row::jsonSerialize
-     */
     public function testJsonSerialize(): void
     {
         $row = new Row(['A' => 'v-a', 'b' => 'v-b', 'c' => null]);
         assert\same(json_encode($row()), json_encode($row));
     }
 
-    /**
-     * @covers \Oxidio\Core\Row::__toString
-     */
     public function testToString(): void
     {
         assert\same('', (string)new Row([]));

@@ -15,9 +15,6 @@ use PHPUnit\Framework\TestCase;
  */
 class MenuTest extends TestCase
 {
-    /**
-     * @covers \Oxidio\Module\Menu::__construct
-     */
     public function testConstructor(): void
     {
         assert\type(Menu::class, $menu = menu('label'));
@@ -31,9 +28,6 @@ class MenuTest extends TestCase
         assert\same([], $menu->buttons);
     }
 
-    /**
-     * @covers \Oxidio\Module\Menu::getId
-     */
     public function testGetId(): void
     {
         assert\same('label', menu('label')->getId());
@@ -41,9 +35,6 @@ class MenuTest extends TestCase
         assert\same('en', menu(['en', 'de'])->getId());
     }
 
-    /**
-     * @covers \Oxidio\Module\Menu::toString
-     */
     public function testToString(): void
     {
         self::assertToString([
@@ -61,10 +52,6 @@ class MenuTest extends TestCase
         ], menu('menu', menu('main', menu('sub'))));
     }
 
-    /**
-     * @covers \Oxidio\Module\Module::getMenu
-     * @covers \Oxidio\Module\Menu::create
-     */
     public function testGetMenu(): void
     {
         $module = Module::instance(fn\VENDOR\OXIDIO\MODULE_BAR);
