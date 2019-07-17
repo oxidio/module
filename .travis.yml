@@ -1,9 +1,5 @@
 language: php
 
-cache:
-  directories:
-    - $HOME/.composer
-
 php:
   - 7.1
   - 7.2
@@ -28,8 +24,7 @@ before_script:
 
 script:
   - mkdir -p build/logs
-  - vendor/bin/phpunit --list-tests tests/
-  - vendor/bin/phpunit -v --debug tests/
+  - vendor/bin/phpunit --debug --coverage-clover build/logs/clover.xml --whitelist src tests
 
 after_success:
   - travis_retry php vendor/bin/php-coveralls -v
