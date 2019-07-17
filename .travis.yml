@@ -25,7 +25,8 @@ before_script:
 
 script:
   - mkdir -p build/logs
-  - vendor/bin/phpunit tests
+  - vendor/bin/phpunit --list-tests tests/
+  - vendor/bin/phpunit -v --debug tests/
 
 after_success:
   - travis_retry php vendor/bin/php-coveralls -v
