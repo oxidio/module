@@ -35,7 +35,7 @@ class RowTest extends TestCase
     }
 
     /**
-     * @covers ::__invoke
+     * @covers \Oxidio\Core\Row::__invoke
      * @dataProvider providerInvoke
      *
      * @param $expected
@@ -49,7 +49,7 @@ class RowTest extends TestCase
     }
 
     /**
-     * @covers ::jsonSerialize
+     * @covers \Oxidio\Core\Row::jsonSerialize
      */
     public function testJsonSerialize(): void
     {
@@ -58,7 +58,7 @@ class RowTest extends TestCase
     }
 
     /**
-     * @covers ::__toString
+     * @covers \Oxidio\Core\Row::__toString
      */
     public function testToString(): void
     {

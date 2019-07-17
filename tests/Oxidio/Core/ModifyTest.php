@@ -20,9 +20,9 @@ use PHPUnit\Framework\TestCase;
 class ModifyTest extends TestCase
 {
     /**
-     * @covers ::insert
-     * @covers ::update
-     * @covers ::delete
+     * @covers \Oxidio\Core\Modify::_insert
+     * @covers \Oxidio\Core\Modify::_update
+     * @covers \Oxidio\Core\Modify::_delete
      */
     public function testModify(): void
     {
@@ -68,11 +68,11 @@ class ModifyTest extends TestCase
     }
 
     /**
-     * @covers ::insert
-     * @covers ::update
-     * @covers ::delete
-     * @covers ::map
-     * @covers ::replace
+     * @covers \Oxidio\Core\Modify::_insert
+     * @covers \Oxidio\Core\Modify::_update
+     * @covers \Oxidio\Core\Modify::_delete
+     * @covers \Oxidio\Core\Modify::_map
+     * @covers \Oxidio\Core\Modify::_replace
      */
     public function testIntegration(): void
     {

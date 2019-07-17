@@ -21,8 +21,8 @@ use PHPUnit\Framework\TestCase;
 class QueryTest extends TestCase
 {
     /**
-     * @covers Query::__toString
-     * @covers Query::buildWhere
+     * @covers \Oxidio\Core\Query::__toString
+     * @covers \Oxidio\Core\Query::buildWhere
      */
     public function testToString(): void
     {
@@ -83,7 +83,7 @@ class QueryTest extends TestCase
     }
 
     /**
-     * @covers ::jsonSerialize
+     * @covers \Oxidio\Core\Query::jsonSerialize
      */
     public function testJsonSerialize(): void
     {

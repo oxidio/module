@@ -8,14 +8,15 @@ namespace Oxidio\Module;
 use fn;
 use fn\test\assert;
 use Oxidio;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Menu
  */
-class MenuTest extends \PHPUnit\Framework\TestCase
+class MenuTest extends TestCase
 {
     /**
-     * @covers ::__constructor()
+     * @covers \Oxidio\Module\Menu::__construct
      */
     public function testConstructor(): void
     {
@@ -31,7 +32,7 @@ class MenuTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers ::getId()
+     * @covers \Oxidio\Module\Menu::getId
      */
     public function testGetId(): void
     {
@@ -41,7 +42,7 @@ class MenuTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers ::toString()
+     * @covers \Oxidio\Module\Menu::toString
      */
     public function testToString(): void
     {
@@ -61,8 +62,8 @@ class MenuTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Module::getMenu
-     * @covers ::create()
+     * @covers \Oxidio\Module\Module::getMenu
+     * @covers \Oxidio\Module\Menu::create
      */
     public function testGetMenu(): void
     {
