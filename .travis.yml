@@ -15,10 +15,13 @@ services:
 sudo: false
 
 before_script:
+  - mysql -e "CREATE USER 'oxidio'@'%' IDENTIFIED BY 'oxidio';"
+  - mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'oxidio'@'%';"
   - composer install --no-plugins
   - echo "DB_HOST=127.0.0.1" > .env
   - echo "DB_NAME=oxidio" >> .env
-  - echo "DB_USER=root" >> .env
+  - echo "DB_USER=oxidio" >> .env
+  - echo "DB_PASSWORD=oxidio" >> .env
   - echo "DB_STATE=ok" >> .env
   - vendor/bin/oxidio-install
   - vendor/bin/oxidio-db vendor/oxidio/shop/source/Setup/Sql/database_schema.sql vendor/oxidio/shop/source/Setup/Sql/initial_data.sql
