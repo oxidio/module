@@ -19,6 +19,18 @@ return [
         } catch (DatabaseException $e) {
         } finally {
             $cli->command('shop:modules', require 'commands/shop-modules.php', ['modules']);
+            /**
+             * Show shop configuration
+             */
+            $cli->command('shop:config', static function (Core\Shop $shop) {
+                yield fn\traverse($shop->config, function ($value, $name) {
+                    return [
+                        'entry' => $name,
+                        'value' => is_string($value) ? $value : json_encode($value, JSON_PRETTY_PRINT),
+                        'type' => fn\type($value),
+                    ];
+                });
+            });
         }
     },
 

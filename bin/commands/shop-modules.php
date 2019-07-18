@@ -32,7 +32,8 @@ return static function (
             'status:before' => $module->status,
             'status:after' => ($invert xor fn\hasValue($module->id, $modules)) ?
                 $module->status = $status :
-                $module->status
+                $module->status,
+            'config' => json_encode($module->config, JSON_PRETTY_PRINT),
         ];
     });
 
