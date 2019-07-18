@@ -75,7 +75,8 @@ class Functions
             [
                 InputInterface::class => static function (fn\Cli $cli) : ArgvInput {
                     ($def = $cli->getDefinition())->addOption(self::shopOption());
-                    return new ArgvInput(null, $def);
+                    ($input = new ArgvInput)->bind($def);
+                    return $input;
                 },
 
                 Core\Shop::class => static function (InputInterface $input): Core\Shop {

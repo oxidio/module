@@ -7,6 +7,7 @@ namespace Oxidio;
 
 use fn\test\assert;
 use OxidEsales\EshopCommunity\Core\Database\Adapter\DatabaseInterface;
+use Oxidio\Core\Database;
 use Oxidio\Core\Shop;
 use PHPUnit\Framework\TestCase;
 use fn;
@@ -36,17 +37,39 @@ class FunctionsTest extends TestCase
 
     public function testCli(): void
     {
-        $_ENV = ['OXIDIO_SHOP_FOO' => DatabaseInterface::FETCH_MODE_BOTH];
-        $cli = cli(fn\VENDOR\OXIDIO\OXIDIO, static function () {
-            yield 'c1' => static function (Shop $shop) {
+        self::assertCli('foo', static function () {
+            yield 'c1' => static function (Shop $shop, Database $db) {
+                assert\same($db, $shop->db);
                 yield (string)$shop;
             };
         });
+
+        self::assertCli('', static function (Shop $shop) {
+            yield 'c1' => static function (Database $db) use ($shop) {
+                assert\same($db, $shop->db);
+                yield (string)$shop;
+            };
+        });
+    }
+
+    private static function assertCli(string $expected, callable $callable): void
+    {
+        $_ENV = ['OXIDIO_SHOP_FOO' => DatabaseInterface::FETCH_MODE_BOTH];
+        $cli = cli(fn\VENDOR\OXIDIO\OXIDIO, $callable);
         assert\true($cli->getDefinition()->hasOption('shop'));
         $cli->setAutoExit(false);
         assert\type(fn\Cli::class, $cli);
         $_SERVER['argv'] = ['_', '--shop=foo', 'c1'];
         assert\same(0, $cli->run(null, $out = new BufferedOutput));
-        assert\same('foo' . PHP_EOL, $out->fetch());
+        assert\same($expected . PHP_EOL, $out->fetch());
+        $_SERVER['argv'] = [];
+        assert\same(0, $cli->run(null, $out));
+        $content = $out->fetch();
+        assert\true(fn\every(
+            [fn\VENDOR\OXIDIO\OXIDIO, 'Usage:', 'Options:', '[ foo ]', 'Available commands:'],
+            static function ($token) use ($content) {
+                return strpos($content, $token) !== false;
+            })
+        );
     }
 }
