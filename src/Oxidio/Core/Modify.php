@@ -50,6 +50,7 @@ class Modify extends AbstractConditionalStatement
             }
             if (fn\isCallable($value)) {
                 if (!is_array($result = $value($column))) {
+                    // dynamic value, e.g. UPPER(:column)
                     $bindings[$column] = $result;
                     continue;
                 }

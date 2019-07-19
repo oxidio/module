@@ -14,7 +14,7 @@ use OxidEsales\Eshop\Core\Database\TABLE;
 /**
  * @property-read string $configKey
  * @property-read string $id
- * @property-read array $config
+ * @property fn\Map $config
  * @property-read fn\Map|Extension[] $modules
  * @property-read fn\Map|Extension[] $themes
  * @property-read Database $db
@@ -75,6 +75,53 @@ class Shop implements DataModificationInterface
     public function __toString()
     {
         return (string)($this->locator ?? '');
+    }
+
+    public function __invoke(...$args): self
+    {
+        foreach ($args as $arg) {
+            $arg = fn\isCallable($arg) ? $arg($this) : $arg;
+            foreach (is_iterable($arg) ? $arg : [] as $view => $value) {
+                $value = fn\isCallable($value) ? $value($this) : $value;
+                if (is_string($view)) {
+                    $modify = $this->modify($view);
+                    $value === null ? $modify->delete() : $modify->replace($value, TABLE\OXSHOPS\OXID);
+                } else if (is_iterable($value)) {
+                    fn\traverse($value);
+                }
+            }
+        }
+        return $this;
+    }
+
+    public static function id(...$args): string
+    {
+        if (!$args) {
+            return md5(uniqid('', true) . '|' . microtime());
+        }
+        if (false === ($last = array_pop($args))) {
+            return implode('', $args);
+        }
+        is_string($last) && $args[] = $last;
+        if (!is_string($last) || strlen(implode('', $args)) >= 32) {
+            $args[] = substr(
+                md5(uniqid('', true) . '|' . microtime()),
+                0,
+                is_int($last) ? $last : 6
+            );
+        }
+        if (($diff = strlen($id = implode('', $args)) - 32) <= 0) {
+            return $id;
+        }
+        $tokens = [];
+        $avg = (int)ceil(32 / count($args));
+        $diff += $avg * count($args) - 32;
+        foreach (array_reverse($args) as $token) {
+            $min = min($diff, max(0, ($length = strlen($token)) - $avg));
+            $tokens[] = $token = substr($token, 0, $length - $min);
+            $diff -= $length - strlen($token);
+        }
+        return implode('', array_reverse($tokens));
     }
 
     /**
@@ -203,11 +250,11 @@ class Shop implements DataModificationInterface
 
     /**
      * @see $config
-     * @return mixed
+     * @return fn\Map
      */
-    protected function resolveConfig()
+    protected function resolveConfig(): fn\Map
     {
-        return $this->extensions[Extension::SHOP][Extension::SHOP]->config ?? [];
+        return $this->extensions[Extension::SHOP][Extension::SHOP]->config ?? fn\map([]);
     }
 
     /**

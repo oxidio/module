@@ -23,7 +23,8 @@
     "oxidio/module-foo": "^1",
     "oxidio/module-bar": "^1",
     "php-coveralls/php-coveralls": "^2.1",
-    "php-fn/test": "^2.0"
+    "php-fn/test": "^2.0",
+    "oxid-esales/wave-theme": "^1.2"
   },
   "autoload": {
     "psr-4": {"Oxidio\\": ["src/Oxidio"]},

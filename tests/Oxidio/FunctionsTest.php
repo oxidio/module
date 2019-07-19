@@ -37,17 +37,17 @@ class FunctionsTest extends TestCase
 
     public function testCli(): void
     {
-        self::assertCli('foo', static function () {
-            yield 'c1' => static function (Shop $shop, Database $db) {
+        self::assertCli('foobar', static function () {
+            yield 'c1' => static function (Shop $shop, Database $db, string $opt) {
                 assert\same($db, $shop->db);
-                yield (string)$shop;
+                yield $shop . $opt;
             };
         });
 
-        self::assertCli('', static function (Shop $shop) {
-            yield 'c1' => static function (Database $db) use ($shop) {
+        self::assertCli('bar', static function (Shop $shop) {
+            yield 'c1' => static function (Database $db, string $opt) use ($shop) {
                 assert\same($db, $shop->db);
-                yield (string)$shop;
+                yield $shop . $opt;
             };
         });
     }
@@ -59,7 +59,7 @@ class FunctionsTest extends TestCase
         assert\true($cli->getDefinition()->hasOption('shop'));
         $cli->setAutoExit(false);
         assert\type(fn\Cli::class, $cli);
-        $_SERVER['argv'] = ['_', '--shop=foo', 'c1'];
+        $_SERVER['argv'] = ['_', '--shop=foo', 'c1', '--opt=bar'];
         assert\same(0, $cli->run(null, $out = new BufferedOutput));
         assert\same($expected . PHP_EOL, $out->fetch());
         $_SERVER['argv'] = [];

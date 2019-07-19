@@ -20,7 +20,7 @@ use OxidEsales\Eshop\Core\Database\TABLE;
  * @property-read string[] $classes aModuleFiles|aModules|aModuleExtensions ['cl', 'ox-cl' => 'cl']
  * @property-read array $templates
  * @property-read array $files
- * @property-read array $config
+ * @property fn\Map $config
  *
  */
 class Extension implements JsonSerializable
@@ -184,5 +184,14 @@ class Extension implements JsonSerializable
             return $this->shop->save();
         }
         return $this->properties['status'] ?? static::STATUS_ACTIVE;
+    }
+
+    /**
+     * @see $config
+     * @return fn\Map
+     */
+    protected function resolveConfig(): fn\Map
+    {
+        return fn\map($this->properties['config'] ?? []);
     }
 }

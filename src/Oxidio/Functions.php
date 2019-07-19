@@ -7,6 +7,7 @@ namespace Oxidio;
 
 use fn;
 use OxidEsales\Eshop;
+use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\{ArgvInput, InputInterface, InputOption};
 
 class Functions
@@ -74,8 +75,12 @@ class Functions
             (new DI\RegistryResolver)->container,
             [
                 InputInterface::class => static function (fn\Cli $cli) : ArgvInput {
+                    $input = new ArgvInput;
                     ($def = $cli->getDefinition())->addOption(self::shopOption());
-                    ($input = new ArgvInput)->bind($def);
+                    try {
+                        $input->bind($def);
+                    } catch (ExceptionInterface $ignore) {
+                    }
                     return $input;
                 },
 
