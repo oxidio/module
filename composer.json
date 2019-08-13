@@ -19,12 +19,12 @@
   "require-dev": {
     "oxid-esales/oxideshop-demodata-ce": "^6",
     "oxidio/project": "1.x-dev",
+    "oxidio/theme-flow": "^3.3",
     "oxidio/module-seo": "^1",
     "oxidio/module-foo": "^1",
     "oxidio/module-bar": "^1",
     "php-coveralls/php-coveralls": "^2.1",
-    "php-fn/test": "^3.0",
-    "oxid-esales/wave-theme": "^1.2"
+    "php-fn/test": "^3.0"
   },
   "autoload": {
     "psr-4": {"Oxidio\\": ["src/Oxidio"]},
