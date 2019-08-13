@@ -20,6 +20,7 @@
     "oxid-esales/oxideshop-demodata-ce": "^6",
     "oxidio/project": "1.x-dev",
     "oxidio/theme-flow": "^3.3",
+    "oxidio/theme-wave": "^1.2",
     "oxidio/module-seo": "^1",
     "oxidio/module-foo": "^1",
     "oxidio/module-bar": "^1",
