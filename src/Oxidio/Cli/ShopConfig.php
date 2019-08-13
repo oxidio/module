@@ -4,6 +4,7 @@
  */
 
 namespace Oxidio\Cli;
+
 use fn;
 use Generator;
 use OxidEsales\Eshop\Core\Database\TABLE;
