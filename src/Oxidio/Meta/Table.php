@@ -6,7 +6,7 @@
 namespace Oxidio\Meta;
 
 use Doctrine\DBAL\Schema\Table as SchemaTable;
-use fn;
+use php;
 use Oxidio;
 
 /**
@@ -32,8 +32,8 @@ class Table
     private function detail($detail): ?string
     {
         static $details;
-        $details || $details = fn\traverse($this->provider->db->tables, function(SchemaTable $table) {
-            return fn\mapKey($table->getName())->andValue($table->getOptions());
+        $details || $details = php\traverse($this->provider->db->tables, function(SchemaTable $table) {
+            return php\mapKey($table->getName())->andValue($table->getOptions());
         });
         return $details[$this->name][$detail] ?? null;
     }
@@ -99,7 +99,7 @@ class Table
             ];
         }
 
-        return fn\traverse($columns, function(array $column, $name) use($nls) {
+        return php\traverse($columns, function(array $column, $name) use($nls) {
             $column['type'] .= (($nls[$name] ?? false) ? '-i18n' : '');
             return new Column($this->provider, ['name' => $name] + $column);
         });

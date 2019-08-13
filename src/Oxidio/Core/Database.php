@@ -5,7 +5,7 @@
 
 namespace Oxidio\Core;
 
-use fn;
+use php;
 use Doctrine\DBAL;
 use OxidEsales\Eshop\Core\Database\Adapter;
 use OxidEsales\Eshop\Core\DatabaseProvider;
@@ -17,7 +17,7 @@ use OxidEsales\Eshop\Core\DatabaseProvider;
  */
 class Database extends Adapter\Doctrine\Database implements DataModificationInterface
 {
-    use fn\PropertiesTrait\ReadOnly;
+    use php\PropertiesTrait\ReadOnly;
     use DatabaseProxyTrait;
 
     /**
@@ -84,8 +84,8 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
      */
     protected function resolveTables(): array
     {
-        return fn\traverse($this->schema->getTables(), function(DBAL\Schema\Table $table) {
-            return fn\mapValue($table)->andKey($table->getName());
+        return php\traverse($this->schema->getTables(), function(DBAL\Schema\Table $table) {
+            return php\mapValue($table)->andKey($table->getName());
         });
     }
 
@@ -110,7 +110,7 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
             } else {
                 $it = $this->select((string) $query);
             }
-            return new fn\Map($it, ...$args);
+            return new php\Map($it, ...$args);
         }));
     }
 

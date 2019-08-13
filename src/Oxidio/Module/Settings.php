@@ -5,7 +5,7 @@
 
 namespace Oxidio\Module;
 
-use fn;
+use php;
 use Generator;
 use IteratorAggregate;
 use JsonSerializable;
@@ -35,9 +35,9 @@ class Settings implements IteratorAggregate, JsonSerializable
         foreach ($this->groups as $groupLabel => $group) {
             foreach ($group as $name => $setting) {
                 if (empty($setting[Settings\TYPE])) {
-                    $setting = fn\merge($setting, $this->type($setting));
+                    $setting = php\merge($setting, $this->type($setting));
                 }
-                yield fn\merge([Settings\GROUP => $groupLabel, Settings\NAME => $name], $setting);
+                yield php\merge([Settings\GROUP => $groupLabel, Settings\NAME => $name], $setting);
             }
         }
     }
@@ -47,7 +47,7 @@ class Settings implements IteratorAggregate, JsonSerializable
      */
     public function jsonSerialize()
     {
-        return fn\traverse($this);
+        return php\traverse($this);
     }
 
     /**
@@ -108,11 +108,11 @@ class Settings implements IteratorAggregate, JsonSerializable
     /**
      * @param iterable $value
      *
-     * @return fn\Map
+     * @return php\Map
      */
-    private function constraints($value): fn\Map
+    private function constraints($value): php\Map
     {
-        return fn\map(is_iterable($value) ? $value : [], function($value, &$key) {
+        return php\map(is_iterable($value) ? $value : [], function($value, &$key) {
             if (is_numeric($key)) {
                 $key = $value;
             }

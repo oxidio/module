@@ -5,7 +5,7 @@
 
 namespace Oxidio\Core;
 
-use fn;
+use php;
 use Generator;
 use Invoker\Exception\NotCallableException;
 use Invoker\Reflection\CallableReflection;
@@ -25,13 +25,13 @@ class Query extends AbstractSelectStatement
      */
     public function __construct($from = null, $mapper = null, ...$where)
     {
-        if (fn\isCallable($from)) {
+        if (php\isCallable($from)) {
             $this->mapper = $this->fromCallable($from);
         } else {
             $this->properties['view'] = $from;
         }
 
-        if (fn\isCallable($mapper)) {
+        if (php\isCallable($mapper)) {
             $this->mapper = $this->fromCallable($mapper);
             $this->where(...$where);
         } else if ($mapper) {
@@ -66,14 +66,14 @@ class Query extends AbstractSelectStatement
 
         if ($params[0]->isArray()) {
             return function(array $row) use($from, $params) {
-                $args = fn\values(static::args($row, ...array_slice($params, 1)));
+                $args = php\values(static::args($row, ...array_slice($params, 1)));
                 return $from($row, ...$args);
             };
         }
 
         return ($class = $params[0]->getClass())
             ? $this->fromCallableWithClass($from, $class, array_slice($params, 1)) : function(array $row) use($from, $params) {
-                $args = fn\values(static::args($row, $params[0], ...array_slice($params, 1)));
+                $args = php\values(static::args($row, $params[0], ...array_slice($params, 1)));
                 return $from(...$args);
             };
     }
@@ -87,7 +87,7 @@ class Query extends AbstractSelectStatement
                 /** @var BaseModel $model */
                 $model = oxNew($class->name);
                 if ($model->load($row['OXID'])) {
-                    $args = fn\values(static::args($row, ...$params));
+                    $args = php\values(static::args($row, ...$params));
                     return $from($model, ...$args);
                 }
                 return null;
@@ -95,7 +95,7 @@ class Query extends AbstractSelectStatement
         }
 
         return function(array $row) use($from, $class, $params) {
-            $args = fn\values(static::args($row, ...$params));
+            $args = php\values(static::args($row, ...$params));
             return $from(oxNew($class->getName(), $row), ...$args);
         };
     }

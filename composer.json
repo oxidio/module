@@ -8,23 +8,23 @@
     {"type": "path", "url": "tests/fixtures/bar"}
   ],
   "require": {
-    "php-fn/php-fn": "~2.0.0",
-    "php-fn/cli": "~2.0.0",
-    "symfony/filesystem": "~3.4.0",
-    "sebastian/diff": "~3.0.0",
+    "php-fn/php-fn": "^3.0",
+    "php-fn/cli": "^3.0",
+    "symfony/filesystem": "^3.4",
+    "sebastian/diff": "^3.0",
     "php": ">=7.1",
     "ext-json": "*",
     "ext-pdo": "*"
   },
   "require-dev": {
-    "oxid-esales/oxideshop-demodata-ce": "~6.0.0",
-    "oxidio/project": "~1.0.0",
-    "oxidio/module-seo": "~1.0.0",
-    "oxidio/module-foo": "~1.0.0",
-    "oxidio/module-bar": "~1.0.0",
-    "php-coveralls/php-coveralls": "~2.1.0",
-    "php-fn/test": "~2.0.0",
-    "oxid-esales/wave-theme": "~1.2.0"
+    "oxid-esales/oxideshop-demodata-ce": "^6",
+    "oxidio/project": "1.x-dev",
+    "oxidio/module-seo": "^1",
+    "oxidio/module-foo": "^1",
+    "oxidio/module-bar": "^1",
+    "php-coveralls/php-coveralls": "^2.1",
+    "php-fn/test": "^3.0",
+    "oxid-esales/wave-theme": "^1.2"
   },
   "autoload": {
     "psr-4": {"Oxidio\\": ["src/Oxidio"]},

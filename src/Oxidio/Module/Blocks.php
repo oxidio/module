@@ -8,7 +8,7 @@ namespace Oxidio\Module;
 use Generator;
 use IteratorAggregate;
 use JsonSerializable;
-use fn;
+use php;
 
 /**
  */
@@ -68,6 +68,6 @@ class Blocks implements IteratorAggregate, JsonSerializable
      */
     public function jsonSerialize()
     {
-        return $this->serialized ?: $this->serialized = fn\traverse($this);
+        return $this->serialized ?: $this->serialized = php\traverse($this);
     }
 }

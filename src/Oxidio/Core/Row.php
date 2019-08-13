@@ -6,7 +6,7 @@
 namespace Oxidio\Core;
 
 use ArrayAccess;
-use fn;
+use php;
 use IteratorAggregate;
 use JsonSerializable;
 
@@ -14,7 +14,7 @@ use JsonSerializable;
  */
 class Row implements ArrayAccess, IteratorAggregate, JsonSerializable
 {
-    use fn\ArrayAccessTrait;
+    use php\ArrayAccessTrait;
 
     /**
      * @var iterable
@@ -26,7 +26,7 @@ class Row implements ArrayAccess, IteratorAggregate, JsonSerializable
      */
     public function __construct(iterable $data)
     {
-        $this->data = array_change_key_case(fn\traverse($data));
+        $this->data = array_change_key_case(php\traverse($data));
     }
 
     /**
@@ -44,7 +44,7 @@ class Row implements ArrayAccess, IteratorAggregate, JsonSerializable
      */
     public function getIterator()
     {
-        return fn\map($this->children);
+        return php\map($this->children);
     }
 
     /**
@@ -57,7 +57,7 @@ class Row implements ArrayAccess, IteratorAggregate, JsonSerializable
 
     /**
      * @param mixed ...$args
-     * @return mixed|fn\Map\Value|null
+     * @return mixed|php\Map\Value|null
      */
     public function __invoke(...$args)
     {
@@ -66,7 +66,7 @@ class Row implements ArrayAccess, IteratorAggregate, JsonSerializable
         }
 
         if (count($args) > 1) {
-            return fn\mapKey($this[$args[0]] ?? null)->andValue($this[$args[1]] ?? null);
+            return php\mapKey($this[$args[0]] ?? null)->andValue($this[$args[1]] ?? null);
         }
         if (is_iterable($args[0])) {
             $array = [];

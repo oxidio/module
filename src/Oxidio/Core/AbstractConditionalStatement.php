@@ -5,7 +5,7 @@
 
 namespace Oxidio\Core;
 
-use fn;
+use php;
 use Oxidio;
 
 /**
@@ -15,7 +15,7 @@ use Oxidio;
  */
 abstract class AbstractConditionalStatement
 {
-    use fn\PropertiesTrait\ReadOnly;
+    use php\PropertiesTrait\ReadOnly;
 
     /**
      * @param callable $db
@@ -52,8 +52,8 @@ abstract class AbstractConditionalStatement
      */
     public function buildWhere(array $terms, string $prefix = "\nWHERE "): string
     {
-        $where = implode(' OR ', fn\traverse($terms, function ($term) {
-            if ($term = is_iterable($term) ? implode(' AND ', fn\traverse($term, function($candidate, $column) {
+        $where = implode(' OR ', php\traverse($terms, function ($term) {
+            if ($term = is_iterable($term) ? implode(' AND ', php\traverse($term, function($candidate, $column) {
                 $value = $candidate;
                 $operator = null;
                 if (is_iterable($candidate)) {
@@ -66,7 +66,7 @@ abstract class AbstractConditionalStatement
                     $value = 'NULL';
                     $operator = $operator ?: 'IS';
                 } else if (is_iterable($value)) {
-                    $value = '(' . fn\map($value, function ($entry) {
+                    $value = '(' . php\map($value, function ($entry) {
                         return "'{$entry}'";
                     })->string(', ') . ')';
                 } else {
@@ -85,12 +85,12 @@ abstract class AbstractConditionalStatement
 
     protected function resolveView(): void
     {
-        fn\fail(__METHOD__);
+        php\fail(__METHOD__);
     }
 
     public function resolveDb(): void
     {
-        fn\fail(__METHOD__);
+        php\fail(__METHOD__);
     }
 
     public function resolveWhereTerms(): array

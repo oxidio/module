@@ -5,8 +5,8 @@
 
 namespace Oxidio\Core;
 
-use fn;
-use fn\test\assert;
+use php;
+use php\test\assert;
 use Oxidio;
 use PHPUnit\Framework\TestCase;
 
@@ -26,11 +26,11 @@ class RowTest extends TestCase
             '1 arg: null' => [null, null],
             "1 arg: ['a', 'b', 'D']" => [['a' => 'v-a', 'b' => 'v-b'], ['a', 'b', 'D']],
             "1 arg: ['a', 'b', 'c' => 'D']" => [['a' => 'v-a', 'b' => 'v-b', 'D' => null], ['a', 'b', 'c' => 'D']],
-            '2 args: a, b' => [fn\mapKey('v-a')->andValue('v-b'), 'a', 'b'],
-            '2 args: a, c' => [fn\mapKey('v-a'), 'a', 'c'],
-            '2 args: c, a' => [fn\mapValue('v-a'), 'c', 'a'],
-            '2 args: c, d' => [fn\mapValue(), 'c', 'd'],
-            '2 args: null, null' => [fn\mapValue(), null, null],
+            '2 args: a, b' => [php\mapKey('v-a')->andValue('v-b'), 'a', 'b'],
+            '2 args: a, c' => [php\mapKey('v-a'), 'a', 'c'],
+            '2 args: c, a' => [php\mapValue('v-a'), 'c', 'a'],
+            '2 args: c, d' => [php\mapValue(), 'c', 'd'],
+            '2 args: null, null' => [php\mapValue(), null, null],
         ];
     }
 

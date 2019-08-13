@@ -5,7 +5,7 @@
 
 namespace Oxidio\Cli;
 
-use fn;
+use php;
 use Generator;
 use OxidEsales\Eshop\Core\Database\TABLE;
 use Oxidio\Core\Shop;
@@ -20,18 +20,18 @@ class ShopConfig
     /**
      * Show/modify shop configuration
      *
-     * @param fn\Cli\IO $io
+     * @param php\Cli\IO $io
      * @param Shop $shop
      * @param bool $clean
      */
-    public function __invoke(fn\Cli\IO $io, Shop $shop, bool $clean) {
+    public function __invoke(php\Cli\IO $io, Shop $shop, bool $clean) {
 
         $differ = new Differ( new UnifiedDiffOutputBuilder('', false));
-        $table = fn\traverse($shop->config, static function ($value, $name) use ($differ) {
+        $table = php\traverse($shop->config, static function ($value, $name) use ($differ) {
             $converted = self::convert($value);
 
             $lines = [];
-            if (fn\hasKey($name, self::INITIAL)) {
+            if (php\hasKey($name, self::INITIAL)) {
                 $diff = 0;
                 foreach ($differ->diffToArray(self::convert(self::INITIAL[$name]), $converted) as $line) {
                     $diff += $line[1];
@@ -50,15 +50,15 @@ class ShopConfig
                 'diff'  => implode(is_array($value) ? '' : PHP_EOL, $lines),
             ];
         });
-        fn\io($table)->toCli($io);
+        php\io($table)->toCli($io);
 
-        $io->isVeryVerbose() && fn\io(fn\map($shop->config, static function ($value, $name) {
-            return "'$name' => " . (is_array($value) ? new fn\ArrayExport($value) : var_export($value, true)) . ',';
+        $io->isVeryVerbose() && php\io(php\map($shop->config, static function ($value, $name) {
+            return "'$name' => " . (is_array($value) ? new php\ArrayExport($value) : var_export($value, true)) . ',';
         })->string)->toCli($io);
 
         $clean && $shop(self::clean());
         foreach ($shop->commit() as $item) {
-            $io->isVerbose() && fn\io((object)$item)->toCli($io);
+            $io->isVerbose() && php\io((object)$item)->toCli($io);
         }
     }
 

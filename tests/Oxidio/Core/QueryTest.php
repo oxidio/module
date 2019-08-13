@@ -5,8 +5,8 @@
 
 namespace Oxidio\Core;
 
-use fn;
-use fn\test\assert;
+use php;
+use php\test\assert;
 use OxidEsales\Eshop\Core\{
     Database\TABLE\OXCOUNTRY,
     Database\TABLE
@@ -89,7 +89,7 @@ class QueryTest extends TestCase
 
             return $row(OXCOUNTRY\OXISOALPHA2, OXCOUNTRY\OXISOALPHA3);
 
-            return fn\mapKey($row[OXCOUNTRY\OXISOALPHA2])->andValue($row[OXCOUNTRY\OXISOALPHA3]);
+            return php\mapKey($row[OXCOUNTRY\OXISOALPHA2])->andValue($row[OXCOUNTRY\OXISOALPHA3]);
         }, [OXCOUNTRY\OXISOALPHA2 => ['IN', ['DE', 'CH', 'NO']]])->orderBy(OXCOUNTRY\OXISOALPHA2);
 
         assert\equals(json_encode(['CH' => 'CHE', 'DE' => 'DEU', 'NO' => 'NOR']), json_encode($map));

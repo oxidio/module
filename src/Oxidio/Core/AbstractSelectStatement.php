@@ -8,7 +8,7 @@ namespace Oxidio\Core;
 use ArrayAccess;
 use Countable;
 use IteratorAggregate;
-use fn;
+use php;
 use JsonSerializable;
 use Oxidio;
 
@@ -25,7 +25,7 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
     IteratorAggregate,
     Countable
 {
-    use fn\ArrayAccessTrait;
+    use php\ArrayAccessTrait;
 
     protected $mapper;
 
@@ -35,7 +35,7 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
     protected function data(): array
     {
         if ($this->data === null) {
-            $this->data = fn\traverse($this->properties['it'] ?? $this->getIterator());
+            $this->data = php\traverse($this->properties['it'] ?? $this->getIterator());
         }
         return $this->data;
     }
@@ -69,9 +69,9 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
      */
     public function buildOrderBy(array $terms, string $prefix = "\nORDER BY "): string
     {
-        $order = implode(', ', fn\traverse($terms, function ($term) {
+        $order = implode(', ', php\traverse($terms, function ($term) {
             return implode(', ',
-                fn\traverse(is_iterable($term) ? $term : (array)$term, function ($direction, $property) {
+                php\traverse(is_iterable($term) ? $term : (array)$term, function ($direction, $property) {
                     if (is_numeric($property)) {
                         $property = $direction;
                         $direction = 'ASC';
@@ -139,9 +139,9 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
     /**
      * @inheritdoc
      *
-     * @return fn\Map
+     * @return php\Map
      */
-    public function getIterator(): fn\Map
+    public function getIterator(): php\Map
     {
         $this->data = null;
         return $this->properties['it'] = ($this->db)($this, ...($this->mapper ? [$this->mapper] : []));

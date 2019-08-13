@@ -6,7 +6,7 @@
 namespace Oxidio\Module;
 
 use Generator;
-use fn;
+use php;
 use IteratorAggregate;
 
 /**
@@ -74,11 +74,11 @@ class Menu extends MenuNode implements IteratorAggregate
     }
 
     /**
-     * @return fn\Map
+     * @return php\Map
      */
-    public function getIterator(): fn\Map
+    public function getIterator(): php\Map
     {
-        return fn\map($this->menus);
+        return php\map($this->menus);
     }
 
     /**
@@ -95,7 +95,7 @@ class Menu extends MenuNode implements IteratorAggregate
 
         yield "$indent<$tag $attrs>";
         foreach ($this->menus as $item) {
-            yield fn\map($item->toString(self::TAGS[$tag], $newIndent))->string;
+            yield php\map($item->toString(self::TAGS[$tag], $newIndent))->string;
         }
         foreach ($this->tabs as $item) {
             yield "$newIndent<TAB $item />";
@@ -145,7 +145,7 @@ class Menu extends MenuNode implements IteratorAggregate
      */
     public function __toString()
     {
-        return fn\map($this->toString('OXMENU'))->string;
+        return php\map($this->toString('OXMENU'))->string;
     }
 
     /**

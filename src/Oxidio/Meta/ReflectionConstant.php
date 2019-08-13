@@ -6,7 +6,7 @@
 namespace Oxidio\Meta;
 
 use Generator;
-use fn;
+use php;
 
 /**
  * @property-read ReflectionNamespace $namespace
@@ -45,7 +45,7 @@ class ReflectionConstant
     protected function resolveName(): string
     {
         $name = $this->properties['name'] ?? null;
-        $isReserved = fn\hasValue(strtolower($this->namespace->relative($name)), fn\Composer\DIPackages::RESERVED);
+        $isReserved = php\hasValue(strtolower($this->namespace->relative($name)), php\Composer\DIPackages::RESERVED);
         return $isReserved ? $name . '_' : $name;
     }
 

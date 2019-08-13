@@ -5,8 +5,8 @@
 
 namespace Oxidio\Core;
 
-use fn\test\assert;
-use fn;
+use php\test\assert;
+use php;
 use Oxidio;
 use OxidEsales\Eshop\{
     Core\Database\TABLE,
@@ -28,7 +28,7 @@ class ModifyTest extends TestCase
         });
 
         $values = static function () {
-            return fn\map(['a' => 'A', 'b' => true, 'c' => false, 'd' => null]);
+            return php\map(['a' => 'A', 'b' => true, 'c' => false, 'd' => null]);
         };
 
         assert\equals(
@@ -129,8 +129,8 @@ class ModifyTest extends TestCase
 
     private static function assertCommit(array $expected, iterable $commit): void
     {
-        $commit = fn\traverse($commit, static function (array $counts) {
-            return fn\map($counts, static function (int $count, string $sql) {
+        $commit = php\traverse($commit, static function (array $counts) {
+            return php\map($counts, static function (int $count, string $sql) {
                 return ['sql' => $sql, 'count' => $count];
             })->values;
         });

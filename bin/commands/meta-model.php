@@ -5,8 +5,8 @@
 
 namespace Oxidio;
 
-use fn\{Cli\IO};
-use fn;
+use php\{Cli\IO};
+use php;
 use OxidEsales\Eshop\Core\Field;
 use OxidEsales\Eshop\Core\Model\BaseModel;
 
@@ -71,7 +71,7 @@ return static function (
     }
 
     $tablesConst && $provider->const($dbNs . '\\TABLES', [
-        'value' => fn\map(static function () use($provider) {
+        'value' => php\map(static function () use($provider) {
             yield '[';
             foreach ($provider->tables as $table) {
                 $ns = $table->const->namespace->shortName . $table->const->shortName;

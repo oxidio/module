@@ -5,7 +5,7 @@
 
 namespace Oxidio\Core;
 
-use fn;
+use php;
 use Oxidio;
 use Generator;
 use OxidEsales\Eshop\Application\Model\Category;
@@ -14,14 +14,14 @@ use OxidEsales\Eshop\Core\Database\TABLE;
 /**
  * @property-read string $configKey
  * @property-read string $id
- * @property fn\Map $config
- * @property-read fn\Map|Extension[] $modules
- * @property-read fn\Map|Extension[] $themes
+ * @property php\Map $config
+ * @property-read php\Map|Extension[] $modules
+ * @property-read php\Map|Extension[] $themes
  * @property-read Database $db
  */
 class Shop implements DataModificationInterface
 {
-    use fn\PropertiesTrait\ReadOnly;
+    use php\PropertiesTrait\ReadOnly;
 
     /**
      * @var string
@@ -80,14 +80,14 @@ class Shop implements DataModificationInterface
     public function __invoke(...$args): self
     {
         foreach ($args as $arg) {
-            $arg = fn\isCallable($arg) ? $arg($this) : $arg;
+            $arg = php\isCallable($arg) ? $arg($this) : $arg;
             foreach (is_iterable($arg) ? $arg : [] as $view => $value) {
-                $value = fn\isCallable($value) ? $value($this) : $value;
+                $value = php\isCallable($value) ? $value($this) : $value;
                 if (is_string($view)) {
                     $modify = $this->modify($view);
                     $value === null ? $modify->delete() : $modify->replace($value, TABLE\OXSHOPS\OXID);
                 } else if (is_iterable($value)) {
-                    fn\traverse($value);
+                    php\traverse($value);
                 }
             }
         }
@@ -132,7 +132,7 @@ class Shop implements DataModificationInterface
     public function categories($where = [Category\PARENTID => self::CATEGORY_ROOT]): Query
     {
         return $this->query(TABLE\OXCATEGORIES, function (Row $row) {
-            return fn\mapKey(static::seo($row[Category\TITLE]))->andValue(
+            return php\mapKey(static::seo($row[Category\TITLE]))->andValue(
                 $row->withChildren($this->categories([Category\PARENTID => $row[Category\ID]]))
             );
         }, $where)->orderBy(Category\SORT);
@@ -225,36 +225,36 @@ class Shop implements DataModificationInterface
      */
     protected function resolveExtensions(): array
     {
-        return fn\traverse(Extension::all($this), static function (Extension $extension) {
-            return fn\mapGroup($extension->type)->andKey($extension->id)->andValue($extension);
+        return php\traverse(Extension::all($this), static function (Extension $extension) {
+            return php\mapGroup($extension->type)->andKey($extension->id)->andValue($extension);
         });
     }
 
     /**
      * @see $modules
-     * @return fn\Map
+     * @return php\Map
      */
-    protected function resolveModules(): fn\Map
+    protected function resolveModules(): php\Map
     {
-        return fn\map($this->extensions[Extension::MODULE] ?? []);
+        return php\map($this->extensions[Extension::MODULE] ?? []);
     }
 
     /**
      * @see $themes
-     * @return fn\Map
+     * @return php\Map
      */
-    protected function resolveThemes(): fn\Map
+    protected function resolveThemes(): php\Map
     {
-        return fn\map($this->extensions[Extension::THEME] ?? []);
+        return php\map($this->extensions[Extension::THEME] ?? []);
     }
 
     /**
      * @see $config
-     * @return fn\Map
+     * @return php\Map
      */
-    protected function resolveConfig(): fn\Map
+    protected function resolveConfig(): php\Map
     {
-        return $this->extensions[Extension::SHOP][Extension::SHOP]->config ?? fn\map([]);
+        return $this->extensions[Extension::SHOP][Extension::SHOP]->config ?? php\map([]);
     }
 
     /**
@@ -270,14 +270,14 @@ class Shop implements DataModificationInterface
 
     protected function modulesConfig(): Generator
     {
-        yield 'aDisabledModules' => fn\map($this->modules, function(Extension $module) {
+        yield 'aDisabledModules' => php\map($this->modules, function(Extension $module) {
             return $module->status === $module::STATUS_INACTIVE ? $module->id : null;
         })->sort()->values;
 
         foreach (Extension::CONFIG_KEYS as $key => $property) {
-            yield $key => fn\map($this->modules, function(Extension $module) use($property) {
+            yield $key => php\map($this->modules, function(Extension $module) use($property) {
                 return $module->status === $module::STATUS_ACTIVE && $module->$property ? $module->$property : null;
-            })->sort(fn\Map\Sort::KEYS)->traverse;
+            })->sort(php\Map\Sort::KEYS)->traverse;
         }
     }
 }

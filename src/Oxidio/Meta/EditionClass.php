@@ -5,7 +5,7 @@
 
 namespace Oxidio\Meta;
 
-use fn;
+use php;
 use ReflectionClass;
 
 use OxidEsales\Eshop\{
@@ -38,7 +38,7 @@ use OxidEsales\Eshop\{
  * @property-read ReflectionNamespace   $tableNs
  * @property-read ReflectionNamespace   $fieldNs
  * @property-read ReflectionConstant[]  $fields
- * @property-read fn\Map|EditionClass[] $derivation
+ * @property-read php\Map|EditionClass[] $derivation
  * @property-read EditionClass|null     $parent
  * @property-read object|null           $instance
  * @property-read Table|null            $table
@@ -81,9 +81,9 @@ class EditionClass
 
     /**
      * @see $derivation
-     * @return fn\Map
+     * @return php\Map
      */
-    protected function resolveDerivation(): fn\Map
+    protected function resolveDerivation(): php\Map
     {
         $ref = $this->reflection;
         $parents = [];
@@ -91,7 +91,7 @@ class EditionClass
             $parents[] = $parent->getName();
             $ref = $parent;
         }
-        return fn\map($parents, function(string $class) {
+        return php\map($parents, function(string $class) {
             return strpos($class, $this->edition) === 0 ? $this->provider->class($class) : null;
         });
     }
@@ -146,9 +146,9 @@ class EditionClass
     {
         static $packages;
         if ($packages === null) {
-            $packages = fn\map(self::PACKAGES)->sort(function(string $left, string $right) {
+            $packages = php\map(self::PACKAGES)->sort(function(string $left, string $right) {
                 return $this->provider->class($left)->derivation->count() - $this->provider->class($right)->derivation->count();
-            }, fn\Map\Sort::KEYS | fn\Map\Sort::REVERSE)->traverse;
+            }, php\Map\Sort::KEYS | php\Map\Sort::REVERSE)->traverse;
         }
         foreach ($packages as $baseClass => $package) {
             if (is_a($this->name, $baseClass, true)) {
@@ -210,11 +210,11 @@ class EditionClass
 
     /**
      * @see $fields
-     * @return fn\Map
+     * @return php\Map
      */
-    protected function resolveFields(): fn\Map
+    protected function resolveFields(): php\Map
     {
-        return fn\map(function () {
+        return php\map(function () {
             if ($this->reflection->isSubclassOf(BaseModel::class)) {
                 $prefix = $this->fieldNs->shortName === $this->shortName . '\\' ? '' : $this->shortName . '_';
                 foreach ($this->instance->getFieldNames() as $fieldName) {

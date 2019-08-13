@@ -5,7 +5,7 @@
 
 namespace Oxidio\Meta;
 
-use fn;
+use php;
 use Generator;
 use OxidEsales\Eshop\{Core, Core\Model\BaseModel};
 use OxidEsales\Facts\Facts;
@@ -30,8 +30,8 @@ use Webmozart\Glob\Glob;
  */
 class Provider
 {
-    use fn\PropertiesTrait\ReadOnly;
-    use fn\PropertiesTrait\Init;
+    use php\PropertiesTrait\ReadOnly;
+    use php\PropertiesTrait\Init;
 
     protected $data = [];
 
@@ -53,7 +53,7 @@ class Provider
      */
     private function get(string $class, $name, array $properties = [])
     {
-        is_iterable($name) && $name = fn\map($name, static function($part) {
+        is_iterable($name) && $name = php\map($name, static function($part) {
             return trim($part, '\\') ?: null;
         })->string('\\');
 
@@ -74,7 +74,7 @@ class Provider
         if ($class = ($classes[$method] ?? null)) {
             return $this->get($class, ...$args);
         }
-        fn\fail\domain($method);
+        php\fail\domain($method);
     }
 
 
@@ -115,9 +115,9 @@ class Provider
     public function resolveClasses(): array
     {
         $provider = new UnifiedNameSpaceClassMapProvider(new Facts);
-        return fn\keys($provider->getClassMap(), function (string $name) {
+        return php\keys($provider->getClassMap(), function (string $name) {
             $class = $this->class($name, ['tableNs' => $this->tableNs, 'fieldNs' => $this->fieldNs]);
-            return fn\mapKey($name)->andValue($class);
+            return php\mapKey($name)->andValue($class);
         });
     }
 
@@ -146,7 +146,7 @@ class Provider
     public function resolveNamespaces(): iterable
     {
         $cached = $this->data[ReflectionNamespace::class] ?? [];
-        return fn\map($cached)->sort(static function(ReflectionNamespace $left, ReflectionNamespace $right) {
+        return php\map($cached)->sort(static function(ReflectionNamespace $left, ReflectionNamespace $right) {
             return (count($left->use) - count($right->use)) ?: strcmp($left, $right);
         });
     }

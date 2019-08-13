@@ -8,6 +8,6 @@ call_user_func(static function () {
     $file = file_exists($file = __DIR__ . '/../../../autoload.php') ? $file :  __DIR__ . '/../vendor/autoload.php';
     /** @noinspection PhpIncludeInspection */
     exit(call_user_func(require $file, static function () {
-        return Oxidio\cli(fn\VENDOR\OXIDIO\OXIDIO, 'bin/di.php')->run();
+        return Oxidio\cli(php\VENDOR\OXIDIO\OXIDIO, 'bin/di.php')->run();
     }));
 });

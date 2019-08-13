@@ -6,7 +6,7 @@
 namespace Oxidio\Core;
 
 use Iterator;
-use fn;
+use php;
 use OuterIterator;
 use Oxidio;
 
@@ -45,7 +45,7 @@ class SelectStatementIterator implements OuterIterator
         if (!$this->it) {
             $this->db->setFetchMode($this->fetchMode);
             $this->counter = 0;
-            $this->it = new fn\Map\Tree($this->db->select($this->query->getSql($this->start, $this->chunkSize)));
+            $this->it = new php\Map\Tree($this->db->select($this->query->getSql($this->start, $this->chunkSize)));
         }
         return $this->it;
     }

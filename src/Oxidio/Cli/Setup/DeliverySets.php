@@ -5,7 +5,7 @@
 
 namespace Oxidio\Cli\Setup;
 
-use fn;
+use php;
 
 use Generator;
 use OxidEsales\Eshop\Core\{
@@ -28,7 +28,7 @@ use Oxidio\Core;
  */
 class DeliverySets
 {
-    use fn\PropertiesTrait\ReadOnly;
+    use php\PropertiesTrait\ReadOnly;
 
     /**
      * @param array $sets
@@ -54,7 +54,7 @@ class DeliverySets
         }
         return $shop->query(TAB\OXCOUNTRY, static function (Core\Row $row) {
             return $row(COUNTRY\OXISOALPHA2, COUNTRY\OXID);
-        }, [COUNTRY\OXISOALPHA2 => ['IN', fn\values($countries)]]);
+        }, [COUNTRY\OXISOALPHA2 => ['IN', php\values($countries)]]);
     }
 
     /**
@@ -69,8 +69,8 @@ class DeliverySets
         $categories = function (...$args) use ($shop) {
             static $data;
             if ($data === null) {
-                $data = fn\traverse($shop->query(TAB\OXCATEGORIES, function(Core\Row $row) {
-                    return fn\mapKey($row[CAT\OXID])->andValue($row);
+                $data = php\traverse($shop->query(TAB\OXCATEGORIES, function(Core\Row $row) {
+                    return php\mapKey($row[CAT\OXID])->andValue($row);
                 }));
                 /** @var Row $row */
                 foreach ($data as $row) {
@@ -102,7 +102,7 @@ class DeliverySets
                     O2P\OXTYPE => TAB\OXCOUNTRY,
                 ];
             }
-            foreach (fn\keys($this->sets) as $setId) {
+            foreach (php\keys($this->sets) as $setId) {
                 $o2p["{$id}_{$setId}"] = [
                     O2P\OXPAYMENTID => $id,
                     O2P\OXOBJECTID => $setId,
@@ -118,12 +118,12 @@ class DeliverySets
             }
         }
         $shop->modify(TAB\OXOBJECT2PAYMENT)->delete(
-            [O2P\OXPAYMENTID => ['IN', fn\keys($this->payments)]],
-            [O2P\OXOBJECTID => ['IN', fn\keys($this->sets)]]
+            [O2P\OXPAYMENTID => ['IN', php\keys($this->payments)]],
+            [O2P\OXOBJECTID => ['IN', php\keys($this->sets)]]
         );
         $shop->modify(TAB\OXOBJECT2PAYMENT)->replace($o2p, O2P\OXID);
 
-        $shop->modify(TAB\OXOBJECT2GROUP)->delete([O2G\OXOBJECTID => ['IN', fn\keys($this->payments)]]);
+        $shop->modify(TAB\OXOBJECT2GROUP)->delete([O2G\OXOBJECTID => ['IN', php\keys($this->payments)]]);
         $shop->modify(TAB\OXOBJECT2GROUP)->replace($o2g, O2G\OXID);
 
         $shop->modify(TAB\OXDELIVERYSET)->update([SET\OXACTIVE => false]);
@@ -162,17 +162,17 @@ class DeliverySets
                 }
             }
         }
-        $shop->modify(TAB\OXOBJECT2DELIVERY)->delete([O2D\OXDELIVERYID => ['IN', fn\keys($this->sets, $del)]]);
+        $shop->modify(TAB\OXOBJECT2DELIVERY)->delete([O2D\OXDELIVERYID => ['IN', php\keys($this->sets, $del)]]);
         $shop->modify(TAB\OXOBJECT2DELIVERY)->replace($s2c, O2D\OXID);
 
         $shop->modify(TAB\OXDELIVERY)->update([DEL\OXACTIVE => false]);
         $shop->modify(TAB\OXDELIVERY)->replace($del, DEL\OXID);
 
-        $shop->modify(TAB\OXDEL2DELSET)->delete([D2S\OXDELSETID => ['IN', fn\keys($this->sets)]]);
+        $shop->modify(TAB\OXDEL2DELSET)->delete([D2S\OXDELSETID => ['IN', php\keys($this->sets)]]);
         $shop->modify(TAB\OXDEL2DELSET)->replace($d2s, D2S\OXID);
 
         foreach ($shop->commit($commit) as $result) {
-            yield fn\io((object)$result, fn\Cli\IO::VERBOSITY_VERBOSE);
+            yield php\io((object)$result, php\Cli\IO::VERBOSITY_VERBOSE);
         }
     }
 }

@@ -5,7 +5,7 @@
 
 namespace Oxidio\Core;
 
-use fn;
+use php;
 use Generator;
 use Oxidio;
 use PDO;
@@ -44,11 +44,11 @@ class Modify extends AbstractConditionalStatement
         $values = [];
         $bindings = [];
 
-        foreach (fn\isCallable($data) ? $data($this) : $data as $column => $value) {
+        foreach (php\isCallable($data) ? $data($this) : $data as $column => $value) {
             if (is_iterable($value)) {
                 continue;
             }
-            if (fn\isCallable($value)) {
+            if (php\isCallable($value)) {
                 if (!is_array($result = $value($column))) {
                     // dynamic value, e.g. UPPER(:column)
                     $bindings[$column] = $result;
@@ -137,7 +137,7 @@ class Modify extends AbstractConditionalStatement
             $this->where(...$where);
             [$values, $types, $bindings] = $this->convertData($data);
 
-            $set = fn\map($bindings, static function ($binding, $column) {
+            $set = php\map($bindings, static function ($binding, $column) {
                 return "$column = $binding";
             })->string(",\n  ");
 
@@ -208,7 +208,7 @@ class Modify extends AbstractConditionalStatement
     {
         return function (bool $dryRun = false) use ($records, $key) {
             $result = [];
-            foreach (fn\isCallable($records) ? $records($this) : $records as $id => $record) {
+            foreach (php\isCallable($records) ? $records($this) : $records as $id => $record) {
                 if ($record === null) {
                     $this->where([$key => $id]);
                     $sql = "DELETE FROM {$this->view}{$this}";
@@ -221,7 +221,7 @@ class Modify extends AbstractConditionalStatement
                         ') VALUES (',
                         '  ' . implode(', ', $bindings),
                         ') ON DUPLICATE KEY UPDATE',
-                        '  ' . implode(', ', fn\keys($bindings, static function (string $column) use($key) {
+                        '  ' . implode(', ', php\keys($bindings, static function (string $column) use($key) {
                             return $column === $key ? null : "$column = VALUES($column)";
                         })),
                     ]);

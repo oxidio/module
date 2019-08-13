@@ -6,7 +6,7 @@
 namespace Oxidio\Cli\Setup;
 
 use Doctrine\DBAL\Schema\Column;
-use fn;
+use php;
 use Oxidio;
 use OxidEsales\Eshop\Core\{ConfigFile, DbMetaDataHandler};
 
@@ -15,13 +15,13 @@ class Views
     /**
      * (Re)generate database views
      *
-     * @param fn\Cli\IO $io
+     * @param php\Cli\IO $io
      * @param ConfigFile $file
      */
-    public function __invoke(fn\Cli\IO $io, ConfigFile $file)
+    public function __invoke(php\Cli\IO $io, ConfigFile $file)
     {
         $status = (object)['updateViews' => false, 'noException' => false];
-        register_shutdown_function(static function ($status, fn\Cli\IO $io) {
+        register_shutdown_function(static function ($status, php\Cli\IO $io) {
             if (!$status->updateViews || !$status->noException) {
                 $io->error('There was an error while regenerating the views.');
             }
@@ -44,13 +44,13 @@ class Views
         $io->isVerbose() && self::verbose($io);
     }
 
-    protected static function verbose(fn\Cli\IO $io): void
+    protected static function verbose(php\Cli\IO $io): void
     {
         $db = Oxidio\db();
 
-        $views = fn\keys($db->views, static function (string $view) {
+        $views = php\keys($db->views, static function (string $view) {
             [, $table] = explode('_', $view);
-            return fn\mapGroup($table);
+            return php\mapGroup($table);
         });
 
         $io->title($db->schema->getName());
@@ -58,7 +58,7 @@ class Views
             $query = $db->query($name);
 
             $total = $io->isVeryVerbose() ? "<comment>total ({$query->total})</comment>" : '';
-            $io->writeln(fn\str(
+            $io->writeln(php\str(
                 '  * <info>%s</info> %s',
                 $name,
                 $total
@@ -67,11 +67,11 @@ class Views
                 $io->writeln("    * $view");
             }
 
-            $columns = fn\map($table->getColumns(), function (Column $column) {
+            $columns = php\map($table->getColumns(), function (Column $column) {
                 return $column->toArray();
             });
-            $io->isDebug() && ($columns = fn\traverse($columns)) && $io->table(
-                fn\keys(reset($columns)),
+            $io->isDebug() && ($columns = php\traverse($columns)) && $io->table(
+                php\keys(reset($columns)),
                 $columns
             );
         }

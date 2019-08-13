@@ -5,7 +5,7 @@
 
 namespace Oxidio;
 
-use fn;
+use php;
 use Generator;
 use OxidEsales\Eshop\Core\{
     Database\TABLE
@@ -35,17 +35,17 @@ return static function (
     $query = $shop->query($from, function(array $row) use($columns, $shop) {
 
         // fails if PDO::MYSQL_ATTR_USE_BUFFERED_QUERY is disabled
-        fn\traverse($shop->query(TABLE\OXSHOPS));
+        php\traverse($shop->query(TABLE\OXSHOPS));
 
         if (!$columns) {
             return $row;
         }
-        $row =  fn\traverse([new Row($row)], fn\mapRow($columns));
+        $row =  php\traverse([new Row($row)], php\mapRow($columns));
         return $row[0];
 
     })->orderBy($order)->limit($limit, $start);
 
     yield from $query;
 
-    yield fn\io(fn\str('(%s) %s', $query->total, $query), fn\Cli\IO::VERBOSITY_VERBOSE);
+    yield php\io(php\str('(%s) %s', $query->total, $query), php\Cli\IO::VERBOSITY_VERBOSE);
 };

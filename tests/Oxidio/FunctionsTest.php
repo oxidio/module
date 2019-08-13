@@ -5,12 +5,12 @@
 
 namespace Oxidio;
 
-use fn\test\assert;
+use php\test\assert;
 use OxidEsales\EshopCommunity\Core\Database\Adapter\DatabaseInterface;
 use Oxidio\Core\Database;
 use Oxidio\Core\Shop;
 use PHPUnit\Framework\TestCase;
-use fn;
+use php;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 /**
@@ -55,18 +55,18 @@ class FunctionsTest extends TestCase
     private static function assertCli(string $expected, callable $callable): void
     {
         $_ENV = ['OXIDIO_SHOP_FOO' => DatabaseInterface::FETCH_MODE_BOTH];
-        $cli = cli(fn\VENDOR\OXIDIO\OXIDIO, $callable);
+        $cli = cli(php\VENDOR\OXIDIO\OXIDIO, $callable);
         assert\true($cli->getDefinition()->hasOption('shop'));
         $cli->setAutoExit(false);
-        assert\type(fn\Cli::class, $cli);
+        assert\type(php\Cli::class, $cli);
         $_SERVER['argv'] = ['_', '--shop=foo', 'c1', '--opt=bar'];
         assert\same(0, $cli->run(null, $out = new BufferedOutput));
         assert\same($expected . PHP_EOL, $out->fetch());
         $_SERVER['argv'] = [];
         assert\same(0, $cli->run(null, $out));
         $content = $out->fetch();
-        assert\true(fn\every(
-            [fn\VENDOR\OXIDIO\OXIDIO, 'Usage:', 'Options:', '[ foo ]', 'Available commands:'],
+        assert\true(php\every(
+            [php\VENDOR\OXIDIO\OXIDIO, 'Usage:', 'Options:', '[ foo ]', 'Available commands:'],
             static function ($token) use ($content) {
                 return strpos($content, $token) !== false;
             })

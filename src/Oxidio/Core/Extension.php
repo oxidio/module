@@ -5,7 +5,7 @@
 
 namespace Oxidio\Core;
 
-use fn;
+use php;
 use JsonSerializable;
 use OxidEsales\Eshop\Core\Database\TABLE;
 
@@ -20,13 +20,13 @@ use OxidEsales\Eshop\Core\Database\TABLE;
  * @property-read string[] $classes aModuleFiles|aModules|aModuleExtensions ['cl', 'ox-cl' => 'cl']
  * @property-read array $templates
  * @property-read array $files
- * @property fn\Map $config
+ * @property php\Map $config
  *
  */
 class Extension implements JsonSerializable
 {
-    use fn\PropertiesTrait;
-    use fn\PropertiesTrait\Init;
+    use php\PropertiesTrait;
+    use php\PropertiesTrait\Init;
 
     public const STATUS_ACTIVE = 'active';
     public const STATUS_INACTIVE = 'inactive';
@@ -80,8 +80,8 @@ class Extension implements JsonSerializable
      */
     protected static function shopData(Shop $shop): array
     {
-        $from = fn\str('(SELECT ' .
-            fn\map([
+        $from = php\str('(SELECT ' .
+            php\map([
                 '{c.shop} shop',
                 '{c.mod} module',
                 '{c.var} name',
@@ -108,18 +108,18 @@ class Extension implements JsonSerializable
         );
 
         $query = $shop->query($from, ['shop' => $shop->id])->orderBy('module', 'gr', 'pos', 'name');
-        return fn\traverse(fn\map($query,
+        return php\traverse(php\map($query,
             static function (array $row) {
                 ['module' => $module, 'value' => $value, 'name' => $name] = $row;
                 strpos($row['type'], 'rr') && $value = unserialize($value, [null]);
                 if ($module && strpos($module, ':') === false) {
                     $module = static::MODULE . ':' . $module;
                 }
-                return fn\mapGroup($module)->andKey($name)->andValue($value);
+                return php\mapGroup($module)->andKey($name)->andValue($value);
             }
         ), static function (array $config, $module) {
             [$type, $module] = explode(':', $module);
-            return fn\mapKey((string)$module)->andValue([
+            return php\mapKey((string)$module)->andValue([
                 'config' => $config,
                 'type' => (string)$type,
             ]);
@@ -128,16 +128,16 @@ class Extension implements JsonSerializable
 
     /**
      * @param Shop $shop
-     * @return fn\Map|static[]
+     * @return php\Map|static[]
      */
-    public static function all(Shop $shop): fn\Map
+    public static function all(Shop $shop): php\Map
     {
         $data = static::shopData($shop);
         $conf = $data[self::SHOP]['config'] ?? [];
 
         $attr = function (array $data, $attr): array {
-            return fn\traverse($data, static function ($value, $module) use ($attr) {
-                return fn\mapKey($module)->andValue([$attr => $value]);
+            return php\traverse($data, static function ($value, $module) use ($attr) {
+                return php\mapKey($module)->andValue([$attr => $value]);
             });
         };
 
@@ -153,11 +153,11 @@ class Extension implements JsonSerializable
         );
 
         unset($data[self::SHOP]['config']['aDisabledModules']);
-        foreach (fn\keys(self::CONFIG_KEYS) as $key) {
+        foreach (php\keys(self::CONFIG_KEYS) as $key) {
             unset($data[self::SHOP]['config'][$key]);
         }
 
-        return fn\map($data, static function (array $ext, $id) use ($shop) {
+        return php\map($data, static function (array $ext, $id) use ($shop) {
             return new static($shop, $ext + ['id' => $id]);
         });
     }
@@ -188,10 +188,10 @@ class Extension implements JsonSerializable
 
     /**
      * @see $config
-     * @return fn\Map
+     * @return php\Map
      */
-    protected function resolveConfig(): fn\Map
+    protected function resolveConfig(): php\Map
     {
-        return fn\map($this->properties['config'] ?? []);
+        return php\map($this->properties['config'] ?? []);
     }
 }
