@@ -12,10 +12,19 @@ use Oxidio\Core\Shop;
 use SebastianBergmann\Diff\Differ;
 use SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder;
 
-
 class ShopConfig
 {
     private const DIFF = [1 => '+ ', 2 => '- '];
+
+    /**
+     * @var array
+     */
+    private $config;
+
+    public function __construct(array $config = [])
+    {
+        $this->config = $config;
+    }
 
     /**
      * Show/modify shop configuration
@@ -24,9 +33,9 @@ class ShopConfig
      * @param Shop $shop
      * @param bool $clean
      */
-    public function __invoke(php\Cli\IO $io, Shop $shop, bool $clean) {
-
-        $differ = new Differ( new UnifiedDiffOutputBuilder('', false));
+    public function __invoke(php\Cli\IO $io, Shop $shop, bool $clean)
+    {
+        $differ = new Differ(new UnifiedDiffOutputBuilder('', false));
         $table = php\traverse($shop->config, static function ($value, $name) use ($differ) {
             $converted = self::convert($value);
 
@@ -56,19 +65,19 @@ class ShopConfig
             return "'$name' => " . (is_array($value) ? new php\ArrayExport($value) : var_export($value, true)) . ',';
         })->string)->toCli($io);
 
-        $clean && $shop(self::clean());
+        $clean && $shop(self::clean($this->config));
         foreach ($shop->commit() as $item) {
             $io->isVerbose() && php\io((object)$item)->toCli($io);
         }
     }
 
-    private static function clean(): Generator
+    private static function clean(array $config): Generator
     {
         yield TABLE\OXTPLBLOCKS => null;
         yield TABLE\OXCONFIGDISPLAY => null;
         yield TABLE\OXCONFIG => null;
-        yield TABLE\OXCONFIG => static function (Shop $shop) {
-            foreach (self::INITIAL as $key => $value) {
+        yield TABLE\OXCONFIG => static function (Shop $shop) use ($config) {
+            foreach (array_merge(self::INITIAL, $config) as $key => $value) {
                 yield $shop::id($key) => [
                     TABLE\OXCONFIG\OXVARNAME => $key,
                     TABLE\OXCONFIG\OXVARTYPE => self::assumeType($value, $key),
