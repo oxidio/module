@@ -7,53 +7,11 @@ namespace Oxidio\Core\Shop;
 
 use Generator;
 use OxidEsales\Eshop\Core\Database\TABLE;
-use Oxidio\Core\Shop;
+use Oxidio\Core;
+use SebastianBergmann\Diff\{Differ, Output\UnifiedDiffOutputBuilder};
 
 class Config
 {
-    /**
-     * @var array
-     */
-    private $config;
-
-    public function __construct(array $config = [])
-    {
-        $this->config = $config;
-    }
-
-    /**
-     * @param Shop $shop
-     * @return Generator
-     */
-    public function __invoke(Shop $shop): Generator
-    {
-        yield TABLE\OXCONFIG => static function (Shop $shop) {
-            foreach ($this->config as $module => $config) {
-                foreach ($config as $key => $value) {
-                    yield $shop::id($module, $key) => [
-                        TABLE\OXCONFIG\OXMODULE => $module,
-                        TABLE\OXCONFIG\OXVARNAME => $key,
-                        TABLE\OXCONFIG\OXVARTYPE => self::assumeType($value, $key),
-                        TABLE\OXCONFIG\OXVARVALUE => static function ($column) use ($value, $shop) {
-                            return ["ENCODE(:$column, '{$shop->configKey}')" => is_array($value) ? serialize($value) : $value];
-                        },
-                    ];
-                }
-            }
-        };
-    }
-
-    private static function assumeType($value, $key): string
-    {
-        if (is_array($value)) {
-            return is_array(current($value)) ? 'aarr' : 'arr';
-        }
-        if (strpos($key, 'bl') === 0) {
-            return 'bool';
-        }
-        return 'str';
-    }
-
     public const INITIAL = [
         'aCacheViews' => ['start', 'alist', 'details'],
         'aCMSfolder' => ['CMSFOLDER_EMAILS' => '#706090', 'CMSFOLDER_USERINFO' => '#303030', 'CMSFOLDER_PRODUCTINFO' => '#303030', 'CMSFOLDER_NONE' => '#904040'],
@@ -191,4 +149,75 @@ class Config
         'sUtilModule' => '',
         'sZoomImageSize' => '450*450',
     ];
+
+    private const DIFF = [1 => '+ ', 2 => '- '];
+
+    /**
+     * @var iterable
+     */
+    private $config;
+
+    public function __construct(iterable $config = [Core\Extension::SHOP => self::INITIAL])
+    {
+        $this->config = $config;
+    }
+
+    public function diff(iterable $modules): Generator
+    {
+        $differ = new Differ(new UnifiedDiffOutputBuilder('', false));
+        foreach ($modules as $module => $config) {
+            foreach ($config as $name => $value) {
+                $converted = self::convert($value);
+                $diff = false;
+                if (isset($this->config[$module][$name])) {
+                    $lines = [];
+                    $count = 0;
+                    foreach ($differ->diffToArray(self::convert($this->config[$module][$name]), $converted) as $line) {
+                        $count += $line[1];
+                        $lines[] = (self::DIFF[$line[1]] ?? '  ') . $line[0];
+                    }
+                    $diff = implode(is_array($value) ? '' : PHP_EOL, $count ? $lines : []);
+                }
+                yield $name => [$converted,  $diff, $module];
+            }
+        }
+    }
+
+    private static function convert($value)
+    {
+        return is_string($value) ? $value : json_encode($value, JSON_PRETTY_PRINT);
+    }
+
+    /**
+     * @param Core\Shop $shop
+     * @return Generator
+     */
+    public function __invoke(Core\Shop $shop): Generator
+    {
+        yield TABLE\OXCONFIG => function (Core\Shop $shop) {
+            foreach ($this->config as $module => $config) {
+                foreach ($config as $key => $value) {
+                    yield $shop::id($module, $key) => [
+                        TABLE\OXCONFIG\OXMODULE => $module,
+                        TABLE\OXCONFIG\OXVARNAME => $key,
+                        TABLE\OXCONFIG\OXVARTYPE => self::assumeType($value, $key),
+                        TABLE\OXCONFIG\OXVARVALUE => static function ($column) use ($value, $shop) {
+                            return ["ENCODE(:$column, '{$shop->configKey}')" => is_array($value) ? serialize($value) : $value];
+                        },
+                    ];
+                }
+            }
+        };
+    }
+
+    private static function assumeType($value, $key): string
+    {
+        if (is_array($value)) {
+            return is_array(current($value)) ? 'aarr' : 'arr';
+        }
+        if (strpos($key, 'bl') === 0) {
+            return 'bool';
+        }
+        return 'str';
+    }
 }
