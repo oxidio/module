@@ -20,7 +20,7 @@ return [
         } catch (DatabaseException $e) {
         } finally {
             $cli->command('shop:modules', require 'commands/shop-modules.php', ['modules']);
-            $cli->command('shop:config', new ShopConfig);
+            $cli->command('shop:config', new ShopConfig, ['action']);
         }
     },
 

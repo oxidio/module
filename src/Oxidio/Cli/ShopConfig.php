@@ -11,6 +11,9 @@ use OxidEsales\Eshop\Core\Database\TABLE;
 
 class ShopConfig
 {
+    private const CLEAN = 'clean';
+    private const UPDATE = 'update';
+
     /**
      * @var Core\Shop\Config
      */
@@ -26,9 +29,9 @@ class ShopConfig
      *
      * @param php\Cli\IO $io
      * @param Core\Shop $shop
-     * @param bool $clean
+     * @param string $action update|clean
      */
-    public function __invoke(php\Cli\IO $io, Core\Shop $shop, bool $clean)
+    public function __invoke(php\Cli\IO $io, Core\Shop $shop, string $action = null)
     {
         $table = [];
         foreach ($this->config->diff([Core\Extension::SHOP => $shop->config]) as $name => [$value, $diff, $module]) {
@@ -43,8 +46,10 @@ class ShopConfig
             return "'$name' => " . (is_array($value) ? new php\ArrayExport($value) : var_export($value, true)) . ',';
         })->string)->toCli($io);
 
-        if ($clean) {
+        if ($action === self::CLEAN) {
             $shop([TABLE\OXTPLBLOCKS => null, TABLE\OXCONFIGDISPLAY => null, TABLE\OXCONFIG => null]);
+            $shop($this->config);
+        } else if ($action === self::UPDATE) {
             $shop($this->config);
         }
 
