@@ -15,15 +15,15 @@ use OxidEsales\Eshop\{
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass Modify
+ * @coversDefaultClass DataModify
  */
-class ModifyTest extends TestCase
+class DataModifyTest extends TestCase
 {
     /**
      */
     public function testModify(): void
     {
-        $modify = (new Modify('view'))->withDb(static function() {
+        $modify = (new DataModify('view'))->withDb(static function () {
             return 1;
         });
 
@@ -67,7 +67,7 @@ class ModifyTest extends TestCase
     public function testIntegration(): void
     {
         assert\type(Shop::class, $shop = Oxidio\shop());
-        assert\type(Modify::class, $modify = $shop->modify(TABLE\OXCOUNTRY));
+        assert\type(DataModify::class, $modify = $shop->modify(TABLE\OXCOUNTRY));
 
         assert\type('callable', $modify->delete([OXCOUNTRY\OXID => ['LIKE', 'test-%']]));
         self::assertCommit([['DELETE|LIKE' => 0]], $shop->commit());
@@ -91,7 +91,7 @@ class ModifyTest extends TestCase
 
         assert\type(
             'callable',
-            $modify->map(['test-d' => 'test-D', 'test-c' => 'test-C'], static function (Modify $modify, $value, $key) {
+            $modify->map(['test-d' => 'test-D', 'test-c' => 'test-C'], static function (DataModify $modify, $value, $key) {
                 yield $modify->insert([OXCOUNTRY\OXID => "$key-first", OXCOUNTRY\OXTITLE => "$value-first"]);
                 yield $modify->insert([OXCOUNTRY\OXTITLE => "$value-second", OXCOUNTRY\OXID => "$key-second"]);
                 yield $modify->update(

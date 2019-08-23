@@ -17,7 +17,7 @@ use PDO;
  * @method callable map(iterable $iterable, callable $factory)
  * @method callable replace(iterable|callable $records, string $key, string ...$keys)
  */
-class Modify extends AbstractConditionalStatement
+class DataModify extends AbstractConditionalStatement
 {
     /**
      * @var callable[]
@@ -92,7 +92,7 @@ class Modify extends AbstractConditionalStatement
     }
 
     /**
-     * @see Modify::insert
+     * @see DataModify::insert
      * @see \Doctrine\DBAL\Connection::insert
      *
      * INSERT INTO `view` (`c1`, `c2`) VALUES (:c1, ENCODE(:c2, 'phrase'))
@@ -122,7 +122,7 @@ class Modify extends AbstractConditionalStatement
     }
 
     /**
-     * @see Modify::update
+     * @see DataModify::update
      * @see \Doctrine\DBAL\Connection::update
      *
      * UPDATE `view` SET `c1` = :c1, `c2` = ENCODE(:c2, 'phrase'), `c3` = UPPER(`c3`) WHERE `c4` = :c4
@@ -149,7 +149,7 @@ class Modify extends AbstractConditionalStatement
     }
 
     /**
-     * @see Modify::delete
+     * @see DataModify::delete
      * @see \Doctrine\DBAL\Connection::delete
      *
      * UPDATE FROM `view` WHERE `c3` = :c3
@@ -168,7 +168,7 @@ class Modify extends AbstractConditionalStatement
     }
 
     /**
-     * @see Modify::map
+     * @see DataModify::map
      *
      * @param iterable $iterable
      * @param callable $factory
@@ -190,7 +190,7 @@ class Modify extends AbstractConditionalStatement
     }
 
     /**
-     * @see Modify::replace
+     * @see DataModify::replace
      *
      * INSERT INTO `view` (
      *   `key`, `c1`, `c2`

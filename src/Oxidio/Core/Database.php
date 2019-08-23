@@ -118,9 +118,9 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
     /**
      * @inheritDoc
      */
-    public function modify($view, callable ...$observers): Modify
+    public function modify($view, callable ...$observers): DataModify
     {
-        return (new Modify($view, ...$observers))->withDb($this->fix(function ($mode, ...$args) {
+        return (new DataModify($view, ...$observers))->withDb($this->fix(function ($mode, ...$args) {
             $this->setFetchMode($mode);
             return $this->executeUpdate(...$args);
         }));

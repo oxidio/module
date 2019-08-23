@@ -165,7 +165,7 @@ class Shop implements DataModificationInterface
     /**
      * @inheritDoc
      */
-    public function modify($view, callable ...$observers): Modify
+    public function modify($view, callable ...$observers): DataModify
     {
         return $this->db->modify($view, function (callable $action) {
             $this->transaction[] = $action;
@@ -180,7 +180,7 @@ class Shop implements DataModificationInterface
 
         $this->dirty = true;
         $table = $this->modify(TABLE\OXCONFIG);
-        $table->map($this->modulesConfig(), function (Modify $table, $value, $name) {
+        $table->map($this->modulesConfig(), function (DataModify $table, $value, $name) {
             yield $table->update([
                 TABLE\OXCONFIG\OXVARVALUE => function ($column) use ($value) {
                     return ["ENCODE(:$column, '{$this->configKey}')" => serialize($value)];
@@ -192,7 +192,7 @@ class Shop implements DataModificationInterface
             ]);
         });
 
-        $table->map($this->modules, function (Modify $table, Extension $module) {
+        $table->map($this->modules, function (DataModify $table, Extension $module) {
             if ($module->id && $module->status === $module::STATUS_REMOVED) {
                 yield $table->delete([
                     TABLE\OXCONFIG\OXSHOPID => $this->id,
