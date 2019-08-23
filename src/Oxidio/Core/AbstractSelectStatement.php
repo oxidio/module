@@ -25,6 +25,11 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
     IteratorAggregate,
     Countable
 {
+    /**
+     * @see \php\PropertiesTrait::propResolver
+     * @uses resolveLimit, resolveStart, resolveTotal, resolveColumns, resolveOrderTerms
+     */
+
     use php\ArrayAccessTrait;
 
     protected $mapper;
@@ -172,7 +177,7 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
     }
 
     /**
-     * @return int
+     * @see $total
      */
     protected function resolveTotal(): int
     {
@@ -183,21 +188,34 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
         )[0]['total'];
     }
 
+
+    /**
+     * @see $limit
+     */
     protected function resolveLimit(): int
     {
         return 0;
     }
 
+    /**
+     * @see $start
+     */
     protected function resolveStart(): int
     {
         return 0;
     }
 
+    /**
+     * @see $columns
+     */
     protected function resolveColumns(): string
     {
         return '*';
     }
 
+    /**
+     * @see $orderTerms
+     */
     public function resolveOrderTerms(): array
     {
         return [];

@@ -17,6 +17,11 @@ use OxidEsales\Eshop\Core\DatabaseProvider;
  */
 class Database extends Adapter\Doctrine\Database implements DataModificationInterface
 {
+    /**
+     * @see \php\PropertiesTrait::propResolver
+     * @uses resolveTables, resolveViews, resolveSchema
+     */
+
     use php\PropertiesTrait\ReadOnly;
     use DatabaseProxyTrait;
 
@@ -35,7 +40,7 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
 
     /**
      * @param int|string $locator
-     * @param int        $mode
+     * @param int $mode
      *
      * @return static
      */
@@ -53,11 +58,11 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
                     $params = ['dbname' => $locator] + static::get()->getConnectionParameters();
                 }
                 $db->setConnectionParameters(['default' => [
-                    'databaseName'     => $params['dbname'] ?? null,
-                    'databaseHost'     => $params['host'] ?? $params['databaseHost'] ?? getenv('DB_HOST'),
+                    'databaseName' => $params['dbname'] ?? null,
+                    'databaseHost' => $params['host'] ?? $params['databaseHost'] ?? getenv('DB_HOST'),
                     'databasePassword' => $params['password'] ?? $params['databasePassword'] ?? getenv('DB_PASSWORD'),
-                    'databaseUser'     => $params['user'] ?? $params['databaseUser'] ?? getenv('DB_USER'),
-                    'databasePort'     => $params['port'] ?? $params['databasePort'] ?? getenv('DB_PORT') ?: 3306,
+                    'databaseUser' => $params['user'] ?? $params['databaseUser'] ?? getenv('DB_USER'),
+                    'databasePort' => $params['port'] ?? $params['databasePort'] ?? getenv('DB_PORT') ?: 3306,
                 ]]);
                 $db->connect();
             }
@@ -68,10 +73,8 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
         return static::$instances[$locator];
     }
 
-
     /**
      * @see $schema
-     * @return DBAL\Schema\Schema
      */
     protected function resolveSchema(): DBAL\Schema\Schema
     {
@@ -80,18 +83,16 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
 
     /**
      * @see $tables
-     * @return array
      */
     protected function resolveTables(): array
     {
-        return php\traverse($this->schema->getTables(), function(DBAL\Schema\Table $table) {
+        return php\traverse($this->schema->getTables(), function (DBAL\Schema\Table $table) {
             return php\mapValue($table)->andKey($table->getName());
         });
     }
 
     /**
      * @see $views
-     * @return array
      */
     protected function resolveViews(): array
     {
@@ -103,12 +104,12 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
      */
     public function query($from = null, $mapper = null, ...$where): Query
     {
-        return (new Query($from, $mapper, ...$where))->withDb($this->fix(function($mode, $query, ...$args) {
+        return (new Query($from, $mapper, ...$where))->withDb($this->fix(function ($mode, $query, ...$args) {
             $this->setFetchMode($mode);
             if ($query instanceof Query && $query->orderTerms) {
                 $it = new SelectStatementIterator($query, $this, $mode);
             } else {
-                $it = $this->select((string) $query);
+                $it = $this->select((string)$query);
             }
             return new php\Map($it, ...$args);
         }));
@@ -119,7 +120,7 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
      */
     public function modify($view, callable ...$observers): Modify
     {
-        return (new Modify($view, ...$observers))->withDb($this->fix(function($mode, ...$args) {
+        return (new Modify($view, ...$observers))->withDb($this->fix(function ($mode, ...$args) {
             $this->setFetchMode($mode);
             return $this->executeUpdate(...$args);
         }));
@@ -128,7 +129,7 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
     public function fix(callable $callable)
     {
         $fetchMode = is_object($this->proxy) ? $this->proxy->fetchMode : $this->fetchMode;
-        return function(...$args) use($callable, $fetchMode) {
+        return function (...$args) use ($callable, $fetchMode) {
             $temp = is_object($this->proxy) ? $this->proxy->fetchMode : $this->fetchMode;
             $result = $callable($fetchMode, ...$args);
             $this->setFetchMode($temp);

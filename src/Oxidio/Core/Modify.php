@@ -76,6 +76,7 @@ class Modify extends AbstractConditionalStatement
     }
 
     /**
+     * @uses _insert, _update, _delete, _map, _replace
      * @param string $method
      * @param array $args
      *
@@ -234,5 +235,4 @@ class Modify extends AbstractConditionalStatement
             return $result;
         };
     }
-
 }

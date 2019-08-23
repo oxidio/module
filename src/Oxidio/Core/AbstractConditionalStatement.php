@@ -15,6 +15,11 @@ use Oxidio;
  */
 abstract class AbstractConditionalStatement
 {
+    /**
+     * @see \php\PropertiesTrait::propResolver
+     * @uses resolveDb, resolveView, resolveWhereTerms
+     */
+
     use php\PropertiesTrait\ReadOnly;
 
     /**
@@ -83,16 +88,25 @@ abstract class AbstractConditionalStatement
         return $where ? $prefix . $where : $where;
     }
 
+    /**
+     * @see $view
+     */
     protected function resolveView(): void
     {
         php\fail(__METHOD__);
     }
 
+    /**
+     * @see $db
+     */
     public function resolveDb(): void
     {
         php\fail(__METHOD__);
     }
 
+    /**
+     * @see $whereTerms
+     */
     public function resolveWhereTerms(): array
     {
         return [];
