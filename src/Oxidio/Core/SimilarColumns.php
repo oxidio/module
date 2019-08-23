@@ -59,7 +59,7 @@ class SimilarColumns implements IteratorAggregate
     }
 
     /**
-     * @return Query[]|Generator
+     * @return DataQuery[]|Generator
      */
     public function queries(): Generator
     {

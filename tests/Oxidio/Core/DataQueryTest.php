@@ -16,9 +16,9 @@ use Oxidio;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass Query
+ * @coversDefaultClass DataQuery
  */
-class QueryTest extends TestCase
+class DataQueryTest extends TestCase
 {
     public function testToString(): void
     {

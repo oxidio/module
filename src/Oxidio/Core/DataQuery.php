@@ -16,7 +16,7 @@ use ReflectionParameter;
 
 /**
  */
-class Query extends AbstractSelectStatement
+class DataQuery extends AbstractSelectStatement
 {
     /**
      * @param callable|string $from

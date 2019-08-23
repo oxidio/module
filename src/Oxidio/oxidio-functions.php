@@ -27,9 +27,9 @@ namespace Oxidio
     /**
      * @param mixed ...$args
      *
-     * @return Core\Query
+     * @return Core\DataQuery
      */
-    function query(...$args): Core\Query
+    function query(...$args): Core\DataQuery
     {
         return db()->query(...$args);
     }

@@ -102,11 +102,11 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
     /**
      * @inheritDoc
      */
-    public function query($from = null, $mapper = null, ...$where): Query
+    public function query($from = null, $mapper = null, ...$where): DataQuery
     {
-        return (new Query($from, $mapper, ...$where))->withDb($this->fix(function ($mode, $query, ...$args) {
+        return (new DataQuery($from, $mapper, ...$where))->withDb($this->fix(function ($mode, $query, ...$args) {
             $this->setFetchMode($mode);
-            if ($query instanceof Query && $query->orderTerms) {
+            if ($query instanceof DataQuery && $query->orderTerms) {
                 $it = new SelectStatementIterator($query, $this, $mode);
             } else {
                 $it = $this->select((string)$query);

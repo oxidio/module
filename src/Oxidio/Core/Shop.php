@@ -127,9 +127,9 @@ class Shop implements DataModificationInterface
     /**
      * @param array $where
      *
-     * @return Query|Row[]
+     * @return DataQuery|Row[]
      */
-    public function categories($where = [Category\PARENTID => self::CATEGORY_ROOT]): Query
+    public function categories($where = [Category\PARENTID => self::CATEGORY_ROOT]): DataQuery
     {
         return $this->query(TABLE\OXCATEGORIES, function (Row $row) {
             return php\mapKey(static::seo($row[Category\TITLE]))->andValue(
@@ -157,7 +157,7 @@ class Shop implements DataModificationInterface
     /**
      * @inheritDoc
      */
-    public function query($from = null, $mapper = null, ...$where): Query
+    public function query($from = null, $mapper = null, ...$where): DataQuery
     {
         return $this->db->query($from, $mapper, ...$where);
     }

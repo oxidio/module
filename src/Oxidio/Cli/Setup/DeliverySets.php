@@ -42,7 +42,7 @@ class DeliverySets
         ];
     }
 
-    private function countries(Core\Shop $shop): Core\Query
+    private function countries(Core\Shop $shop): Core\DataQuery
     {
         $countries = [];
         foreach ([$this->sets, $this->payments] as $record) {

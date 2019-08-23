@@ -16,7 +16,7 @@ interface DataQueryInterface
      * @param callable|array $mapper
      * @param array[] $where
      *
-     * @return Query
+     * @return DataQuery
      */
-    public function query($from = null, $mapper = null, ...$where): Query;
+    public function query($from = null, $mapper = null, ...$where): DataQuery;
 }
