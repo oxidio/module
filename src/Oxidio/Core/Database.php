@@ -11,6 +11,7 @@ use OxidEsales\Eshop\Core\Database\Adapter;
 use OxidEsales\Eshop\Core\DatabaseProvider;
 
 /**
+ * @property-read DBAL\Connection $conn
  * @property-read DBAL\Schema\Table[] $tables
  * @property-read DBAL\Schema\View[] $views
  * @property-read DBAL\Schema\Schema $schema
@@ -19,7 +20,7 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
 {
     /**
      * @see \php\PropertiesTrait::propResolver
-     * @uses resolveTables, resolveViews, resolveSchema
+     * @uses resolveTables, resolveViews, resolveSchema, resolveConn
      */
 
     use php\PropertiesTrait\ReadOnly;
@@ -35,7 +36,7 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
      */
     public static function all(): array
     {
-        return static::get()->getConnection()->getSchemaManager()->listDatabases();
+        return static::get()->conn->getSchemaManager()->listDatabases();
     }
 
     /**
@@ -66,7 +67,7 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
                 ]]);
                 $db->connect();
             }
-            $db->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', DBAL\Types\Type::STRING);
+            $db->conn->getDatabasePlatform()->registerDoctrineTypeMapping('enum', DBAL\Types\Type::STRING);
             static::$instances[$locator] = $db;
         }
         static::$instances[$locator]->setFetchMode($mode);
@@ -74,11 +75,19 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
     }
 
     /**
+     * @see $conn
+     */
+    protected function resolveConn(): DBAL\Connection
+    {
+        return $this->getConnection();
+    }
+
+    /**
      * @see $schema
      */
     protected function resolveSchema(): DBAL\Schema\Schema
     {
-        return $this->getConnection()->getSchemaManager()->createSchema();
+        return $this->conn->getSchemaManager()->createSchema();
     }
 
     /**
@@ -113,6 +122,11 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
             }
             return new php\Map($it, ...$args);
         }));
+    }
+
+    public function define(callable ...$version): DataDefine
+    {
+        return new DataDefine($this, $version);
     }
 
     /**

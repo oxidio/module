@@ -21,6 +21,11 @@ use OxidEsales\Eshop\Core\Database\TABLE;
  */
 class Shop implements DataModificationInterface
 {
+    /**
+     * @see \php\PropertiesTrait::propResolver
+     * @uses resolveId, resolveConfig, resolveModules, resolveThemes, resolveExtensions
+     */
+
     use php\PropertiesTrait\ReadOnly;
 
     /**
