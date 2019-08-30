@@ -210,12 +210,11 @@ class DataModify extends AbstractConditionalStatement
         return function (bool $dryRun = false) use ($records, $key) {
             $result = [];
             foreach (php\isCallable($records) ? $records($this) : $records as $id => $record) {
+                [$values, $types, $bindings] = $this->convertData(($record ?? []) + [$key => $id]);
                 if ($record === null) {
-                    $this->where([$key => $id]);
-                    $sql = "DELETE FROM {$this->view}{$this}";
-                    $count = $dryRun ? 0 : ($this->db)($sql);
+                    $sql = "DELETE FROM {$this->view} WHERE $key = :$key";
+                    $count = $dryRun ? 0 : ($this->db)($sql, $values, $types);
                 } else {
-                    [$values, $types, $bindings] = $this->convertData($record + [$key => $id]);
                     $sql = implode("\n", [
                         "INSERT INTO {$this->view} (",
                         '  ' . implode(', ', array_keys($bindings)),

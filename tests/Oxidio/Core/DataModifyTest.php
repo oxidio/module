@@ -115,16 +115,18 @@ class DataModifyTest extends TestCase
             yield 'test-a' => [OXCOUNTRY\OXTITLE => 'test-a-replaced'];
             yield 'test-e' => [OXCOUNTRY\OXTITLE => 'test-e-new', OXCOUNTRY\OXACTIVE => true];
             yield 'test-b' => null;
+            yield 'test-b' => null;
+            yield 'test-D-first' => null;
         }, OXCOUNTRY\OXID);
 
         self::assertCommit([[
             'INSERT' => 2,
             'INSERT|active' => 1,
-            'DELETE' => 1,
+            'DELETE' => 2,
         ]], $shop->commit());
 
         $modify->delete([OXCOUNTRY\OXID => ['LIKE', 'test-%']]);
-        self::assertCommit([['DELETE|LIKE' => 7]], $shop->commit());
+        self::assertCommit([['DELETE|LIKE' => 6]], $shop->commit());
     }
 
     private static function assertCommit(array $expected, iterable $commit): void
