@@ -18,8 +18,8 @@ class Events implements JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'onActivate'   => [static::class, 'onActivate'],
-            'onDeactivate' => [static::class, 'onDeactivate'],
+            'onActivate'   => static::class . '::onActivate',
+            'onDeactivate' => static::class . '::onDeactivate',
         ];
     }
 

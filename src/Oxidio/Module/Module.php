@@ -49,10 +49,11 @@ class Module implements JsonSerializable
     {
         $package = $this->package;
         ($di = $package->extra['di'] ?? []) && $di = $package->file($di);
-        return php\di([
-            ID => $this->id,
-            self::class => $this,
-        ], $di,  php\Composer\DIClassLoader::instance()->getContainer());
+        return php\di(
+            [ID => $this->id, self::class => $this,],
+            $di,
+            php\Composer\DIClassLoader::instance()->getContainer()
+        );
     }
 
     /**
@@ -234,8 +235,8 @@ class Module implements JsonSerializable
             DESCRIPTION => $this->get(DESCRIPTION, $this->package->description),
             URL         => $this->get(URL, $this->package->homepage),
             VERSION     => $this->get(VERSION, $this->package->version()),
-            AUTHOR      => $this->get(AUTHOR, $author['name'] ?? null),
-            EMAIL       => $this->get(EMAIL, $author['email'] ?? null),
+            AUTHOR      => $this->get(AUTHOR, $author['name'] ?? ''),
+            EMAIL       => $this->get(EMAIL, $author['email'] ?? ''),
             SETTINGS    => new Settings($this->get(SETTINGS, [])),
             BLOCKS      => $this->getBlocks(),
             EXTEND      => $this->get(EXTEND, []),
@@ -249,7 +250,7 @@ class Module implements JsonSerializable
      */
     public function getMetadata(): array
     {
-        $this->generateFiles(dirname(debug_backtrace(FALSE, 1)[0]['file'] ?? null));
+        $this->generateFiles(dirname(debug_backtrace(false, 1)[0]['file'] ?? null));
         return json_decode(json_encode($this), true);
     }
 
