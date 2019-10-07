@@ -9,7 +9,7 @@
   ],
   "require": {
     "oxidio/bin": "^1",
-    "oxidio/shop": "<6.4",
+    "oxidio/shop": "~6.3.0",
     "oxidio/composer-plugin": "^2",
     "oxidio/unified-namespace-generator": "^2",
     "oxidio/facts": "^2",
@@ -53,7 +53,8 @@
   ],
   "extra": {
     "branch-alias": {
-      "dev-master": "1.x-dev"
+      "dev-6.1": "6.3.x-dev",
+      "dev-master": "6.x-dev"
     }
   },
   "scripts": {
