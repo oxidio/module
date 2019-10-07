@@ -9,7 +9,7 @@
   ],
   "require": {
     "oxidio/bin": "^1",
-    "oxidio/shop": "~6.3.0",
+    "oxidio/shop": "~6.4.0",
     "oxidio/composer-plugin": "^2",
     "oxidio/unified-namespace-generator": "^2",
     "oxidio/facts": "^2",
