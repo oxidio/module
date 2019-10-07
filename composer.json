@@ -53,7 +53,7 @@
   ],
   "extra": {
     "branch-alias": {
-      "dev-6.1": "6.3.x-dev",
+      "dev-oxidio-6.1.x": "6.3.x-dev",
       "dev-master": "6.x-dev"
     }
   },
