@@ -11,6 +11,7 @@ services:
 sudo: false
 
 before_script:
+  - git checkout ${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}
   - mysql -e "CREATE USER 'oxidio'@'%' IDENTIFIED BY 'oxidio';"
   - mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'oxidio'@'%';"
   - composer install --no-plugins
