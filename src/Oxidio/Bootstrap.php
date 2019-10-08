@@ -35,10 +35,11 @@ class Bootstrap
             $this->sSSLShopURL = getenv('SHOP_URL') ?: 'localhost';
             $this->sAdminEmail = getenv('SHOP_ADMIN') ?: 'webmaster@localhost';
             $this->iDebug      = getenv('SHOP_DEBUG') ?: 0;
-        }, $config, $config)();
 
-        $configFile = INSTALLATION_ROOT_PATH . (getenv('SHOP_CONFIG') ?:  '/config/shop.php');
-        /** @noinspection PhpIncludeInspection */
-        file_exists($configFile) && require $configFile;
+            $configFile = INSTALLATION_ROOT_PATH . (getenv('SHOP_CONFIG') ?:  '/config/shop.php');
+            /** @noinspection PhpIncludeInspection */
+            file_exists($configFile) && require $configFile;
+
+        }, $config, $config)();
     }
 }
