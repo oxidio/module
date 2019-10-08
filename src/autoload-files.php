@@ -16,7 +16,4 @@ call_user_func(static function(...$files) {
 );
 
 require_once __DIR__ . '/constants.php';
-require_once __DIR__ . '/constants-model.php';
-require_once __DIR__ . '/constants-setup.php';
-require_once __DIR__ . '/constants-theme.php';
 require_once __DIR__ . '/Oxidio/oxidio-functions.php';
