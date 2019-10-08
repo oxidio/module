@@ -5,9 +5,12 @@
  */
 
 call_user_func(static function () {
-    $file = file_exists($file = __DIR__ . '/../../../autoload.php') ? $file :  __DIR__ . '/../vendor/autoload.php';
-    /** @noinspection PhpIncludeInspection */
-    exit(call_user_func(require $file, static function () {
-        return Oxidio\cli(php\VENDOR\OXIDIO\OXIDIO, 'bin/di.php')->run();
-    }));
+    for ($levels = 1; $levels < 4; $levels++) {
+        if (file_exists($file = dirname(__DIR__, $levels) . '/../vendor/autoload.php')) {
+            /** @noinspection PhpIncludeInspection */
+            exit(call_user_func(require $file, static function () {
+                return Oxidio\cli(php\VENDOR\OXIDIO\OXIDIO, 'bin/di.php')->run();
+            }));
+        }
+    }
 });
