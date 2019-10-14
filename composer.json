@@ -36,11 +36,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Oxidio\\": ["src/Oxidio"],
-      "OxidEsales\\EshopCommunity\\MigrationsProject\\": [
-        "../../../source/migration/project_data/",
-        "source/migration/project_data/"
-      ]
+      "Oxidio\\": ["src/Oxidio"]
     },
     "files": ["src/autoload-files.php"]
   },
