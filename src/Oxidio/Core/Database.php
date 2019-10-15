@@ -64,6 +64,7 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
                     'databasePassword' => $params['password'] ?? $params['databasePassword'] ?? getenv('DB_PASSWORD'),
                     'databaseUser' => $params['user'] ?? $params['databaseUser'] ?? getenv('DB_USER'),
                     'databasePort' => $params['port'] ?? $params['databasePort'] ?? getenv('DB_PORT') ?: 3306,
+                    'connectionCharset' => $params['charset'] ?? $params['connectionCharset'] ?? getenv('DB_CHARSET') ?: '',
                 ]]);
                 $db->connect();
             }
