@@ -88,7 +88,10 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
      */
     protected function resolveSchema(): DBAL\Schema\Schema
     {
-        return $this->conn->getSchemaManager()->createSchema();
+        return $this->fix(function () {
+            $this->setFetchMode(self::FETCH_MODE_ASSOC);
+            return $this->conn->getSchemaManager()->createSchema();
+        })();
     }
 
     /**
@@ -106,7 +109,7 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
      */
     protected function resolveViews(): array
     {
-        return $this->getConnection()->getSchemaManager()->listViews();
+        return $this->conn->getSchemaManager()->listViews();
     }
 
     /**
