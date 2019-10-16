@@ -118,7 +118,7 @@ class Extension implements JsonSerializable
                 return php\mapGroup($module)->andKey($name)->andValue($value);
             }
         ), static function (array $config, $module) {
-            [$type, $module] = explode(':', $module);
+            [$type, $module] = explode(':', $module . ':');
             return php\mapKey((string)$module)->andValue([
                 'config' => $config,
                 'type' => (string)$type,
