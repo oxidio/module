@@ -115,7 +115,7 @@ class Menu extends MenuNode implements IteratorAggregate
         foreach ($data as $key => $item) {
             $id = $class = null;
             if (!is_numeric($key)) {
-                strpos($key, Menu\ADMIN) === 0 ? $id = end($id = explode('/', $key)) : $class = $key;
+                strpos($key, Menu\ADMIN) === 0 ? $id = array_reverse(explode('/', $key))[0] : $class = $key;
             }
 
             // new

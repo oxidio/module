@@ -15,7 +15,7 @@ return [
             $shop->id;
             yield 'setup:views' => new Cli\Setup\Views;
             $cli->command('setup:shop', require 'commands/setup-shop.php', ['action']);
-            yield 'meta:model' => require 'commands/meta-model.php';
+            $cli->command('meta:tables', require 'commands/meta-tables.php', ['dir']);
             yield 'meta:theme' => require 'commands/meta-theme.php';
         } catch (DatabaseException $e) {
         } finally {

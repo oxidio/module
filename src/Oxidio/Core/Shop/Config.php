@@ -6,9 +6,10 @@
 namespace Oxidio\Core\Shop;
 
 use Generator;
-use OxidEsales\Eshop\Core\Database\TABLE;
 use Oxidio\Core;
+use Oxidio\Enum\Tables as T;
 use SebastianBergmann\Diff\{Differ, Output\UnifiedDiffOutputBuilder};
+
 
 class Config
 {
@@ -194,14 +195,14 @@ class Config
      */
     public function __invoke(Core\Shop $shop): Generator
     {
-        yield TABLE\OXCONFIG => function (Core\Shop $shop) {
+        yield T::CONFIG => function (Core\Shop $shop) {
             foreach ($this->config as $module => $config) {
                 foreach ($config as $key => $value) {
                     yield $shop::id($module, $key) => [
-                        TABLE\OXCONFIG\OXMODULE => $module,
-                        TABLE\OXCONFIG\OXVARNAME => $key,
-                        TABLE\OXCONFIG\OXVARTYPE => self::assumeType($value, $key),
-                        TABLE\OXCONFIG\OXVARVALUE => static function ($column) use ($value, $shop) {
+                        T\Config::MODULE => $module,
+                        T\Config::VARNAME => $key,
+                        T\Config::VARTYPE => self::assumeType($value, $key),
+                        T\Config::VARVALUE => static function ($column) use ($value, $shop) {
                             return ["ENCODE(:$column, '{$shop->configKey}')" => is_array($value) ? serialize($value) : $value];
                         },
                     ];

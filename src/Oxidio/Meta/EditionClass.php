@@ -218,7 +218,7 @@ class EditionClass
             if ($this->reflection->isSubclassOf(BaseModel::class)) {
                 $prefix = $this->fieldNs->shortName === $this->shortName . '\\' ? '' : $this->shortName . '_';
                 foreach ($this->instance->getFieldNames() as $fieldName) {
-                    $name = strpos($fieldName, 'ox') === 0  ? substr($fieldName, 2) : $fieldName;
+                    $name = Provider::beautify($fieldName, false);
                     $name = strtoupper($prefix . $name);
                     yield $fieldName => $this->provider->const([$this->fieldNs, $name], [
                         'value'    => "'$fieldName'",

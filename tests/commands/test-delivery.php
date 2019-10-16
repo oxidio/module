@@ -6,11 +6,7 @@
 namespace Oxidio;
 
 use Generator;
-use OxidEsales\Eshop\Core\{
-    Database\TABLE\OXDELIVERY as DEL,
-    Database\TABLE\OXDELIVERYSET as SET,
-    Database\TABLE\OXPAYMENTS
-};
+use Oxidio\Enum\Tables as T;
 
 /**
  * @param Core\Shop $shop
@@ -25,189 +21,189 @@ return static function (Core\Shop $shop, bool $commit = false): Generator {
 
     $payment = function(array $record) {
         return $record + [
-            OXPAYMENTS\OXADDSUM      => 0,
-            OXPAYMENTS\OXFROMAMOUNT  => 0,
-            OXPAYMENTS\OXTOAMOUNT    => 1000000,
-            OXPAYMENTS\OXADDSUMTYPE  => 'abs',
-            OXPAYMENTS\OXADDSUMRULES => 15,
-            OXPAYMENTS\OXACTIVE      => true,
-            OXPAYMENTS\OXCHECKED     => false,
+            T\Payments::ADDSUM      => 0,
+            T\Payments::FROMAMOUNT  => 0,
+            T\Payments::TOAMOUNT    => 1000000,
+            T\Payments::ADDSUMTYPE  => 'abs',
+            T\Payments::ADDSUMRULES => 15,
+            T\Payments::ACTIVE      => true,
+            T\Payments::CHECKED     => false,
             'groups'                 => [],
         ];
     };
 
     $ds = new Cli\Setup\DeliverySets([
         'DS_HAULER_DE' => [
-            SET\OXTITLE => 'Spedition (DE)',
-            SET\OXPOS => 100,
-            SET\OXACTIVE => true,
+            T\Deliveryset::TITLE => 'Spedition (DE)',
+            T\Deliveryset::POS => 100,
+            T\Deliveryset::ACTIVE => true,
             'countries' => $de,
             'rules' => [
                 'FREE' => [
-                    DEL\OXTITLE => 'Spedition DE -> Portofrei',
-                    DEL\OXSORT => 110,
+                    T\Delivery::TITLE => 'Spedition DE -> Portofrei',
+                    T\Delivery::SORT => 110,
                     'categories' => ['kiteboarding/kites'],
                 ],
             ],
         ],
         'DS_HAULER_EU' => [
-            SET\OXTITLE => 'Spedition (EU)',
-            SET\OXPOS => 200,
-            SET\OXACTIVE => true,
+            T\Deliveryset::TITLE => 'Spedition (EU)',
+            T\Deliveryset::POS => 200,
+            T\Deliveryset::ACTIVE => true,
             'countries' => $eu,
             'rules' => [
                 'PORTO' => [
-                    DEL\OXTITLE => 'Spedition EU -> 50 € Porto',
-                    DEL\OXSORT => 210,
-                    DEL\OXADDSUM => 50,
+                    T\Delivery::TITLE => 'Spedition EU -> 50 € Porto',
+                    T\Delivery::SORT => 210,
+                    T\Delivery::ADDSUM => 50,
                     'categories' => ['kiteboarding/kites'],
                 ],
             ],
         ],
         'DS_HAULER_CH' => [
-            SET\OXTITLE => 'Spedition (CH)',
-            SET\OXPOS => 300,
-            SET\OXACTIVE => true,
+            T\Deliveryset::TITLE => 'Spedition (CH)',
+            T\Deliveryset::POS => 300,
+            T\Deliveryset::ACTIVE => true,
             'countries' => $ch,
             'rules' => [
                 'PORTO' => [
-                    DEL\OXTITLE => 'Spedition CH -> 170 € Porto',
-                    DEL\OXSORT => 310,
-                    DEL\OXADDSUM => 170,
+                    T\Delivery::TITLE => 'Spedition CH -> 170 € Porto',
+                    T\Delivery::SORT => 310,
+                    T\Delivery::ADDSUM => 170,
                     'categories' => ['kiteboarding/kites'],
                 ],
             ],
         ],
         'DS_HAULER_NO' => [
-            SET\OXTITLE => 'Spedition (NO)',
-            SET\OXPOS => 400,
-            SET\OXACTIVE => true,
+            T\Deliveryset::TITLE => 'Spedition (NO)',
+            T\Deliveryset::POS => 400,
+            T\Deliveryset::ACTIVE => true,
             'countries' => $no,
             'rules' => [
                 'PORTO' => [
-                    DEL\OXTITLE => 'Spedition NO -> 170 € Porto',
-                    DEL\OXSORT => 410,
-                    DEL\OXADDSUM => 170,
+                    T\Delivery::TITLE => 'Spedition NO -> 170 € Porto',
+                    T\Delivery::SORT => 410,
+                    T\Delivery::ADDSUM => 170,
                     'categories' => ['kiteboarding/kites'],
                 ],
             ],
         ],
         'oxidstandard' => [
-            SET\OXTITLE => 'DHL Paket (DE)',
-            SET\OXPOS => 500,
-            SET\OXACTIVE => true,
+            T\Deliveryset::TITLE => 'DHL Paket (DE)',
+            T\Deliveryset::POS => 500,
+            T\Deliveryset::ACTIVE => true,
             'countries' => $de,
             'rules' => [
                 'PORTO' => [
-                    DEL\OXTITLE => 'DHL DE bis 30 € -> 5 € Porto',
-                    DEL\OXSORT => 510,
-                    DEL\OXADDSUM => 5,
-                    DEL\OXPARAM => 0,
-                    DEL\OXPARAMEND => 29.99,
+                    T\Delivery::TITLE => 'DHL DE bis 30 € -> 5 € Porto',
+                    T\Delivery::SORT => 510,
+                    T\Delivery::ADDSUM => 5,
+                    T\Delivery::PARAM => 0,
+                    T\Delivery::PARAMEND => 29.99,
                 ],
                 'FREE' => [
-                    DEL\OXTITLE => 'DHL DE ab 30 € -> Portofrei',
-                    DEL\OXSORT => 520,
-                    DEL\OXADDSUM => 0,
-                    DEL\OXPARAM => 30,
-                    DEL\OXPARAMEND => 1000000,
+                    T\Delivery::TITLE => 'DHL DE ab 30 € -> Portofrei',
+                    T\Delivery::SORT => 520,
+                    T\Delivery::ADDSUM => 0,
+                    T\Delivery::PARAM => 30,
+                    T\Delivery::PARAMEND => 1000000,
                 ],
             ],
         ],
         'DS_DHL_EU' => [
-            SET\OXTITLE => 'DHL Paket (EU)',
-            SET\OXPOS => 600,
-            SET\OXACTIVE => true,
+            T\Deliveryset::TITLE => 'DHL Paket (EU)',
+            T\Deliveryset::POS => 600,
+            T\Deliveryset::ACTIVE => true,
             'countries' => $eu,
             'rules' => [
                 'PORTO' => [
-                    DEL\OXTITLE => 'DHL EU bis 100 € -> 10 € Porto',
-                    DEL\OXSORT => 610,
-                    DEL\OXADDSUM => 10,
-                    DEL\OXPARAM => 0,
-                    DEL\OXPARAMEND => 99.99,
+                    T\Delivery::TITLE => 'DHL EU bis 100 € -> 10 € Porto',
+                    T\Delivery::SORT => 610,
+                    T\Delivery::ADDSUM => 10,
+                    T\Delivery::PARAM => 0,
+                    T\Delivery::PARAMEND => 99.99,
                 ],
                 'FREE' => [
-                    DEL\OXTITLE => 'DHL EU ab 100 € -> Portofrei',
-                    DEL\OXSORT => 620,
-                    DEL\OXADDSUM => 0,
-                    DEL\OXPARAM => 100,
-                    DEL\OXPARAMEND => 1000000,
+                    T\Delivery::TITLE => 'DHL EU ab 100 € -> Portofrei',
+                    T\Delivery::SORT => 620,
+                    T\Delivery::ADDSUM => 0,
+                    T\Delivery::PARAM => 100,
+                    T\Delivery::PARAMEND => 1000000,
                 ],
             ],
         ],
         'DS_DHL_CH' => [
-            SET\OXTITLE => 'DHL Paket (CH)',
-            SET\OXPOS => 700,
-            SET\OXACTIVE => true,
+            T\Deliveryset::TITLE => 'DHL Paket (CH)',
+            T\Deliveryset::POS => 700,
+            T\Deliveryset::ACTIVE => true,
             'countries' => $ch,
             'rules' => [
                 'PORTO' => [
-                    DEL\OXTITLE => 'DHL CH -> 24,37 € Porto',
-                    DEL\OXSORT => 710,
-                    DEL\OXADDSUM => 24.37,
+                    T\Delivery::TITLE => 'DHL CH -> 24,37 € Porto',
+                    T\Delivery::SORT => 710,
+                    T\Delivery::ADDSUM => 24.37,
                 ],
             ],
         ],
         'DS_DHL_NO' => [
-            SET\OXTITLE => 'DHL Paket (NO)',
-            SET\OXPOS => 800,
-            SET\OXACTIVE => true,
+            T\Deliveryset::TITLE => 'DHL Paket (NO)',
+            T\Deliveryset::POS => 800,
+            T\Deliveryset::ACTIVE => true,
             'countries' => $no,
             'rules' => [
                 'PORTO' => [
-                    DEL\OXTITLE => 'DHL NO -> 29,41 € Porto',
-                    DEL\OXSORT => 810,
-                    DEL\OXADDSUM => 29.41,
+                    T\Delivery::TITLE => 'DHL NO -> 29,41 € Porto',
+                    T\Delivery::SORT => 810,
+                    T\Delivery::ADDSUM => 29.41,
                 ],
             ],
         ],
     ], [
         'oxidcashondel' => $payment([
-            OXPAYMENTS\OXDESC => 'Nachnahme',
-            OXPAYMENTS\OXADDSUM => 5,
-            OXPAYMENTS\OXTOAMOUNT => 2500,
+            T\Payments::DESC => 'Nachnahme',
+            T\Payments::ADDSUM => 5,
+            T\Payments::TOAMOUNT => 2500,
             'countries' => $de
         ]),
         'oxidpayadvance' => $payment([
-            OXPAYMENTS\OXDESC => 'Vorkasse',
-            OXPAYMENTS\OXCHECKED => true
+            T\Payments::DESC => 'Vorkasse',
+            T\Payments::CHECKED => true
         ]),
         'oxidinvoice' => $payment([
-            OXPAYMENTS\OXDESC => 'Rechnung',
+            T\Payments::DESC => 'Rechnung',
             'groups' => ['oxiddealer'],
         ]),
         'oxempty' => $payment([
-            OXPAYMENTS\OXDESC => 'Empty',
-            OXPAYMENTS\OXTOAMOUNT => 0
+            T\Payments::DESC => 'Empty',
+            T\Payments::TOAMOUNT => 0
         ]),
         'payppaypalplus' => $payment([
-            OXPAYMENTS\OXDESC => 'PayPal Plus',
-            OXPAYMENTS\OXTOAMOUNT => 10000
+            T\Payments::DESC => 'PayPal Plus',
+            T\Payments::TOAMOUNT => 10000
         ]),
         'oxidpaypal' => $payment([
-            OXPAYMENTS\OXDESC => 'PayPal',
-            OXPAYMENTS\OXTOAMOUNT => 99999
+            T\Payments::DESC => 'PayPal',
+            T\Payments::TOAMOUNT => 99999
         ]),
         'klarna_pay_now' => $payment([
-            OXPAYMENTS\OXDESC => 'Sofort bezahlen'
+            T\Payments::DESC => 'Sofort bezahlen'
         ]),
         'klarna_pay_later' => $payment([
-            OXPAYMENTS\OXDESC => 'Klarna Rechnung',
+            T\Payments::DESC => 'Klarna Rechnung',
             'countries' => $de
         ]),
         'klarna_slice_it' => $payment([
-            OXPAYMENTS\OXDESC => 'Klarna Ratenkauf',
-            OXPAYMENTS\OXACTIVE => false,
+            T\Payments::DESC => 'Klarna Ratenkauf',
+            T\Payments::ACTIVE => false,
         ]),
         'PAYMENT_CREDIT_PURCHASE' => $payment([
-            OXPAYMENTS\OXDESC => 'Zielkauf',
-            OXPAYMENTS\OXFROMAMOUNT => 250,
+            T\Payments::DESC => 'Zielkauf',
+            T\Payments::FROMAMOUNT => 250,
             'countries' => $de
         ]),
         'PAYMENT_FINANCING' => $payment([
-            OXPAYMENTS\OXDESC => 'Finanzierung',
-            OXPAYMENTS\OXFROMAMOUNT => 250,
+            T\Payments::DESC => 'Finanzierung',
+            T\Payments::FROMAMOUNT => 250,
             'countries' => $de
         ]),
     ]);

@@ -6,9 +6,7 @@
 namespace Oxidio;
 
 use Generator;
-use OxidEsales\Eshop\Core\{
-    Database\TABLE
-};
+use Oxidio\Enum\Tables as T;
 
 /**
  * Test dml functionality
@@ -21,20 +19,20 @@ use OxidEsales\Eshop\Core\{
  * @return Generator
  */
 return static function (Core\Shop $shop, string $action = null, string $name = null, bool $dryRun = false) {
-    $where = [TABLE\OXCONFIG\OXID => "test:$name"];
-    $modify = $shop->modify(TABLE\OXCONFIG);
+    $where = [T\Config::ID => "test:$name"];
+    $modify = $shop->modify(T::CONFIG);
 
     if ($action === 'insert') {
         yield (object)$modify->insert([
-            TABLE\OXCONFIG\OXMODULE => 'test',
-            TABLE\OXCONFIG\OXVARNAME => $name,
-            TABLE\OXCONFIG\OXID => "test:$name",
+            T\Config::MODULE => 'test',
+            T\Config::VARNAME => $name,
+            T\Config::ID => "test:$name",
         ])($dryRun);
     } else if ($action === 'update') {
-        yield (object)$modify->update([TABLE\OXCONFIG\OXTIMESTAMP => null], $where)($dryRun);
+        yield (object)$modify->update([T\Config::TIMESTAMP => null], $where)($dryRun);
     } else if ($action === 'delete') {
         yield (object)$modify->delete($where)($dryRun);
     }
 
-    yield (object)$shop->query(TABLE\OXCONFIG, [TABLE\OXCONFIG\OXID => ['LIKE', 'test:%']]);
+    yield (object)$shop->query(T::CONFIG, [T\Config::ID => ['LIKE', 'test:%']]);
 };
