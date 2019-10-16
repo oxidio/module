@@ -44,9 +44,7 @@ class ReflectionConstant
      */
     protected function resolveName(): string
     {
-        $name = $this->properties['name'] ?? null;
-        $isReserved = php\hasValue(strtolower($this->namespace->relative($name)), php\Composer\DIPackages::RESERVED);
-        return $isReserved ? $name . '_' : $name;
+        return Provider::beautify($this->properties['name'] ?? '_', false);
     }
 
     /**
@@ -65,6 +63,7 @@ class ReflectionConstant
             $line = trim($line);
             yield $line ? "     * $line" : '     *';
         }
+        yield '     * @deprecated';
         yield '     */';
         yield "    const {$this->shortName} = {$this->value};";
     }

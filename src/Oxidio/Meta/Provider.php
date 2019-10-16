@@ -35,6 +35,15 @@ class Provider
 
     protected $data = [];
 
+    public static function beautify($input, $suffix = '_', $prefix = 'ox'): string
+    {
+        $input = $prefix && stripos($input, $prefix) === 0  ? substr($input, strlen($prefix)) : $input;
+        if ($suffix && in_array(strtolower($input), php\Composer\DIPackages::RESERVED, true)) {
+            return $input . $suffix;
+        }
+        return $input;
+    }
+
     /**
      * @see $db
      * @return Oxidio\Core\Database
@@ -93,14 +102,14 @@ class Provider
      */
     protected function resolveFieldNs(): ?ReflectionNamespace
     {
-        if ($ns = $this->properties['fieldNs'] ?? null) {
-            return $this->ns($ns, ['use' => [substr($this->tableNs, 0, -1)]]);
-        }
+//        if ($ns = $this->properties['fieldNs'] ?? null) {
+//            return $this->ns($ns, ['use' => [substr($this->tableNs, 0, -1)]]);
+//        }
         return null;
     }
 
     /**
-     * @see $fieldNs
+     * @see $themeNs
      * @return ReflectionNamespace
      */
     protected function resolveThemeNs(): ReflectionNamespace

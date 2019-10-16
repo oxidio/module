@@ -57,9 +57,9 @@ class Column
             'docBlock' => [$this->comment, '', $type]]
         );
         $const->namespace->add('docBlock',"@see \\{$tableConst}");
-        if ($field = $this->table->class->fields[$this->name] ?? null) {
-            $field->setValue($tableConst->namespace->shortName . $tableConst->shortName . '\\' . $const->shortName);
-        }
+//        if ($field = $this->table->class->fields[$this->name] ?? null) {
+//            $field->setValue($tableConst->namespace->shortName . $tableConst->shortName . '\\' . $const->shortName);
+//        }
 
         return $const;
     }

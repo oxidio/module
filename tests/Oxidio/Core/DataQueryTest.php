@@ -5,14 +5,10 @@
 
 namespace Oxidio\Core;
 
-use php;
 use php\test\assert;
-use OxidEsales\Eshop\Core\{
-    Database\TABLE\OXCOUNTRY,
-    Database\TABLE
-};
 use OxidEsales\Eshop\Application\Model;
 use Oxidio;
+use Oxidio\Enum\Tables as T;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -80,17 +76,14 @@ class DataQueryTest extends TestCase
 
     public function testJsonSerialize(): void
     {
-        $map = Oxidio\query(TABLE\OXCOUNTRY, function (Row $row) {
+        $map = Oxidio\query(T::COUNTRY, function (Row $row) {
             $row();
             $row('c');
             $row(['c']);
             $row(['c' => 'a']);
             $row('k', 'v');
-
-            return $row(OXCOUNTRY\OXISOALPHA2, OXCOUNTRY\OXISOALPHA3);
-
-            return php\mapKey($row[OXCOUNTRY\OXISOALPHA2])->andValue($row[OXCOUNTRY\OXISOALPHA3]);
-        }, [OXCOUNTRY\OXISOALPHA2 => ['IN', ['DE', 'CH', 'NO']]])->orderBy(OXCOUNTRY\OXISOALPHA2);
+            return $row(T\Country::ISOALPHA2, T\Country::ISOALPHA3);
+        }, [T\Country::ISOALPHA2 => ['IN', ['DE', 'CH', 'NO']]])->orderBy(T\Country::ISOALPHA2);
 
         assert\equals(json_encode(['CH' => 'CHE', 'DE' => 'DEU', 'NO' => 'NOR']), json_encode($map));
     }

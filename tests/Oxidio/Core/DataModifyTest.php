@@ -8,10 +8,7 @@ namespace Oxidio\Core;
 use php\test\assert;
 use php;
 use Oxidio;
-use OxidEsales\Eshop\{
-    Core\Database\TABLE,
-    Core\Database\TABLE\OXCOUNTRY
-};
+use Oxidio\Enum\Tables as T;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -67,36 +64,36 @@ class DataModifyTest extends TestCase
     public function testIntegration(): void
     {
         assert\type(Shop::class, $shop = Oxidio\shop());
-        assert\type(DataModify::class, $modify = $shop->modify(TABLE\OXCOUNTRY));
+        assert\type(DataModify::class, $modify = $shop->modify(T::COUNTRY));
 
-        assert\type('callable', $modify->delete([OXCOUNTRY\OXID => ['LIKE', 'test-%']]));
+        assert\type('callable', $modify->delete([T\Country::ID => ['LIKE', 'test-%']]));
         self::assertCommit([['DELETE|LIKE' => 0]], $shop->commit());
-        assert\same(0, $shop->query(TABLE\OXCOUNTRY, [OXCOUNTRY\OXID => ['LIKE', 'test-%']])->total);
+        assert\same(0, $shop->query(T::COUNTRY, [T\Country::ID => ['LIKE', 'test-%']])->total);
 
         assert\type(
             'callable',
             $modify->insert(
-                [OXCOUNTRY\OXID => 'test-a', OXCOUNTRY\OXTITLE => 'test-a'],
-                [OXCOUNTRY\OXID => 'test-b', OXCOUNTRY\OXTITLE => 'test-b'],
-                [OXCOUNTRY\OXID => 'test-c', OXCOUNTRY\OXTITLE => 'test-c', OXCOUNTRY\OXACTIVE => true]
+                [T\Country::ID => 'test-a', T\Country::TITLE => 'test-a'],
+                [T\Country::ID => 'test-b', T\Country::TITLE => 'test-b'],
+                [T\Country::ID => 'test-c', T\Country::TITLE => 'test-c', T\Country::ACTIVE => true]
             )
         );
         self::assertCommit([['INSERT INTO' => 2, 'INSERT INTO|active' => 1]], $shop->commit());
         self::assertCommit([], $shop->commit());
         assert\type(
             'callable',
-            $modify->update([OXCOUNTRY\OXSHORTDESC => 'test'], [OXCOUNTRY\OXID => ['LIKE', 'test-%']])
+            $modify->update([T\Country::SHORTDESC => 'test'], [T\Country::ID => ['LIKE', 'test-%']])
         );
         self::assertCommit([['UPDATE' => 3]], $shop->commit());
 
         assert\type(
             'callable',
             $modify->map(['test-d' => 'test-D', 'test-c' => 'test-C'], static function (DataModify $modify, $value, $key) {
-                yield $modify->insert([OXCOUNTRY\OXID => "$key-first", OXCOUNTRY\OXTITLE => "$value-first"]);
-                yield $modify->insert([OXCOUNTRY\OXTITLE => "$value-second", OXCOUNTRY\OXID => "$key-second"]);
+                yield $modify->insert([T\Country::ID => "$key-first", T\Country::TITLE => "$value-first"]);
+                yield $modify->insert([T\Country::TITLE => "$value-second", T\Country::ID => "$key-second"]);
                 yield $modify->update(
-                    [OXCOUNTRY\OXTITLE => function ($column) { return "UPPER($column)";}],
-                    [OXCOUNTRY\OXID => ['LIKE', "$key-%"]]
+                    [T\Country::TITLE => function ($column) { return "UPPER($column)";}],
+                    [T\Country::ID => ['LIKE', "$key-%"]]
                 );
             })
         );
@@ -109,15 +106,15 @@ class DataModifyTest extends TestCase
             ['UPDATE|= UPPER(' => 2],
         ], $shop->commit());
 
-        assert\same(1, $shop->query(TABLE\OXCOUNTRY, [OXCOUNTRY\OXTITLE => 'TEST-C-FIRST'])->total);
+        assert\same(1, $shop->query(T::COUNTRY, [T\Country::TITLE => 'TEST-C-FIRST'])->total);
 
         $modify->replace(static function () {
-            yield 'test-a' => [OXCOUNTRY\OXTITLE => 'test-a-replaced'];
-            yield 'test-e' => [OXCOUNTRY\OXTITLE => 'test-e-new', OXCOUNTRY\OXACTIVE => true];
+            yield 'test-a' => [T\Country::TITLE => 'test-a-replaced'];
+            yield 'test-e' => [T\Country::TITLE => 'test-e-new', T\Country::ACTIVE => true];
             yield 'test-b' => null;
             yield 'test-b' => null;
             yield 'test-D-first' => null;
-        }, OXCOUNTRY\OXID);
+        }, T\Country::ID);
 
         self::assertCommit([[
             'INSERT' => 2,
@@ -125,7 +122,7 @@ class DataModifyTest extends TestCase
             'DELETE' => 2,
         ]], $shop->commit());
 
-        $modify->delete([OXCOUNTRY\OXID => ['LIKE', 'test-%']]);
+        $modify->delete([T\Country::ID => ['LIKE', 'test-%']]);
         self::assertCommit([['DELETE|LIKE' => 6]], $shop->commit());
     }
 

@@ -64,6 +64,7 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
                     'databasePassword' => $params['password'] ?? $params['databasePassword'] ?? getenv('DB_PASSWORD'),
                     'databaseUser' => $params['user'] ?? $params['databaseUser'] ?? getenv('DB_USER'),
                     'databasePort' => $params['port'] ?? $params['databasePort'] ?? getenv('DB_PORT') ?: 3306,
+                    'connectionCharset' => $params['charset'] ?? $params['connectionCharset'] ?? getenv('DB_CHARSET') ?: '',
                 ]]);
                 $db->connect();
             }
@@ -87,7 +88,10 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
      */
     protected function resolveSchema(): DBAL\Schema\Schema
     {
-        return $this->conn->getSchemaManager()->createSchema();
+        return $this->fix(function () {
+            $this->setFetchMode(self::FETCH_MODE_ASSOC);
+            return $this->conn->getSchemaManager()->createSchema();
+        })();
     }
 
     /**
@@ -105,7 +109,7 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
      */
     protected function resolveViews(): array
     {
-        return $this->getConnection()->getSchemaManager()->listViews();
+        return $this->conn->getSchemaManager()->listViews();
     }
 
     /**

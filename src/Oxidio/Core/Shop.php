@@ -8,8 +8,7 @@ namespace Oxidio\Core;
 use php;
 use Oxidio;
 use Generator;
-use OxidEsales\Eshop\Application\Model\Category;
-use OxidEsales\Eshop\Core\Database\TABLE;
+use Oxidio\Enum\Tables as T;
 
 /**
  * @property-read string $configKey
@@ -90,7 +89,7 @@ class Shop implements DataModificationInterface
                 $value = php\isCallable($value) ? $value($this) : $value;
                 if (is_string($view)) {
                     $modify = $this->modify($view);
-                    $value === null ? $modify->delete() : $modify->replace($value, TABLE\OXSHOPS\OXID);
+                    $value === null ? $modify->delete() : $modify->replace($value, T\Shops::ID);
                 } else if (is_iterable($value)) {
                     php\traverse($value);
                 }
@@ -134,13 +133,13 @@ class Shop implements DataModificationInterface
      *
      * @return DataQuery|Row[]
      */
-    public function categories($where = [Category\PARENTID => self::CATEGORY_ROOT]): DataQuery
+    public function categories($where = [T\Categories::PARENTID => self::CATEGORY_ROOT]): DataQuery
     {
-        return $this->query(TABLE\OXCATEGORIES, function (Row $row) {
-            return php\mapKey(static::seo($row[Category\TITLE]))->andValue(
-                $row->withChildren($this->categories([Category\PARENTID => $row[Category\ID]]))
+        return $this->query(T::CATEGORIES, function (Row $row) {
+            return php\mapKey(static::seo($row[T\Categories::TITLE]))->andValue(
+                $row->withChildren($this->categories([T\Categories::PARENTID => $row[T\Categories::ID]]))
             );
-        }, $where)->orderBy(Category\SORT);
+        }, $where)->orderBy(T\Categories::SORT);
     }
 
     /**
@@ -184,27 +183,27 @@ class Shop implements DataModificationInterface
         }
 
         $this->dirty = true;
-        $table = $this->modify(TABLE\OXCONFIG);
+        $table = $this->modify(T::CONFIG);
         $table->map($this->modulesConfig(), function (DataModify $table, $value, $name) {
             yield $table->update([
-                TABLE\OXCONFIG\OXVARVALUE => function ($column) use ($value) {
+                T\Config::VARVALUE => function ($column) use ($value) {
                     return ["ENCODE(:$column, '{$this->configKey}')" => serialize($value)];
                 },
             ], [
-                TABLE\OXCONFIG\OXMODULE => Extension::SHOP,
-                TABLE\OXCONFIG\OXSHOPID => $this->id,
-                TABLE\OXCONFIG\OXVARNAME => $name
+                T\Config::MODULE => Extension::SHOP,
+                T\Config::SHOPID => $this->id,
+                T\Config::VARNAME => $name
             ]);
         });
 
         $table->map($this->modules, function (DataModify $table, Extension $module) {
             if ($module->id && $module->status === $module::STATUS_REMOVED) {
                 yield $table->delete([
-                    TABLE\OXCONFIG\OXSHOPID => $this->id,
-                    TABLE\OXCONFIG\OXMODULE => "{$module->type}:{$module->id}",
+                    T\Config::SHOPID => $this->id,
+                    T\Config::MODULE => "{$module->type}:{$module->id}",
                 ], [
-                    TABLE\OXCONFIG\OXSHOPID => $this->id,
-                    TABLE\OXCONFIG\OXMODULE => $module->id,
+                    T\Config::SHOPID => $this->id,
+                    T\Config::MODULE => $module->id,
                 ]);
             }
         });
@@ -268,9 +267,9 @@ class Shop implements DataModificationInterface
      */
     protected function resolveId()
     {
-        return $this->query(TABLE\OXSHOPS, function($id) {
+        return $this->query(T::SHOPS, function($id) {
             return $id;
-        })->orderBy(TABLE\OXSHOPS\OXID)->limit(1)[0] ?? static::DEFAULT_ID;
+        })->orderBy(T\Shops::ID)->limit(1)[0] ?? static::DEFAULT_ID;
     }
 
     protected function modulesConfig(): Generator

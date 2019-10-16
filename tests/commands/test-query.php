@@ -7,10 +7,8 @@ namespace Oxidio;
 
 use php;
 use Generator;
-use OxidEsales\Eshop\Core\{
-    Database\TABLE
-};
 use Oxidio\Core\Row;
+use Oxidio\Enum\Tables as T;
 
 /**
  * Test query functionality
@@ -26,16 +24,16 @@ use Oxidio\Core\Row;
  */
 return static function (
     Core\Shop $shop,
-    string $from = TABLE\OXCONFIG,
-    array $columns = [TABLE\OXCONFIG\OXID],
-    array $order = [TABLE\OXCONFIG\OXID],
+    string $from = T::CONFIG,
+    array $columns = [T\Config::ID],
+    array $order = [T\Config::ID],
     int $limit = 0,
     int $start = 0
 ) {
     $query = $shop->query($from, function(array $row) use($columns, $shop) {
 
         // fails if PDO::MYSQL_ATTR_USE_BUFFERED_QUERY is disabled
-        php\traverse($shop->query(TABLE\OXSHOPS));
+        php\traverse($shop->query(T::SHOPS));
 
         if (!$columns) {
             return $row;

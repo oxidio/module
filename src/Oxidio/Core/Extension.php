@@ -7,7 +7,7 @@ namespace Oxidio\Core;
 
 use php;
 use JsonSerializable;
-use OxidEsales\Eshop\Core\Database\TABLE;
+use Oxidio\Enum\Tables as T;
 
 /**
  * @property string $status
@@ -93,17 +93,17 @@ class Extension implements JsonSerializable
             ' FROM {c} LEFT JOIN {cd} ON {c.mod} = {cd.mod} AND {c.var} = {cd.var}) config',
             [
                 'pass' => $shop->configKey,
-                'c' => TABLE\OXCONFIG . ' c',
-                'cd' => TABLE\OXCONFIGDISPLAY . ' cd',
-                'c.mod' => 'c.' . TABLE\OXCONFIG\OXMODULE,
-                'c.shop' => 'c.' . TABLE\OXCONFIG\OXSHOPID,
-                'c.var' => 'c.' . TABLE\OXCONFIG\OXVARNAME,
-                'c.val' => 'c.' . TABLE\OXCONFIG\OXVARVALUE,
-                'c.type' => 'c.' . TABLE\OXCONFIG\OXVARTYPE,
-                'cd.mod' => 'cd.' . TABLE\OXCONFIGDISPLAY\OXCFGMODULE,
-                'cd.var' => 'cd.' . TABLE\OXCONFIGDISPLAY\OXCFGVARNAME,
-                'cd.gr' => 'cd.' . TABLE\OXCONFIGDISPLAY\OXGROUPING,
-                'cd.pos' => 'cd.' . TABLE\OXCONFIGDISPLAY\OXPOS,
+                'c' => T::CONFIG . ' c',
+                'cd' => T::CONFIGDISPLAY . ' cd',
+                'c.mod' => 'c.' . T\Config::MODULE,
+                'c.shop' => 'c.' . T\Config::SHOPID,
+                'c.var' => 'c.' . T\Config::VARNAME,
+                'c.val' => 'c.' . T\Config::VARVALUE,
+                'c.type' => 'c.' . T\Config::VARTYPE,
+                'cd.mod' => 'cd.' . T\Configdisplay::CFGMODULE,
+                'cd.var' => 'cd.' . T\Configdisplay::CFGVARNAME,
+                'cd.gr' => 'cd.' . T\Configdisplay::GROUPING,
+                'cd.pos' => 'cd.' . T\Configdisplay::POS,
             ]
         );
 
@@ -118,7 +118,7 @@ class Extension implements JsonSerializable
                 return php\mapGroup($module)->andKey($name)->andValue($value);
             }
         ), static function (array $config, $module) {
-            [$type, $module] = explode(':', $module);
+            [$type, $module] = explode(':', $module . ':');
             return php\mapKey((string)$module)->andValue([
                 'config' => $config,
                 'type' => (string)$type,

@@ -32,7 +32,7 @@ class Table
     private function detail($detail): ?string
     {
         static $details;
-        $details || $details = php\traverse($this->provider->db->tables, function(SchemaTable $table) {
+        $details || $details = php\traverse($this->provider->db->tables, function (SchemaTable $table) {
             return php\mapKey($table->getName())->andValue($table->getOptions());
         });
         return $details[$this->name][$detail] ?? null;
@@ -46,7 +46,7 @@ class Table
     {
         $table = strtoupper($this->name);
         return $this->provider->const([$this->class->tableNs, $table], [
-            'value'    => "'{$this->name}'",
+            'value' => "'{$this->name}'",
             'docBlock' => [
                 "{$this->comment} [{$this->engine}]",
                 '',
@@ -80,7 +80,7 @@ class Table
     protected function resolveColumns(): array
     {
         $columns = [];
-        $nls     = [];
+        $nls = [];
         foreach ($this->provider->db->metaColumns($this->name) as $column) {
             $name = strtolower($column->name);
             if (is_numeric(substr($name, ($last = strrpos($name, '_')) + 1))) {
@@ -88,18 +88,18 @@ class Table
                 continue;
             }
             $columns[$name] = [
-                'table'           => $this,
-                'name'            => $name,
-                'type'            => $column->type,
-                'comment'         => $column->comment,
-                'isPrimaryKey'    => $column->primary_key,
+                'table' => $this,
+                'name' => $name,
+                'type' => $column->type,
+                'comment' => $column->comment,
+                'isPrimaryKey' => $column->primary_key,
                 'isAutoIncrement' => $column->auto_increment,
-                'length'          => $column->max_length,
-                'default'         => $column->has_default ?? null ? $column->default_value : null,
+                'length' => $column->max_length,
+                'default' => $column->has_default ?? null ? $column->default_value : null,
             ];
         }
 
-        return php\traverse($columns, function(array $column, $name) use($nls) {
+        return php\traverse($columns, function (array $column, $name) use ($nls) {
             $column['type'] .= (($nls[$name] ?? false) ? '-i18n' : '');
             return new Column($this->provider, ['name' => $name] + $column);
         });
