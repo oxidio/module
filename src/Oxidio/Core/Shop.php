@@ -8,7 +8,6 @@ namespace Oxidio\Core;
 use php;
 use Oxidio;
 use Generator;
-use OxidEsales\Eshop\Application\Model\Category;
 use OxidEsales\Eshop\Core\Database\TABLE;
 
 /**
@@ -134,13 +133,13 @@ class Shop implements DataModificationInterface
      *
      * @return DataQuery|Row[]
      */
-    public function categories($where = [Category\PARENTID => self::CATEGORY_ROOT]): DataQuery
+    public function categories($where = [TABLE\OXCATEGORIES\OXPARENTID => self::CATEGORY_ROOT]): DataQuery
     {
         return $this->query(TABLE\OXCATEGORIES, function (Row $row) {
-            return php\mapKey(static::seo($row[Category\TITLE]))->andValue(
-                $row->withChildren($this->categories([Category\PARENTID => $row[Category\ID]]))
+            return php\mapKey(static::seo($row[TABLE\OXCATEGORIES\OXTITLE]))->andValue(
+                $row->withChildren($this->categories([TABLE\OXCATEGORIES\OXPARENTID => $row[TABLE\OXCATEGORIES\OXID]]))
             );
-        }, $where)->orderBy(Category\SORT);
+        }, $where)->orderBy(TABLE\OXCATEGORIES\OXSORT);
     }
 
     /**

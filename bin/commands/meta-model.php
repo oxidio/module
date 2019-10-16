@@ -5,32 +5,33 @@
 
 namespace Oxidio;
 
-use php\{Cli\IO};
 use php;
+use php\Cli\IO;
+use OxidEsales\Eshop\Core\Database;
 use OxidEsales\Eshop\Core\Field;
 use OxidEsales\Eshop\Core\Model\BaseModel;
 
 /**
  * Analyze and generate model namespace constants (tables, columns, fields)
  *
- * @param IO     $io
- * @param bool   $filterTable    Filter classes with db tables (not abstract models)
- * @param bool   $filterTemplate Filter classes with templates (not abstract controllers)
- * @param bool   $tablesConst    Create TABLES constant
- * @param string $filter         Filter classes by pattern
- * @param string $dbNs           Namespace for database constants [OxidEsales\Eshop\Core\Database]
- * @param string $fieldNs        Namespace for field constants [OxidEsales\Eshop\Core\Field]
- * @param string $db
+ * @param IO        $io
+ * @param Core\Shop $shop
+ * @param bool      $filterTable    Filter classes with db tables (not abstract models)
+ * @param bool      $filterTemplate Filter classes with templates (not abstract controllers)
+ * @param bool      $tablesConst    Create TABLES constant
+ * @param string    $filter         Filter classes by pattern
+ * @param string    $dbNs           Namespace for database constants [OxidEsales\Eshop\Core\Database]
+ * @param string    $fieldNs        Namespace for field constants [OxidEsales\Eshop\Core\Field]
  */
 return static function (
     IO $io,
+    Core\Shop $shop,
     bool $filterTable = false,
     bool $filterTemplate = false,
     bool $tablesConst = false,
     string $filter = null,
-    string $dbNs = 'OxidEsales\\Eshop\\Core\\Database',
-    string $fieldNs = Field::class,
-    string $db = null
+    string $dbNs = Database::class,
+    string $fieldNs = Field::class
 ) {
 
     $onVerbose = static function (IO $io, Meta\EditionClass $class): void {
@@ -49,7 +50,7 @@ return static function (
 
     $tableNs = $dbNs . '\\TABLE';
 
-    $provider = new Meta\Provider(['tableNs' => $tableNs, 'fieldNs' => $fieldNs, 'db' => $db]);
+    $provider = new Meta\Provider(['tableNs' => $tableNs, 'fieldNs' => $fieldNs, 'db' => $shop->db]);
 
     foreach ($provider->classes as $name => $class) {
         if ($filter && stripos($class->package, $filter) === false) {
@@ -71,13 +72,13 @@ return static function (
     }
 
     $tablesConst && $provider->const($dbNs . '\\TABLES', [
-        'value' => php\map(static function () use($provider) {
+        'value' => php\map(static function () use ($provider) {
             yield '[';
             foreach ($provider->tables as $table) {
                 $ns = $table->const->namespace->shortName . $table->const->shortName;
                 yield "        $ns => [";
                 foreach ($table->columns as $column) {
-                    $field = strpos($column, 'ox') === 0  ? substr($column, 2) : $column;
+                    $field = strpos($column, 'ox') === 0 ? substr($column, 2) : $column;
                     yield "            '$field' => $ns\\{$column->const->shortName},";
                 }
                 yield '        ],';

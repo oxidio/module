@@ -65,6 +65,7 @@ class ReflectionConstant
             $line = trim($line);
             yield $line ? "     * $line" : '     *';
         }
+        yield '     * @deprecated';
         yield '     */';
         yield "    const {$this->shortName} = {$this->value};";
     }

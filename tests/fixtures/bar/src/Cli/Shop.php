@@ -7,7 +7,7 @@ namespace Oxidio\Bar\Cli;
 
 use php;
 use Oxidio;
-use OxidEsales\Eshop\Application\Model\Category;
+use OxidEsales\Eshop\Core\Database\TABLE\OXCATEGORIES;
 
 class Shop
 {
@@ -20,7 +20,7 @@ class Shop
     public function __invoke(php\Cli\IO $io, Oxidio\Core\Shop $shop)
     {
         foreach (php\flatten($shop->categories()) as $key => $cat) {
-            $io->writeln(str_replace(['-', '/'], '_', strtoupper($key)) . ' : ' . $cat[Category\TITLE]);
+            $io->writeln(str_replace(['-', '/'], '_', strtoupper($key)) . ' : ' . $cat[OXCATEGORIES\OXTITLE]);
         }
     }
 }

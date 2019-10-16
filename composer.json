@@ -4,8 +4,10 @@
   "description": "shared functionality for oxid(io) modules",
   "license": "GPL-3.0",
   "repositories": [
-    {"type": "path", "url": "tests/fixtures/foo"},
-    {"type": "path", "url": "tests/fixtures/bar"}
+    {
+      "type": "path",
+      "url": "tests/fixtures/*"
+    }
   ],
   "require": {
     "oxidio/bin": "^1.0",
@@ -14,7 +16,6 @@
     "oxidio/composer-plugin": "^2.0",
     "oxidio/unified-namespace-generator": "^2.0",
     "oxidio/facts": "^2.0",
-
     "symfony/yaml": "^3.4",
     "vlucas/phpdotenv": "^3.4",
     "php-fn/php-fn": "^3.0",
@@ -31,17 +32,24 @@
     "oxidio/module-seo": "^1.0",
     "oxidio/module-foo": "^1.0",
     "oxidio/module-bar": "^1.0",
-
     "oxidio/test": "^1.0"
   },
   "autoload": {
     "psr-4": {
-      "Oxidio\\": ["src/Oxidio"]
+      "Oxidio\\": [
+        "src/Oxidio"
+      ]
     },
-    "files": ["src/autoload-files.php"]
+    "files": [
+      "src/autoload-files.php"
+    ]
   },
   "autoload-dev": {
-    "psr-4": {"Oxidio\\": ["tests/Oxidio"]}
+    "psr-4": {
+      "Oxidio\\": [
+        "tests/Oxidio"
+      ]
+    }
   },
   "minimum-stability": "dev",
   "prefer-stable": true,

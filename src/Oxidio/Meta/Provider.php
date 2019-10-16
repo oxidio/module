@@ -93,14 +93,14 @@ class Provider
      */
     protected function resolveFieldNs(): ?ReflectionNamespace
     {
-        if ($ns = $this->properties['fieldNs'] ?? null) {
-            return $this->ns($ns, ['use' => [substr($this->tableNs, 0, -1)]]);
-        }
+//        if ($ns = $this->properties['fieldNs'] ?? null) {
+//            return $this->ns($ns, ['use' => [substr($this->tableNs, 0, -1)]]);
+//        }
         return null;
     }
 
     /**
-     * @see $fieldNs
+     * @see $themeNs
      * @return ReflectionNamespace
      */
     protected function resolveThemeNs(): ReflectionNamespace
