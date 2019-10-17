@@ -7,7 +7,7 @@ namespace Oxidio\Cli;
 
 use php;
 use Oxidio\Core;
-use OxidEsales\Eshop\Core\Database\TABLE;
+use Oxidio\Enum\Tables as T;
 
 class ShopConfig
 {
@@ -29,9 +29,10 @@ class ShopConfig
      *
      * @param php\Cli\IO $io
      * @param Core\Shop $shop
+     * @param bool $dryRun
      * @param string $action update|clean
      */
-    public function __invoke(php\Cli\IO $io, Core\Shop $shop, string $action = null)
+    public function __invoke(php\Cli\IO $io, Core\Shop $shop, bool $dryRun = false, string $action = null): void
     {
         $table = [];
         foreach ($this->config->diff([Core\Extension::SHOP => $shop->config]) as $name => [$value, $diff, $module]) {
@@ -47,13 +48,13 @@ class ShopConfig
         })->string)->toCli($io);
 
         if ($action === self::CLEAN) {
-            $shop([TABLE\OXTPLBLOCKS => null, TABLE\OXCONFIGDISPLAY => null, TABLE\OXCONFIG => null]);
+            $shop([T::TPLBLOCKS => null, T::CONFIGDISPLAY => null, T::CONFIG => null]);
             $shop($this->config);
         } else if ($action === self::UPDATE) {
             $shop($this->config);
         }
 
-        foreach ($shop->commit() as $item) {
+        foreach ($shop->commit(!$dryRun) as $item) {
             $io->isVerbose() && php\io((object)$item)->toCli($io);
         }
     }
