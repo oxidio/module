@@ -10,13 +10,13 @@ use Oxidio;
 
 /**
  * @property-read callable $db
- * @property-read string $view
- * @property-read array $whereTerms
+ * @property-read string   $view
+ * @property-read array    $whereTerms
  */
 abstract class AbstractConditionalStatement
 {
     /**
-     * @see \php\PropertiesTrait::propResolver
+     * @see  \php\PropertiesTrait::propResolver
      * @uses resolveDb, resolveView, resolveWhereTerms
      */
 
@@ -50,7 +50,7 @@ abstract class AbstractConditionalStatement
     }
 
     /**
-     * @param array $terms
+     * @param array  $terms
      * @param string $prefix
      *
      * @return string
@@ -58,12 +58,12 @@ abstract class AbstractConditionalStatement
     public function buildWhere(array $terms, string $prefix = "\nWHERE "): string
     {
         $where = implode(' OR ', php\traverse($terms, function ($term) {
-            if ($term = is_iterable($term) ? implode(' AND ', php\traverse($term, function($candidate, $column) {
+            if ($term = is_iterable($term) ? implode(' AND ', php\traverse($term, function ($candidate, $column) {
                 $value = $candidate;
                 $operator = null;
                 if (is_iterable($candidate)) {
                     $column = $candidate['column'] ?? $column;
-                    $operator = $candidate['op'] ?? $candidate[0] ?? null;
+                    $operator = strtoupper($candidate['op'] ?? $candidate[0] ?? null);
                     $value = $candidate['value'] ?? $candidate[1] ?? null;
                 }
 
@@ -71,9 +71,13 @@ abstract class AbstractConditionalStatement
                     $value = 'NULL';
                     $operator = $operator ?: 'IS';
                 } else if (is_iterable($value)) {
-                    $value = '(' . php\map($value, function ($entry) {
-                        return "'{$entry}'";
-                    })->string(', ') . ')';
+                    $value = php\traverse($value, function ($entry) {
+                        return "'$entry'";
+                    });
+                    if (($operator === 'IN' || $operator === 'NOT IN') && !$value) {
+                        $value = ['SELECT NULL FROM DUAL WHERE FALSE'];
+                    }
+                    $value = '(' . implode(', ', $value) . ')';
                 } else {
                     $value = "'{$value}'";
                 }
