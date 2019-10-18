@@ -19,10 +19,6 @@ class DeliverySets
 {
     use php\PropertiesTrait\ReadOnly;
 
-    /**
-     * @param array $sets
-     * @param array $payments
-     */
     public function __construct(array $sets, array $payments)
     {
         $this->properties = [
@@ -34,11 +30,9 @@ class DeliverySets
     private function countries(Core\Shop $shop): Core\DataQuery
     {
         $countries = [];
-        foreach ([$this->sets, $this->payments] as $record) {
-            foreach ($record['countries'] ?? [] as $codes) {
-                foreach ($codes ?? [] as $code) {
-                    $countries[$code] = $code;
-                }
+        foreach ($this->sets + $this->payments as $record) {
+            foreach ($record['countries'] ?? [] as $code) {
+                $countries[$code] = $code;
             }
         }
         return $shop->query(T::COUNTRY, static function (Core\Row $row) {
@@ -46,11 +40,6 @@ class DeliverySets
         }, [T\Country::ISOALPHA2 => ['IN', php\values($countries)]]);
     }
 
-    /**
-     * @param Core\Shop $shop
-     * @param bool $commit
-     * @return Generator
-     */
     public function __invoke(Core\Shop $shop, bool $commit = false): Generator
     {
         $countries = $this->countries($shop);
