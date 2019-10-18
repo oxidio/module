@@ -7,6 +7,19 @@
 call_user_func(static function () {
     /** @noinspection PhpIncludeInspection */
     exit(call_user_func(require getcwd() . '/vendor/autoload.php', static function () {
-        return Oxidio\cli(php\VENDOR\OXIDIO\OXIDIO, 'bin/di.php')->run();
+        $cli = Oxidio\cli(php\VENDOR\OXIDIO\OXIDIO, 'bin/di.php');
+        $cli->setVersion(<<<EOL
+ 
+                  _     __
+      ____  _  __(_)___/ /
+     / __ \| |/_/ / __  / 
+    / /_/ />  </ / /_/ / _     
+    \____/_/|_/_/\__,_/ (_)___ 
+                       / / __ \
+                      / / /_/ /   
+                     /_/\____/ {$cli->getVersion()}
+EOL
+);
+        return $cli->run();
     }));
 });
