@@ -139,7 +139,7 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
     public function modify($view, callable ...$observers): DataModify
     {
         return (new DataModify($view, ...$observers))->withDb($this->fix(function ($mode, ...$args) {
-            $this->setFetchMode($mode);
+            $this->fetchMode = $mode;
             return $this->executeUpdate(...$args);
         }));
     }
@@ -150,7 +150,7 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
         return function (...$args) use ($callable, $fetchMode) {
             $temp = is_object($this->proxy) ? $this->proxy->fetchMode : $this->fetchMode;
             $result = $callable($fetchMode, ...$args);
-            $this->setFetchMode($temp);
+            $this->fetchMode = $temp;
             return $result;
         };
     }
