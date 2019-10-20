@@ -60,6 +60,7 @@ namespace {$ns};
 
 interface {$class}
 {
+
 EOL
 );
         $this->fs->appendToFile($file, new php\Map($closure));
@@ -68,7 +69,7 @@ EOL
 
     private function table(Oxidio\Meta\Table $table): Generator
     {
-        $const = $this::constName($table->name, $this->class);
+        $const = $this::constName($table->name, $this->class, ['ox' => '', 'object2' => 'o2']);
         $this->tableClass = $this->class . '\\' . $const;
 
         yield '    /**';
@@ -101,7 +102,7 @@ EOL
         yield;
     }
 
-    private static function constName(string $value, string $class): string
+    private static function constName(string $value, string $class, $replacePrefix = 'ox'): string
     {
         static $cache = [];
         if (!isset($cache[$class])) {
@@ -111,6 +112,6 @@ EOL
                 $cache[$class] = [];
             }
         }
-        return strtoupper($cache[$class][$value] ?? Oxidio\Meta\Provider::beautify($value));
+        return strtoupper(Oxidio\Oxidio::sanitize(Oxidio\Oxidio::after($value, $replacePrefix)));
     }
 }

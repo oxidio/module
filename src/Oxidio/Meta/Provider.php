@@ -35,15 +35,6 @@ class Provider
 
     protected $data = [];
 
-    public static function beautify($input, $suffix = '_', $prefix = 'ox'): string
-    {
-        $input = $prefix && stripos($input, $prefix) === 0  ? substr($input, strlen($prefix)) : $input;
-        if ($suffix && in_array(strtolower($input), php\Composer\DIPackages::RESERVED, true)) {
-            return $input . $suffix;
-        }
-        return $input;
-    }
-
     /**
      * @see $db
      * @return Oxidio\Core\Database

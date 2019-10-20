@@ -6,6 +6,7 @@
 namespace Oxidio\Meta;
 
 use php;
+use Oxidio;
 use ReflectionClass;
 
 use OxidEsales\Eshop\{
@@ -218,8 +219,7 @@ class EditionClass
             if ($this->reflection->isSubclassOf(BaseModel::class)) {
                 $prefix = $this->fieldNs->shortName === $this->shortName . '\\' ? '' : $this->shortName . '_';
                 foreach ($this->instance->getFieldNames() as $fieldName) {
-                    $name = Provider::beautify($fieldName, false);
-                    $name = strtoupper($prefix . $name);
+                    $name = strtoupper($prefix . Oxidio\Oxidio::after($fieldName, 'ox'));
                     yield $fieldName => $this->provider->const([$this->fieldNs, $name], [
                         'value'    => "'$fieldName'",
                         'docBlock' => ["@see \\{$this->name}"]
