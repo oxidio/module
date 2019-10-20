@@ -25,8 +25,8 @@ use Oxidio\Enum\Tables as T;
 return static function (
     Core\Shop $shop,
     string $from = T::CONFIG,
-    array $columns = [T\Config::ID],
-    array $order = [T\Config::ID],
+    array $columns = [T\CONFIG::ID],
+    array $order = [T\CONFIG::ID],
     int $limit = 0,
     int $start = 0
 ) {

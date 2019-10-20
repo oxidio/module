@@ -20,7 +20,7 @@ class Shop
     public function __invoke(php\Cli\IO $io, Oxidio\Core\Shop $shop)
     {
         foreach (php\flatten($shop->categories()) as $key => $cat) {
-            $io->writeln(str_replace(['-', '/'], '_', strtoupper($key)) . ' : ' . $cat[T\Categories::TITLE]);
+            $io->writeln(str_replace(['-', '/'], '_', strtoupper($key)) . ' : ' . $cat[T\CATEGORIES::TITLE]);
         }
     }
 }

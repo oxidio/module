@@ -89,7 +89,7 @@ class Shop implements DataModificationInterface
                 $value = php\isCallable($value) ? $value($this) : $value;
                 if (is_string($view)) {
                     $modify = $this->modify($view);
-                    $value === null ? $modify->delete() : $modify->replace($value, T\Shops::ID);
+                    $value === null ? $modify->delete() : $modify->replace($value, T\SHOPS::ID);
                 } else if (is_iterable($value)) {
                     php\traverse($value);
                 }
@@ -133,13 +133,13 @@ class Shop implements DataModificationInterface
      *
      * @return DataQuery|Row[]
      */
-    public function categories($where = [T\Categories::PARENTID => self::CATEGORY_ROOT]): DataQuery
+    public function categories($where = [T\CATEGORIES::PARENTID => self::CATEGORY_ROOT]): DataQuery
     {
         return $this->query(T::CATEGORIES, function (Row $row) {
-            return php\mapKey(static::seo($row[T\Categories::TITLE]))->andValue(
-                $row->withChildren($this->categories([T\Categories::PARENTID => $row[T\Categories::ID]]))
+            return php\mapKey(static::seo($row[T\CATEGORIES::TITLE]))->andValue(
+                $row->withChildren($this->categories([T\CATEGORIES::PARENTID => $row[T\CATEGORIES::ID]]))
             );
-        }, $where)->orderBy(T\Categories::SORT);
+        }, $where)->orderBy(T\CATEGORIES::SORT);
     }
 
     /**
@@ -186,24 +186,24 @@ class Shop implements DataModificationInterface
         $table = $this->modify(T::CONFIG);
         $table->map($this->modulesConfig(), function (DataModify $table, $value, $name) {
             yield $table->update([
-                T\Config::VARVALUE => function ($column) use ($value) {
+                T\CONFIG::VARVALUE => function ($column) use ($value) {
                     return ["ENCODE(:$column, '{$this->configKey}')" => serialize($value)];
                 },
             ], [
-                T\Config::MODULE => Extension::SHOP,
-                T\Config::SHOPID => $this->id,
-                T\Config::VARNAME => $name
+                T\CONFIG::MODULE => Extension::SHOP,
+                T\CONFIG::SHOPID => $this->id,
+                T\CONFIG::VARNAME => $name
             ]);
         });
 
         $table->map($this->modules, function (DataModify $table, Extension $module) {
             if ($module->id && $module->status === $module::STATUS_REMOVED) {
                 yield $table->delete([
-                    T\Config::SHOPID => $this->id,
-                    T\Config::MODULE => "{$module->type}:{$module->id}",
+                    T\CONFIG::SHOPID => $this->id,
+                    T\CONFIG::MODULE => "{$module->type}:{$module->id}",
                 ], [
-                    T\Config::SHOPID => $this->id,
-                    T\Config::MODULE => $module->id,
+                    T\CONFIG::SHOPID => $this->id,
+                    T\CONFIG::MODULE => $module->id,
                 ]);
             }
         });
@@ -269,7 +269,7 @@ class Shop implements DataModificationInterface
     {
         return $this->query(T::SHOPS, function($id) {
             return $id;
-        })->orderBy(T\Shops::ID)->limit(1)[0] ?? static::DEFAULT_ID;
+        })->orderBy(T\SHOPS::ID)->limit(1)[0] ?? static::DEFAULT_ID;
     }
 
     protected function modulesConfig(): Generator

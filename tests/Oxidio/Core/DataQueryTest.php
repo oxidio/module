@@ -82,8 +82,8 @@ class DataQueryTest extends TestCase
             $row(['c']);
             $row(['c' => 'a']);
             $row('k', 'v');
-            return $row(T\Country::ISOALPHA2, T\Country::ISOALPHA3);
-        }, [T\Country::ISOALPHA2 => ['IN', ['DE', 'CH', 'NO']]])->orderBy(T\Country::ISOALPHA2);
+            return $row(T\COUNTRY::ISOALPHA2, T\COUNTRY::ISOALPHA3);
+        }, [T\COUNTRY::ISOALPHA2 => ['IN', ['DE', 'CH', 'NO']]])->orderBy(T\COUNTRY::ISOALPHA2);
 
         assert\equals(json_encode(['CH' => 'CHE', 'DE' => 'DEU', 'NO' => 'NOR']), json_encode($map));
     }
