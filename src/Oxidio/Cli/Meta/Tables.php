@@ -7,6 +7,7 @@ namespace Oxidio\Cli\Meta;
 
 use Closure;
 use Generator;
+use OxidEsales\Eshop\Core\Model\BaseModel;
 use php;
 use ReflectionClass;
 use ReflectionException;
@@ -43,7 +44,7 @@ class Tables
         }, $this->class);
     }
 
-    private function file(Closure $closure, string $class): void
+    private function file(Closure $closure, string $class, string $docBlock = ''): void
     {
         $ns = explode('\\', $class);
         $class = array_pop($ns);
@@ -58,6 +59,9 @@ class Tables
 
 namespace {$ns};
 
+/**
+ * {$docBlock}
+ */
 interface {$class}
 {
 
@@ -72,10 +76,13 @@ EOL
         $const = $this::constName($table->name, $this->class, ['ox' => '', 'object2' => 'o2']);
         $this->tableClass = $this->class . '\\' . $const;
 
+        $docBlock = "{$table->comment} [{$table->engine}]";
         yield '    /**';
-        yield "     * {$table->comment} [{$table->engine}]";
-        yield '     *';
-        yield "     * @see \\{$table->class}";
+        yield "     * {$docBlock}";
+        if ($table->class->name !== BaseModel::class) {
+            yield '     *';
+            yield "     * @see \\{$table->class}";
+        }
         yield '     */';
         yield "    public const {$const} = '{$table}';";
         yield;
@@ -83,7 +90,7 @@ EOL
             foreach ($table->columns as $column) {
                 yield from $this->column($column);
             }
-        }, $this->tableClass);
+        }, $this->tableClass, $docBlock);
     }
 
     private function column(Oxidio\Meta\Column $column): Generator
