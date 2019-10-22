@@ -12,6 +12,24 @@ use ReflectionException;
 class Oxidio
 {
     /**
+     * @var array
+     */
+    private const SEO_CHARS = [
+        '&amp;' => '',
+        '&quot;' => '',
+        '&#039;' => '',
+        '&lt;' => '',
+        '&gt;' => '',
+        'ä' => 'ae',
+        'ö' => 'oe',
+        'ü' => 'ue',
+        'Ä' => 'AE',
+        'Ö' => 'OE',
+        'Ü' => 'UE',
+        'ß' => 'ss',
+    ];
+
+    /**
      * @param string          $input
      * @param string|string[] $replacePrefix
      * @return string
@@ -44,5 +62,15 @@ class Oxidio
             }
         }
         return $cache[$class][$value] ?? null;
+    }
+
+    public static function seo($string, string $separator = '-', string $charset = 'UTF-8'): string
+    {
+        $string = html_entity_decode($string, ENT_QUOTES, $charset);
+        $string = str_replace(array_keys(self::SEO_CHARS), array_values(self::SEO_CHARS), $string);
+        return trim(
+            preg_replace(['#/+#', "/[^A-Za-z0-9\\/$separator]+/", '# +#', "#($separator)+#"], $separator, $string),
+            $separator
+        );
     }
 }

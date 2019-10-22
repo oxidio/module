@@ -5,8 +5,8 @@
 
 namespace Oxidio\Cli\Setup;
 
+use Oxidio\Oxidio;
 use php;
-
 use Generator;
 use Oxidio\Enum\Tables as T;
 use Oxidio\Core;
@@ -54,7 +54,7 @@ class DeliverySets
                     $parent = $row;
                     $path = [];
                     do {
-                        $path[] = strtolower($shop::seo($parent[T\CATEGORIES::TITLE]));
+                        $path[] = strtolower(Oxidio::seo($parent[T\CATEGORIES::TITLE]));
                     } while ($parent = $data[$parent[T\CATEGORIES::PARENTID]] ?? null);
                     $data[implode('/', array_reverse($path))] = $row;
                 }
