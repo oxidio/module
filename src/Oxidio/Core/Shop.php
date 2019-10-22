@@ -30,11 +30,6 @@ class Shop implements DataModificationInterface
     /**
      * @var string
      */
-    public const CATEGORY_ROOT = 'oxrootid';
-
-    /**
-     * @var string
-     */
     protected const DEFAULT_CONFIG_KEY = 'fq45QS09_fqyx09239QQ';
 
     /**
@@ -126,20 +121,6 @@ class Shop implements DataModificationInterface
             $diff -= $length - strlen($token);
         }
         return implode('', array_reverse($tokens));
-    }
-
-    /**
-     * @param array $where
-     *
-     * @return DataQuery|Row[]
-     */
-    public function categories($where = [T\CATEGORIES::PARENTID => self::CATEGORY_ROOT]): DataQuery
-    {
-        return $this->query(T::CATEGORIES, function (Row $row) {
-            return php\mapKey(static::seo($row[T\CATEGORIES::TITLE]))->andValue(
-                $row->withChildren($this->categories([T\CATEGORIES::PARENTID => $row[T\CATEGORIES::ID]]))
-            );
-        }, $where)->orderBy(T\CATEGORIES::SORT);
     }
 
     /**
