@@ -9,8 +9,6 @@ use Closure;
 use Generator;
 use OxidEsales\Eshop\Core\Model\BaseModel;
 use php;
-use ReflectionClass;
-use ReflectionException;
 use Symfony\Component\Filesystem\Filesystem;
 use Oxidio;
 
@@ -24,10 +22,10 @@ class Tables
     /**
      * Analyze and generate table constants (tables, columns)
      *
-     * @param php\Cli\IO $io
-     * @param Oxidio\Core\Shop  $shop
-     * @param string     $class class name [Oxidio\Enum\Tables]
-     * @param string     $dir
+     * @param php\Cli\IO       $io
+     * @param Oxidio\Core\Shop $shop
+     * @param string           $class class name [Oxidio\Enum\Tables]
+     * @param string           $dir
      */
     public function __invoke(
         php\Cli\IO $io,
@@ -66,7 +64,7 @@ interface {$class}
 {
 
 EOL
-);
+        );
         $this->fs->appendToFile($file, new php\Map($closure));
         $this->fs->appendToFile($file, '}');
     }
@@ -109,16 +107,9 @@ EOL
         yield;
     }
 
-    private static function constName(string $value, string $class, $replacePrefix = 'ox'): string
+    private static function constName(string $value, string $class, $replace = 'ox'): string
     {
-        static $cache = [];
-        if (!isset($cache[$class])) {
-            try {
-                $cache[$class] = array_flip((new ReflectionClass($class))->getConstants());
-            } catch (ReflectionException $e) {
-                $cache[$class] = [];
-            }
-        }
-        return strtoupper(Oxidio\Oxidio::sanitize(Oxidio\Oxidio::after($value, $replacePrefix)));
+        return Oxidio\Oxidio::constName($value, $class) ??
+            strtoupper(Oxidio\Oxidio::sanitize(Oxidio\Oxidio::after($value, $replace)));
     }
 }
