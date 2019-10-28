@@ -72,7 +72,7 @@ class DataQuery extends AbstractSelectStatement
         }
 
         return ($class = $params[0]->getClass())
-            ? $this->fromCallableWithClass($from, $class, array_slice($params, 1)) : function(array $row) use($from, $params) {
+            ? $this->fromCallableWithClass($from, $class, array_slice($params, 1)) : function (array $row) use($from, $params) {
                 $args = php\values(static::args($row, $params[0], ...array_slice($params, 1)));
                 return $from(...$args);
             };
