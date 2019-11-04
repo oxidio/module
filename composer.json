@@ -52,7 +52,6 @@
     }
   },
   "minimum-stability": "dev",
-  "prefer-stable": true,
   "bin": [
     "bin/oxidio"
   ],
