@@ -38,7 +38,7 @@ class Module implements JsonSerializable
      */
     protected function resolvePackage(): php\Package
     {
-        return php\package($this->id);
+        return php\Package::get($this->id);
     }
 
     /**
@@ -49,7 +49,7 @@ class Module implements JsonSerializable
     {
         $package = $this->package;
         ($di = $package->extra['di'] ?? []) && $di = $package->file($di);
-        return php\di(
+        return php\DI::create(
             [ID => $this->id, self::class => $this,],
             $di,
             php\Composer\DIClassLoader::instance()->getContainer()
