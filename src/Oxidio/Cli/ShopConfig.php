@@ -41,11 +41,11 @@ class ShopConfig
             }
             $table[] = ['module' => $module, 'entry' => $name, 'value' => $value, 'diff' => $diff];
         }
-        php\io($table)->toCli($io);
+        (new php\Cli\Renderable($table))->toCli($io);
 
-        $io->isVeryVerbose() && php\io(php\map($shop->config, static function ($value, $name) {
+        $io->isVeryVerbose() && (new php\Cli\Renderable(php\map($shop->config, static function ($value, $name) {
             return "'$name' => " . (is_array($value) ? new php\ArrayExport($value) : var_export($value, true)) . ',';
-        })->string)->toCli($io);
+        })->string))->toCli($io);
 
         if ($action === self::CLEAN) {
             $shop([T::TPLBLOCKS => null, T::CONFIGDISPLAY => null, T::CONFIG => null]);
@@ -55,7 +55,7 @@ class ShopConfig
         }
 
         foreach ($shop->commit(!$dryRun) as $item) {
-            $io->isVerbose() && php\io((object)$item)->toCli($io);
+            $io->isVerbose() && (new php\Cli\Renderable((object)$item))->toCli($io);
         }
     }
 }

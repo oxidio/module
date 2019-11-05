@@ -70,7 +70,7 @@ class Functions
      */
     public static function cli($package = null, ...$args): php\Cli
     {
-        $cli = php\cli(
+        $cli = php\Cli::fromPackage(
             $package ?? [],
             (new DI\RegistryResolver)->container,
             [

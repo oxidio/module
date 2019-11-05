@@ -38,6 +38,6 @@ return static function (
     });
 
     foreach ($shop->commit($commit) as $result) {
-        yield php\io((object)$result, php\Cli\IO::VERBOSITY_VERBOSE);
+        yield new php\Cli\Renderable((object)$result, php\Cli\IO::VERBOSITY_VERBOSE);
     }
 };
