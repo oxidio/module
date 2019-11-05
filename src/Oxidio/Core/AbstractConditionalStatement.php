@@ -5,7 +5,7 @@
 
 namespace Oxidio\Core;
 
-use php;
+use Php;
 use Oxidio;
 
 /**
@@ -16,11 +16,11 @@ use Oxidio;
 abstract class AbstractConditionalStatement
 {
     /**
-     * @see  \php\PropertiesTrait::propResolver
+     * @see  \Php\PropertiesTrait::propResolver
      * @uses resolveDb, resolveView, resolveWhereTerms
      */
 
-    use php\PropertiesTrait\ReadOnly;
+    use Php\PropertiesTrait\ReadOnly;
 
     /**
      * @param callable $db
@@ -57,8 +57,8 @@ abstract class AbstractConditionalStatement
      */
     public function buildWhere(array $terms, string $prefix = "\nWHERE "): string
     {
-        $where = implode(' OR ', php\traverse($terms, function ($term) {
-            if ($term = is_iterable($term) ? implode(' AND ', php\traverse($term, function ($candidate, $column) {
+        $where = implode(' OR ', Php\traverse($terms, function ($term) {
+            if ($term = is_iterable($term) ? implode(' AND ', Php\traverse($term, function ($candidate, $column) {
                 $value = $candidate;
                 $operator = null;
                 if (is_iterable($candidate)) {
@@ -71,7 +71,7 @@ abstract class AbstractConditionalStatement
                     $value = 'NULL';
                     $operator = $operator ?: 'IS';
                 } else if (is_iterable($value)) {
-                    $value = php\traverse($value, function ($entry) {
+                    $value = Php\traverse($value, function ($entry) {
                         return "'$entry'";
                     });
                     if (($operator === 'IN' || $operator === 'NOT IN') && !$value) {
@@ -97,7 +97,7 @@ abstract class AbstractConditionalStatement
      */
     protected function resolveView(): void
     {
-        php\fail(__METHOD__);
+        Php\fail(__METHOD__);
     }
 
     /**
@@ -105,7 +105,7 @@ abstract class AbstractConditionalStatement
      */
     public function resolveDb(): void
     {
-        php\fail(__METHOD__);
+        Php\fail(__METHOD__);
     }
 
     /**

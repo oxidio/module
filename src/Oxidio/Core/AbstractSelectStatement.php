@@ -8,7 +8,7 @@ namespace Oxidio\Core;
 use ArrayAccess;
 use Countable;
 use IteratorAggregate;
-use php;
+use Php;
 use JsonSerializable;
 use Oxidio;
 
@@ -26,11 +26,11 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
     Countable
 {
     /**
-     * @see \php\PropertiesTrait::propResolver
+     * @see \Php\PropertiesTrait::propResolver
      * @uses resolveLimit, resolveStart, resolveTotal, resolveColumns, resolveOrderTerms
      */
 
-    use php\ArrayAccessTrait;
+    use Php\ArrayAccessTrait;
 
     protected $mapper;
 
@@ -40,7 +40,7 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
     protected function data(): array
     {
         if ($this->data === null) {
-            $this->data = php\traverse($this->properties['it'] ?? $this->getIterator());
+            $this->data = Php\traverse($this->properties['it'] ?? $this->getIterator());
         }
         return $this->data;
     }
@@ -74,9 +74,9 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
      */
     public function buildOrderBy(array $terms, string $prefix = "\nORDER BY "): string
     {
-        $order = implode(', ', php\traverse($terms, function ($term) {
+        $order = implode(', ', Php\traverse($terms, function ($term) {
             return implode(', ',
-                php\traverse(is_iterable($term) ? $term : (array)$term, function ($direction, $property) {
+                Php\traverse(is_iterable($term) ? $term : (array)$term, function ($direction, $property) {
                     if (is_numeric($property)) {
                         $property = $direction;
                         $direction = 'ASC';
@@ -144,9 +144,9 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
     /**
      * @inheritdoc
      *
-     * @return php\Map
+     * @return Php\Map
      */
-    public function getIterator(): php\Map
+    public function getIterator(): Php\Map
     {
         $this->data = null;
         return $this->properties['it'] = ($this->db)($this, ...($this->mapper ? [$this->mapper] : []));

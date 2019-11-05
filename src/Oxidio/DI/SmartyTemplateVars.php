@@ -6,7 +6,7 @@
 namespace Oxidio\DI;
 
 use ArrayAccess;
-use php;
+use Php;
 use Generator;
 use Invoker\ParameterResolver\TypeHintVariadicResolver;
 use IteratorAggregate;
@@ -59,9 +59,9 @@ class SmartyTemplateVars implements ArrayAccess, IteratorAggregate
     /**
      * @inheritdoc
      */
-    public function getIterator(): php\Map
+    public function getIterator(): Php\Map
     {
-        return php\map($this->smarty->get_template_vars());
+        return Php\map($this->smarty->get_template_vars());
     }
 
     /**
@@ -85,7 +85,7 @@ class SmartyTemplateVars implements ArrayAccess, IteratorAggregate
      */
     public function offsetSet($offset, $value): void
     {
-        php\fail($offset);
+        Php\fail($offset);
     }
 
     /**
@@ -93,6 +93,6 @@ class SmartyTemplateVars implements ArrayAccess, IteratorAggregate
      */
     public function offsetUnset($offset): void
     {
-        php\fail($offset);
+        Php\fail($offset);
     }
 }

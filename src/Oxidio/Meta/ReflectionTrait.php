@@ -5,15 +5,15 @@
 
 namespace Oxidio\Meta;
 
-use php;
+use Php;
 
 /**
  * @property-read string $name
  */
 trait ReflectionTrait
 {
-    use php\PropertiesTrait\ReadOnly;
-    use php\PropertiesTrait\Init;
+    use Php\PropertiesTrait\ReadOnly;
+    use Php\PropertiesTrait\Init;
 
     /**
      * @var Provider
@@ -44,7 +44,7 @@ trait ReflectionTrait
     {
         $this->__get($property);
         foreach ($lines as $line) {
-            if (!$line || !php\hasValue($line, $this->$property)) {
+            if (!$line || !Php\hasValue($line, $this->$property)) {
                 $this->properties[$property][] = $line;
             }
         }

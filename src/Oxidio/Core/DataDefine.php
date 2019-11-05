@@ -5,7 +5,7 @@
 
 namespace Oxidio\Core;
 
-use php;
+use Php;
 use Generator;
 use Oxidio;
 
@@ -60,7 +60,7 @@ class DataDefine
                         yield $sql => $dryRun;
                     }
                     foreach (is_iterable($result) ? $result : [] as $sql => $params) {
-                        if (php\isCallable($params)) {
+                        if (Php\isCallable($params)) {
                             yield from $params($dryRun);
                         } else {
                             $count = $dryRun ? 0 : $db->executeUpdate($sql, ...$params);

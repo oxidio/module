@@ -5,7 +5,7 @@
 
 namespace Oxidio;
 
-use php;
+use Php;
 use Generator;
 
 /**
@@ -25,19 +25,19 @@ return static function (
     string $status = '',
     ...$modules
 ): Generator {
-    yield php\traverse($shop->modules, function (Core\Extension $module) use ($modules, $status, $invert) {
+    yield Php\traverse($shop->modules, function (Core\Extension $module) use ($modules, $status, $invert) {
         return [
             'id' => $module->id,
             'version' => $module->version,
             'status:before' => $module->status,
-            'status:after' => ($invert xor php\hasValue($module->id, $modules)) ?
+            'status:after' => ($invert xor Php\hasValue($module->id, $modules)) ?
                 $module->status = $status :
                 $module->status,
-            'config' => json_encode(php\traverse($module->config), JSON_PRETTY_PRINT),
+            'config' => json_encode(Php\traverse($module->config), JSON_PRETTY_PRINT),
         ];
     });
 
     foreach ($shop->commit($commit) as $result) {
-        yield php\io((object)$result, php\Cli\IO::VERBOSITY_VERBOSE);
+        yield new Php\Cli\Renderable((object)$result, Php\Cli\IO::VERBOSITY_VERBOSE);
     }
 };

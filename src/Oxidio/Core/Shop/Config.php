@@ -199,10 +199,10 @@ class Config
             foreach ($this->config as $module => $config) {
                 foreach ($config as $key => $value) {
                     yield $shop::id($module, $key) => [
-                        T\Config::MODULE => $module,
-                        T\Config::VARNAME => $key,
-                        T\Config::VARTYPE => self::assumeType($value, $key),
-                        T\Config::VARVALUE => static function ($column) use ($value, $shop) {
+                        T\CONFIG::MODULE => $module,
+                        T\CONFIG::VARNAME => $key,
+                        T\CONFIG::VARTYPE => self::assumeType($value, $key),
+                        T\CONFIG::VARVALUE => static function ($column) use ($value, $shop) {
                             return ["ENCODE(:$column, '{$shop->configKey}')" => is_array($value) ? serialize($value) : $value];
                         },
                     ];

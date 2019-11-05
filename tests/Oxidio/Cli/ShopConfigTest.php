@@ -6,7 +6,7 @@
 namespace Oxidio\Cli;
 
 use Oxidio\Functions;
-use php\Cli\IO;
+use Php\Cli\IO;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\BufferedOutput;

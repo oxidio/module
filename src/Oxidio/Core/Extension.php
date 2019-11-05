@@ -5,28 +5,28 @@
 
 namespace Oxidio\Core;
 
-use php;
+use Php;
 use JsonSerializable;
 use Oxidio\Enum\Tables as T;
 
 /**
- * @property string $status
- * @property-read string $id
- * @property-read string $type
- * @property-read string $version
- * @property-read string $path
+ * @property string        $status
+ * @property-read string   $id
+ * @property-read string   $type
+ * @property-read string   $version
+ * @property-read string   $path
  * @property-read string[] $controllers
- * @property-read array[] $events
+ * @property-read array[]  $events
  * @property-read string[] $classes aModuleFiles|aModules|aModuleExtensions ['cl', 'ox-cl' => 'cl']
- * @property-read array $templates
- * @property-read array $files
- * @property php\Map $config
+ * @property-read array    $templates
+ * @property-read array    $files
+ * @property Php\Map       $config
  *
  */
 class Extension implements JsonSerializable
 {
-    use php\PropertiesTrait;
-    use php\PropertiesTrait\Init;
+    use Php\PropertiesTrait;
+    use Php\PropertiesTrait\Init;
 
     public const STATUS_ACTIVE = 'active';
     public const STATUS_INACTIVE = 'inactive';
@@ -80,8 +80,8 @@ class Extension implements JsonSerializable
      */
     protected static function shopData(Shop $shop): array
     {
-        $from = php\str('(SELECT ' .
-            php\map([
+        $from = Php\str('(SELECT ' .
+            Php\map([
                 '{c.shop} shop',
                 '{c.mod} module',
                 '{c.var} name',
@@ -95,31 +95,31 @@ class Extension implements JsonSerializable
                 'pass' => $shop->configKey,
                 'c' => T::CONFIG . ' c',
                 'cd' => T::CONFIGDISPLAY . ' cd',
-                'c.mod' => 'c.' . T\Config::MODULE,
-                'c.shop' => 'c.' . T\Config::SHOPID,
-                'c.var' => 'c.' . T\Config::VARNAME,
-                'c.val' => 'c.' . T\Config::VARVALUE,
-                'c.type' => 'c.' . T\Config::VARTYPE,
-                'cd.mod' => 'cd.' . T\Configdisplay::CFGMODULE,
-                'cd.var' => 'cd.' . T\Configdisplay::CFGVARNAME,
-                'cd.gr' => 'cd.' . T\Configdisplay::GROUPING,
-                'cd.pos' => 'cd.' . T\Configdisplay::POS,
+                'c.mod' => 'c.' . T\CONFIG::MODULE,
+                'c.shop' => 'c.' . T\CONFIG::SHOPID,
+                'c.var' => 'c.' . T\CONFIG::VARNAME,
+                'c.val' => 'c.' . T\CONFIG::VARVALUE,
+                'c.type' => 'c.' . T\CONFIG::VARTYPE,
+                'cd.mod' => 'cd.' . T\CONFIGDISPLAY::CFGMODULE,
+                'cd.var' => 'cd.' . T\CONFIGDISPLAY::CFGVARNAME,
+                'cd.gr' => 'cd.' . T\CONFIGDISPLAY::GROUPING,
+                'cd.pos' => 'cd.' . T\CONFIGDISPLAY::POS,
             ]
         );
 
         $query = $shop->query($from, ['shop' => $shop->id])->orderBy('module', 'gr', 'pos', 'name');
-        return php\traverse(php\map($query,
+        return Php\traverse(Php\map($query,
             static function (array $row) {
                 ['module' => $module, 'value' => $value, 'name' => $name] = $row;
                 strpos($row['type'], 'rr') && $value = unserialize($value, [null]);
                 if ($module && strpos($module, ':') === false) {
                     $module = static::MODULE . ':' . $module;
                 }
-                return php\mapGroup($module)->andKey($name)->andValue($value);
+                return Php\mapGroup($module)->andKey($name)->andValue($value);
             }
         ), static function (array $config, $module) {
             [$type, $module] = explode(':', $module . ':');
-            return php\mapKey((string)$module)->andValue([
+            return Php\mapKey((string)$module)->andValue([
                 'config' => $config,
                 'type' => (string)$type,
             ]);
@@ -128,16 +128,16 @@ class Extension implements JsonSerializable
 
     /**
      * @param Shop $shop
-     * @return php\Map|static[]
+     * @return Php\Map|static[]
      */
-    public static function all(Shop $shop): php\Map
+    public static function all(Shop $shop): Php\Map
     {
         $data = static::shopData($shop);
         $conf = $data[self::SHOP]['config'] ?? [];
 
         $attr = function (array $data, $attr): array {
-            return php\traverse($data, static function ($value, $module) use ($attr) {
-                return php\mapKey($module)->andValue([$attr => $value]);
+            return Php\traverse($data, static function ($value, $module) use ($attr) {
+                return Php\mapKey($module)->andValue([$attr => $value]);
             });
         };
 
@@ -153,11 +153,11 @@ class Extension implements JsonSerializable
         );
 
         unset($data[self::SHOP]['config']['aDisabledModules']);
-        foreach (php\keys(self::CONFIG_KEYS) as $key) {
+        foreach (Php\keys(self::CONFIG_KEYS) as $key) {
             unset($data[self::SHOP]['config'][$key]);
         }
 
-        return php\map($data, static function (array $ext, $id) use ($shop) {
+        return Php\map($data, static function (array $ext, $id) use ($shop) {
             return new static($shop, $ext + ['id' => $id]);
         });
     }
@@ -188,10 +188,10 @@ class Extension implements JsonSerializable
 
     /**
      * @see $config
-     * @return php\Map
+     * @return Php\Map
      */
-    protected function resolveConfig(): php\Map
+    protected function resolveConfig(): Php\Map
     {
-        return php\map($this->properties['config'] ?? []);
+        return Php\map($this->properties['config'] ?? []);
     }
 }

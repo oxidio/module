@@ -21,189 +21,189 @@ return static function (Core\Shop $shop, bool $commit = false): Generator {
 
     $payment = function(array $record) {
         return $record + [
-            T\Payments::ADDSUM      => 0,
-            T\Payments::FROMAMOUNT  => 0,
-            T\Payments::TOAMOUNT    => 1000000,
-            T\Payments::ADDSUMTYPE  => 'abs',
-            T\Payments::ADDSUMRULES => 15,
-            T\Payments::ACTIVE      => true,
-            T\Payments::CHECKED     => false,
+            T\PAYMENTS::ADDSUM      => 0,
+            T\PAYMENTS::FROMAMOUNT  => 0,
+            T\PAYMENTS::TOAMOUNT    => 1000000,
+            T\PAYMENTS::ADDSUMTYPE  => 'abs',
+            T\PAYMENTS::ADDSUMRULES => 15,
+            T\PAYMENTS::ACTIVE      => true,
+            T\PAYMENTS::CHECKED     => false,
             'groups'                 => [],
         ];
     };
 
     $ds = new Cli\Setup\DeliverySets([
         'DS_HAULER_DE' => [
-            T\Deliveryset::TITLE => 'Spedition (DE)',
-            T\Deliveryset::POS => 100,
-            T\Deliveryset::ACTIVE => true,
+            T\DELIVERYSET::TITLE => 'Spedition (DE)',
+            T\DELIVERYSET::POS => 100,
+            T\DELIVERYSET::ACTIVE => true,
             'countries' => $de,
             'rules' => [
                 'FREE' => [
-                    T\Delivery::TITLE => 'Spedition DE -> Portofrei',
-                    T\Delivery::SORT => 110,
+                    T\DELIVERY::TITLE => 'Spedition DE -> Portofrei',
+                    T\DELIVERY::SORT => 110,
                     'categories' => ['kiteboarding/kites'],
                 ],
             ],
         ],
         'DS_HAULER_EU' => [
-            T\Deliveryset::TITLE => 'Spedition (EU)',
-            T\Deliveryset::POS => 200,
-            T\Deliveryset::ACTIVE => true,
+            T\DELIVERYSET::TITLE => 'Spedition (EU)',
+            T\DELIVERYSET::POS => 200,
+            T\DELIVERYSET::ACTIVE => true,
             'countries' => $eu,
             'rules' => [
                 'PORTO' => [
-                    T\Delivery::TITLE => 'Spedition EU -> 50 € Porto',
-                    T\Delivery::SORT => 210,
-                    T\Delivery::ADDSUM => 50,
+                    T\DELIVERY::TITLE => 'Spedition EU -> 50 € Porto',
+                    T\DELIVERY::SORT => 210,
+                    T\DELIVERY::ADDSUM => 50,
                     'categories' => ['kiteboarding/kites'],
                 ],
             ],
         ],
         'DS_HAULER_CH' => [
-            T\Deliveryset::TITLE => 'Spedition (CH)',
-            T\Deliveryset::POS => 300,
-            T\Deliveryset::ACTIVE => true,
+            T\DELIVERYSET::TITLE => 'Spedition (CH)',
+            T\DELIVERYSET::POS => 300,
+            T\DELIVERYSET::ACTIVE => true,
             'countries' => $ch,
             'rules' => [
                 'PORTO' => [
-                    T\Delivery::TITLE => 'Spedition CH -> 170 € Porto',
-                    T\Delivery::SORT => 310,
-                    T\Delivery::ADDSUM => 170,
+                    T\DELIVERY::TITLE => 'Spedition CH -> 170 € Porto',
+                    T\DELIVERY::SORT => 310,
+                    T\DELIVERY::ADDSUM => 170,
                     'categories' => ['kiteboarding/kites'],
                 ],
             ],
         ],
         'DS_HAULER_NO' => [
-            T\Deliveryset::TITLE => 'Spedition (NO)',
-            T\Deliveryset::POS => 400,
-            T\Deliveryset::ACTIVE => true,
+            T\DELIVERYSET::TITLE => 'Spedition (NO)',
+            T\DELIVERYSET::POS => 400,
+            T\DELIVERYSET::ACTIVE => true,
             'countries' => $no,
             'rules' => [
                 'PORTO' => [
-                    T\Delivery::TITLE => 'Spedition NO -> 170 € Porto',
-                    T\Delivery::SORT => 410,
-                    T\Delivery::ADDSUM => 170,
+                    T\DELIVERY::TITLE => 'Spedition NO -> 170 € Porto',
+                    T\DELIVERY::SORT => 410,
+                    T\DELIVERY::ADDSUM => 170,
                     'categories' => ['kiteboarding/kites'],
                 ],
             ],
         ],
         'oxidstandard' => [
-            T\Deliveryset::TITLE => 'DHL Paket (DE)',
-            T\Deliveryset::POS => 500,
-            T\Deliveryset::ACTIVE => true,
+            T\DELIVERYSET::TITLE => 'DHL Paket (DE)',
+            T\DELIVERYSET::POS => 500,
+            T\DELIVERYSET::ACTIVE => true,
             'countries' => $de,
             'rules' => [
                 'PORTO' => [
-                    T\Delivery::TITLE => 'DHL DE bis 30 € -> 5 € Porto',
-                    T\Delivery::SORT => 510,
-                    T\Delivery::ADDSUM => 5,
-                    T\Delivery::PARAM => 0,
-                    T\Delivery::PARAMEND => 29.99,
+                    T\DELIVERY::TITLE => 'DHL DE bis 30 € -> 5 € Porto',
+                    T\DELIVERY::SORT => 510,
+                    T\DELIVERY::ADDSUM => 5,
+                    T\DELIVERY::PARAM => 0,
+                    T\DELIVERY::PARAMEND => 29.99,
                 ],
                 'FREE' => [
-                    T\Delivery::TITLE => 'DHL DE ab 30 € -> Portofrei',
-                    T\Delivery::SORT => 520,
-                    T\Delivery::ADDSUM => 0,
-                    T\Delivery::PARAM => 30,
-                    T\Delivery::PARAMEND => 1000000,
+                    T\DELIVERY::TITLE => 'DHL DE ab 30 € -> Portofrei',
+                    T\DELIVERY::SORT => 520,
+                    T\DELIVERY::ADDSUM => 0,
+                    T\DELIVERY::PARAM => 30,
+                    T\DELIVERY::PARAMEND => 1000000,
                 ],
             ],
         ],
         'DS_DHL_EU' => [
-            T\Deliveryset::TITLE => 'DHL Paket (EU)',
-            T\Deliveryset::POS => 600,
-            T\Deliveryset::ACTIVE => true,
+            T\DELIVERYSET::TITLE => 'DHL Paket (EU)',
+            T\DELIVERYSET::POS => 600,
+            T\DELIVERYSET::ACTIVE => true,
             'countries' => $eu,
             'rules' => [
                 'PORTO' => [
-                    T\Delivery::TITLE => 'DHL EU bis 100 € -> 10 € Porto',
-                    T\Delivery::SORT => 610,
-                    T\Delivery::ADDSUM => 10,
-                    T\Delivery::PARAM => 0,
-                    T\Delivery::PARAMEND => 99.99,
+                    T\DELIVERY::TITLE => 'DHL EU bis 100 € -> 10 € Porto',
+                    T\DELIVERY::SORT => 610,
+                    T\DELIVERY::ADDSUM => 10,
+                    T\DELIVERY::PARAM => 0,
+                    T\DELIVERY::PARAMEND => 99.99,
                 ],
                 'FREE' => [
-                    T\Delivery::TITLE => 'DHL EU ab 100 € -> Portofrei',
-                    T\Delivery::SORT => 620,
-                    T\Delivery::ADDSUM => 0,
-                    T\Delivery::PARAM => 100,
-                    T\Delivery::PARAMEND => 1000000,
+                    T\DELIVERY::TITLE => 'DHL EU ab 100 € -> Portofrei',
+                    T\DELIVERY::SORT => 620,
+                    T\DELIVERY::ADDSUM => 0,
+                    T\DELIVERY::PARAM => 100,
+                    T\DELIVERY::PARAMEND => 1000000,
                 ],
             ],
         ],
         'DS_DHL_CH' => [
-            T\Deliveryset::TITLE => 'DHL Paket (CH)',
-            T\Deliveryset::POS => 700,
-            T\Deliveryset::ACTIVE => true,
+            T\DELIVERYSET::TITLE => 'DHL Paket (CH)',
+            T\DELIVERYSET::POS => 700,
+            T\DELIVERYSET::ACTIVE => true,
             'countries' => $ch,
             'rules' => [
                 'PORTO' => [
-                    T\Delivery::TITLE => 'DHL CH -> 24,37 € Porto',
-                    T\Delivery::SORT => 710,
-                    T\Delivery::ADDSUM => 24.37,
+                    T\DELIVERY::TITLE => 'DHL CH -> 24,37 € Porto',
+                    T\DELIVERY::SORT => 710,
+                    T\DELIVERY::ADDSUM => 24.37,
                 ],
             ],
         ],
         'DS_DHL_NO' => [
-            T\Deliveryset::TITLE => 'DHL Paket (NO)',
-            T\Deliveryset::POS => 800,
-            T\Deliveryset::ACTIVE => true,
+            T\DELIVERYSET::TITLE => 'DHL Paket (NO)',
+            T\DELIVERYSET::POS => 800,
+            T\DELIVERYSET::ACTIVE => true,
             'countries' => $no,
             'rules' => [
                 'PORTO' => [
-                    T\Delivery::TITLE => 'DHL NO -> 29,41 € Porto',
-                    T\Delivery::SORT => 810,
-                    T\Delivery::ADDSUM => 29.41,
+                    T\DELIVERY::TITLE => 'DHL NO -> 29,41 € Porto',
+                    T\DELIVERY::SORT => 810,
+                    T\DELIVERY::ADDSUM => 29.41,
                 ],
             ],
         ],
     ], [
         'oxidcashondel' => $payment([
-            T\Payments::DESC => 'Nachnahme',
-            T\Payments::ADDSUM => 5,
-            T\Payments::TOAMOUNT => 2500,
+            T\PAYMENTS::DESC => 'Nachnahme',
+            T\PAYMENTS::ADDSUM => 5,
+            T\PAYMENTS::TOAMOUNT => 2500,
             'countries' => $de
         ]),
         'oxidpayadvance' => $payment([
-            T\Payments::DESC => 'Vorkasse',
-            T\Payments::CHECKED => true
+            T\PAYMENTS::DESC => 'Vorkasse',
+            T\PAYMENTS::CHECKED => true
         ]),
         'oxidinvoice' => $payment([
-            T\Payments::DESC => 'Rechnung',
+            T\PAYMENTS::DESC => 'Rechnung',
             'groups' => ['oxiddealer'],
         ]),
         'oxempty' => $payment([
-            T\Payments::DESC => 'Empty',
-            T\Payments::TOAMOUNT => 0
+            T\PAYMENTS::DESC => 'Empty',
+            T\PAYMENTS::TOAMOUNT => 0
         ]),
         'payppaypalplus' => $payment([
-            T\Payments::DESC => 'PayPal Plus',
-            T\Payments::TOAMOUNT => 10000
+            T\PAYMENTS::DESC => 'PayPal Plus',
+            T\PAYMENTS::TOAMOUNT => 10000
         ]),
         'oxidpaypal' => $payment([
-            T\Payments::DESC => 'PayPal',
-            T\Payments::TOAMOUNT => 99999
+            T\PAYMENTS::DESC => 'PayPal',
+            T\PAYMENTS::TOAMOUNT => 99999
         ]),
         'klarna_pay_now' => $payment([
-            T\Payments::DESC => 'Sofort bezahlen'
+            T\PAYMENTS::DESC => 'Sofort bezahlen'
         ]),
         'klarna_pay_later' => $payment([
-            T\Payments::DESC => 'Klarna Rechnung',
+            T\PAYMENTS::DESC => 'Klarna Rechnung',
             'countries' => $de
         ]),
         'klarna_slice_it' => $payment([
-            T\Payments::DESC => 'Klarna Ratenkauf',
-            T\Payments::ACTIVE => false,
+            T\PAYMENTS::DESC => 'Klarna Ratenkauf',
+            T\PAYMENTS::ACTIVE => false,
         ]),
         'PAYMENT_CREDIT_PURCHASE' => $payment([
-            T\Payments::DESC => 'Zielkauf',
-            T\Payments::FROMAMOUNT => 250,
+            T\PAYMENTS::DESC => 'Zielkauf',
+            T\PAYMENTS::FROMAMOUNT => 250,
             'countries' => $de
         ]),
         'PAYMENT_FINANCING' => $payment([
-            T\Payments::DESC => 'Finanzierung',
-            T\Payments::FROMAMOUNT => 250,
+            T\PAYMENTS::DESC => 'Finanzierung',
+            T\PAYMENTS::FROMAMOUNT => 250,
             'countries' => $de
         ]),
     ]);

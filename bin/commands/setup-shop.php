@@ -5,8 +5,8 @@
 
 namespace Oxidio\Cli;
 
-use php;
-use php\Cli\IO;
+use Php;
+use Php\Cli\IO;
 use OxidEsales\EshopCommunity\Setup\{Dispatcher, Exception\SetupControllerExitException};
 
 /**
@@ -18,11 +18,11 @@ use OxidEsales\EshopCommunity\Setup\{Dispatcher, Exception\SetupControllerExitEx
  */
 return static function (IO $io, Dispatcher $dispatcher, $action) {
     $setup = $dispatcher->getInstance('Setup');
-    php\some(php\keys($setup->getSteps()), function (string $id) use ($action) {
+    Php\some(Php\keys($setup->getSteps()), function (string $id) use ($action) {
         $method = str_replace('_', '', str_ireplace('step_', '', $id));
 
         return strtoupper($action) === $method;
-    }) || php\fail('unsupported $action %s', $action);
+    }) || Php\fail('unsupported $action %s', $action);
 
     $controller = $dispatcher->getInstance('Controller');
     $view = $controller->getView();

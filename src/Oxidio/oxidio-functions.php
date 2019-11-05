@@ -5,7 +5,7 @@
 
 namespace Oxidio
 {
-    use php;
+    use Php;
     use OxidEsales\Eshop;
 
     function db(...$args): Core\Database
@@ -17,11 +17,11 @@ namespace Oxidio
      * @param string $sql
      * @param callable ...$mapper
      *
-     * @return php\Map|array[]
+     * @return Php\Map|array[]
      */
-    function select($sql, callable ...$mapper): php\Map
+    function select($sql, callable ...$mapper): Php\Map
     {
-        return php\map(db()->select((string)$sql), ...$mapper);
+        return Php\map(db()->select((string)$sql), ...$mapper);
     }
 
     /**
@@ -46,12 +46,12 @@ namespace Oxidio
     }
 
     /**
-     * @param php\Package|string|array $package
-     * @param string|callable|array ...$args
+     * @param Php\Package|string|array $package
+     * @param string|callable|array    ...$args
      *
-     * @return php\Cli
+     * @return Php\Cli
      */
-    function cli($package = null, ...$args): php\Cli
+    function cli($package = null, ...$args): Php\Cli
     {
         return Functions::cli(...func_get_args());
     }

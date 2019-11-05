@@ -5,8 +5,8 @@
 
 namespace Oxidio\Module;
 
-use php;
-use php\test\assert;
+use Php;
+use Php\test\assert;
 use Oxidio;
 use PHPUnit\Framework\TestCase;
 
@@ -54,7 +54,7 @@ class MenuTest extends TestCase
 
     public function testGetMenu(): void
     {
-        $module = Module::instance(php\VENDOR\OXIDIO\MODULE_BAR);
+        $module = Module::instance(Php\VENDOR\OXIDIO\MODULE_BAR);
 
         assert\same(
             [
@@ -73,7 +73,7 @@ class MenuTest extends TestCase
                 '1/1'   => 'bar-users',
                 2       => 'foo',
             ],
-            php\traverse($module->getMenu(true), function(Menu $menu) {
+            Php\traverse($module->getMenu(true), function(Menu $menu) {
                 return $menu->getId();
             })
         );
@@ -144,7 +144,7 @@ class MenuTest extends TestCase
 
     private static function assertToString(array $lines, Menu $menu): void
     {
-        assert\same(implode(PHP_EOL, php\traverse($lines, function($line) {
+        assert\same(implode(PHP_EOL, Php\traverse($lines, function($line) {
             return is_array($line) ? sprintf(...$line) : $line;
         })), (string) $menu);
     }

@@ -5,7 +5,7 @@
 
 namespace Oxidio;
 
-use php;
+use Php;
 use Generator;
 use Oxidio\Core\Row;
 use Oxidio\Enum\Tables as T;
@@ -25,25 +25,25 @@ use Oxidio\Enum\Tables as T;
 return static function (
     Core\Shop $shop,
     string $from = T::CONFIG,
-    array $columns = [T\Config::ID],
-    array $order = [T\Config::ID],
+    array $columns = [T\CONFIG::ID],
+    array $order = [T\CONFIG::ID],
     int $limit = 0,
     int $start = 0
 ) {
     $query = $shop->query($from, function(array $row) use($columns, $shop) {
 
         // fails if PDO::MYSQL_ATTR_USE_BUFFERED_QUERY is disabled
-        php\traverse($shop->query(T::SHOPS));
+        Php\traverse($shop->query(T::SHOPS));
 
         if (!$columns) {
             return $row;
         }
-        $row =  php\traverse([new Row($row)], php\mapRow($columns));
+        $row =  Php\traverse([new Row($row)], Php\mapRow($columns));
         return $row[0];
 
     })->orderBy($order)->limit($limit, $start);
 
     yield from $query;
 
-    yield php\io(php\str('(%s) %s', $query->total, $query), php\Cli\IO::VERBOSITY_VERBOSE);
+    yield new Php\Cli\Renderable(Php\str('(%s) %s', $query->total, $query), Php\Cli\IO::VERBOSITY_VERBOSE);
 };

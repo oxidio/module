@@ -5,7 +5,7 @@
 
 namespace Oxidio\Core;
 
-use php\test\assert;
+use Php\test\assert;
 use Oxidio;
 use PHPUnit\Framework\TestCase;
 

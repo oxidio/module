@@ -5,22 +5,19 @@
 
 namespace Oxidio\Bar\Cli;
 
-use php;
+use Php;
 use Oxidio;
-use Oxidio\Enum\Tables as T;
 
 class Shop
 {
     /**
      * test Oxidio\Core\Shop component
      *
-     * @param php\Cli\IO $io
+     * @param Php\Cli\IO       $io
      * @param Oxidio\Core\Shop $shop
      */
-    public function __invoke(php\Cli\IO $io, Oxidio\Core\Shop $shop)
+    public function __invoke(Php\Cli\IO $io, Oxidio\Core\Shop $shop)
     {
-        foreach (php\flatten($shop->categories()) as $key => $cat) {
-            $io->writeln(str_replace(['-', '/'], '_', strtoupper($key)) . ' : ' . $cat[T\Categories::TITLE]);
-        }
+        $io->writeln($shop->id);
     }
 }

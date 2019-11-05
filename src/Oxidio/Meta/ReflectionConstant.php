@@ -6,7 +6,7 @@
 namespace Oxidio\Meta;
 
 use Generator;
-use php;
+use Oxidio;
 
 /**
  * @property-read ReflectionNamespace $namespace
@@ -44,7 +44,7 @@ class ReflectionConstant
      */
     protected function resolveName(): string
     {
-        return Provider::beautify($this->properties['name'] ?? '_', false);
+        return Oxidio\Oxidio::sanitize($this->properties['name'] ?? '');
     }
 
     /**

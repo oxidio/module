@@ -13,14 +13,12 @@
     "oxidio/bin": "^1.0",
     "oxidio/constants": "^1.0",
     "oxidio/shop": "~6.4.0",
-    "oxidio/composer-plugin": "^2",
-    "oxidio/unified-namespace-generator": "^2",
-    "oxidio/facts": "^2",
-
+    "oxidio/composer-plugin": "^2.0",
+    "oxidio/unified-namespace-generator": "^2.0",
+    "oxidio/facts": "^2.0",
     "symfony/yaml": "^3.4",
     "vlucas/phpdotenv": "^3.4",
     "php-fn/php-fn": "^3.0",
-    "php-fn/cli": "^3.0",
     "symfony/filesystem": "^3.4",
     "sebastian/diff": "^3.0",
 
@@ -53,7 +51,6 @@
     }
   },
   "minimum-stability": "dev",
-  "prefer-stable": true,
   "bin": [
     "bin/oxidio"
   ],

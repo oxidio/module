@@ -5,32 +5,27 @@
 
 namespace Oxidio\Core;
 
-use php;
+use Php;
 use Oxidio;
 use Generator;
 use Oxidio\Enum\Tables as T;
 
 /**
- * @property-read string $configKey
- * @property-read string $id
- * @property php\Map $config
- * @property-read php\Map|Extension[] $modules
- * @property-read php\Map|Extension[] $themes
- * @property-read Database $db
+ * @property-read string              $configKey
+ * @property-read string              $id
+ * @property Php\Map                  $config
+ * @property-read Php\Map|Extension[] $modules
+ * @property-read Php\Map|Extension[] $themes
+ * @property-read Database            $db
  */
 class Shop implements DataModificationInterface
 {
     /**
-     * @see \php\PropertiesTrait::propResolver
+     * @see \Php\PropertiesTrait::propResolver
      * @uses resolveId, resolveConfig, resolveModules, resolveThemes, resolveExtensions
      */
 
-    use php\PropertiesTrait\ReadOnly;
-
-    /**
-     * @var string
-     */
-    public const CATEGORY_ROOT = 'oxrootid';
+    use Php\PropertiesTrait\ReadOnly;
 
     /**
      * @var string
@@ -41,24 +36,6 @@ class Shop implements DataModificationInterface
      * @var int|string
      */
     protected const DEFAULT_ID = 1;
-
-    /**
-     * @var array
-     */
-    private const SEO_CHARS = [
-        '&amp;'  => '',
-        '&quot;' => '',
-        '&#039;' => '',
-        '&lt;'   => '',
-        '&gt;'   => '',
-        'ä'      => 'ae',
-        'ö'      => 'oe',
-        'ü'      => 'ue',
-        'Ä'      => 'AE',
-        'Ö'      => 'OE',
-        'Ü'      => 'UE',
-        'ß'      => 'ss',
-    ];
 
     /**
      * @var bool
@@ -84,14 +61,14 @@ class Shop implements DataModificationInterface
     public function __invoke(...$args): self
     {
         foreach ($args as $arg) {
-            $arg = php\isCallable($arg) ? $arg($this) : $arg;
+            $arg = Php\isCallable($arg) ? $arg($this) : $arg;
             foreach (is_iterable($arg) ? $arg : [] as $view => $value) {
-                $value = php\isCallable($value) ? $value($this) : $value;
+                $value = Php\isCallable($value) ? $value($this) : $value;
                 if (is_string($view)) {
                     $modify = $this->modify($view);
-                    $value === null ? $modify->delete() : $modify->replace($value, T\Shops::ID);
+                    $value === null ? $modify->delete() : $modify->replace($value, T\SHOPS::ID);
                 } else if (is_iterable($value)) {
-                    php\traverse($value);
+                    Php\traverse($value);
                 }
             }
         }
@@ -129,36 +106,6 @@ class Shop implements DataModificationInterface
     }
 
     /**
-     * @param array $where
-     *
-     * @return DataQuery|Row[]
-     */
-    public function categories($where = [T\Categories::PARENTID => self::CATEGORY_ROOT]): DataQuery
-    {
-        return $this->query(T::CATEGORIES, function (Row $row) {
-            return php\mapKey(static::seo($row[T\Categories::TITLE]))->andValue(
-                $row->withChildren($this->categories([T\Categories::PARENTID => $row[T\Categories::ID]]))
-            );
-        }, $where)->orderBy(T\Categories::SORT);
-    }
-
-    /**
-     * @param string $string
-     * @param string $separator
-     * @param string $charset
-     * @return string
-     */
-    public static function seo($string, string $separator = '-', string $charset = 'UTF-8'): string
-    {
-        $string = html_entity_decode($string, ENT_QUOTES, $charset);
-        $string = str_replace(array_keys(self::SEO_CHARS), array_values(self::SEO_CHARS), $string);
-        return trim(
-            preg_replace(['#/+#', "/[^A-Za-z0-9\\/$separator]+/", '# +#', "#($separator)+#"], $separator, $string),
-            $separator
-        );
-    }
-
-    /**
      * @inheritDoc
      */
     public function query($from = null, $mapper = null, ...$where): DataQuery
@@ -186,24 +133,24 @@ class Shop implements DataModificationInterface
         $table = $this->modify(T::CONFIG);
         $table->map($this->modulesConfig(), function (DataModify $table, $value, $name) {
             yield $table->update([
-                T\Config::VARVALUE => function ($column) use ($value) {
+                T\CONFIG::VARVALUE => function ($column) use ($value) {
                     return ["ENCODE(:$column, '{$this->configKey}')" => serialize($value)];
                 },
             ], [
-                T\Config::MODULE => Extension::SHOP,
-                T\Config::SHOPID => $this->id,
-                T\Config::VARNAME => $name
+                T\CONFIG::MODULE => Extension::SHOP,
+                T\CONFIG::SHOPID => $this->id,
+                T\CONFIG::VARNAME => $name
             ]);
         });
 
         $table->map($this->modules, function (DataModify $table, Extension $module) {
             if ($module->id && $module->status === $module::STATUS_REMOVED) {
                 yield $table->delete([
-                    T\Config::SHOPID => $this->id,
-                    T\Config::MODULE => "{$module->type}:{$module->id}",
+                    T\CONFIG::SHOPID => $this->id,
+                    T\CONFIG::MODULE => "{$module->type}:{$module->id}",
                 ], [
-                    T\Config::SHOPID => $this->id,
-                    T\Config::MODULE => $module->id,
+                    T\CONFIG::SHOPID => $this->id,
+                    T\CONFIG::MODULE => $module->id,
                 ]);
             }
         });
@@ -229,36 +176,36 @@ class Shop implements DataModificationInterface
      */
     protected function resolveExtensions(): array
     {
-        return php\traverse(Extension::all($this), static function (Extension $extension) {
-            return php\mapGroup($extension->type)->andKey($extension->id)->andValue($extension);
+        return Php\traverse(Extension::all($this), static function (Extension $extension) {
+            return Php\mapGroup($extension->type)->andKey($extension->id)->andValue($extension);
         });
     }
 
     /**
      * @see $modules
-     * @return php\Map
+     * @return Php\Map
      */
-    protected function resolveModules(): php\Map
+    protected function resolveModules(): Php\Map
     {
-        return php\map($this->extensions[Extension::MODULE] ?? []);
+        return Php\map($this->extensions[Extension::MODULE] ?? []);
     }
 
     /**
      * @see $themes
-     * @return php\Map
+     * @return Php\Map
      */
-    protected function resolveThemes(): php\Map
+    protected function resolveThemes(): Php\Map
     {
-        return php\map($this->extensions[Extension::THEME] ?? []);
+        return Php\map($this->extensions[Extension::THEME] ?? []);
     }
 
     /**
      * @see $config
-     * @return php\Map
+     * @return Php\Map
      */
-    protected function resolveConfig(): php\Map
+    protected function resolveConfig(): Php\Map
     {
-        return $this->extensions[Extension::SHOP][Extension::SHOP]->config ?? php\map([]);
+        return $this->extensions[Extension::SHOP][Extension::SHOP]->config ?? Php\map([]);
     }
 
     /**
@@ -269,19 +216,19 @@ class Shop implements DataModificationInterface
     {
         return $this->query(T::SHOPS, function($id) {
             return $id;
-        })->orderBy(T\Shops::ID)->limit(1)[0] ?? static::DEFAULT_ID;
+        })->orderBy(T\SHOPS::ID)->limit(1)[0] ?? static::DEFAULT_ID;
     }
 
     protected function modulesConfig(): Generator
     {
-        yield 'aDisabledModules' => php\map($this->modules, function(Extension $module) {
+        yield 'aDisabledModules' => Php\map($this->modules, function(Extension $module) {
             return $module->status === $module::STATUS_INACTIVE ? $module->id : null;
         })->sort()->values;
 
         foreach (Extension::CONFIG_KEYS as $key => $property) {
-            yield $key => php\map($this->modules, function(Extension $module) use($property) {
+            yield $key => Php\map($this->modules, function(Extension $module) use($property) {
                 return $module->status === $module::STATUS_ACTIVE && $module->$property ? $module->$property : null;
-            })->sort(php\Map\Sort::KEYS)->traverse;
+            })->sort(Php\Map\Sort::KEYS)->traverse;
         }
     }
 }

@@ -16,7 +16,7 @@ use OxidEsales\Eshop\Core\Theme;
 use OxidEsales\Eshop\Core\ViewConfig;
 use Oxidio\DI\SmartyTemplateVars;
 
-use php;
+use Php;
 use DI;
 use Oxidio;
 use Smarty;
@@ -70,8 +70,8 @@ return [
         ],
     ],
 
-    CLI   => static function (php\Cli $cli) {
-        $cli->command('bar', function (php\Cli\IO $io) {
+    CLI   => static function (Php\Cli $cli) {
+        $cli->command('bar', function (Php\Cli\IO $io) {
             $io->success('bar');
         });
 

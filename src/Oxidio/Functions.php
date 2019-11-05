@@ -5,7 +5,7 @@
 
 namespace Oxidio;
 
-use php;
+use Php;
 use OxidEsales\Eshop;
 use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\{ArgvInput, InputInterface, InputOption};
@@ -21,7 +21,7 @@ class Functions
      */
     public static function shopUrls(): array
     {
-        return php\traverse($_ENV ?? [], static function ($url, &$var) {
+        return Php\traverse($_ENV ?? [], static function ($url, &$var) {
             if (strpos($var, static::URL_PREFIX) !== 0) {
                 return null;
             }
@@ -50,7 +50,7 @@ class Functions
 
     private static function shopOption(): InputOption
     {
-        if ($urls = implode(' | ', php\keys(static::shopUrls()))) {
+        if ($urls = implode(' | ', Php\keys(static::shopUrls()))) {
             $urls = "[ $urls ]";
         }
         return new InputOption(
@@ -63,18 +63,18 @@ class Functions
     }
 
     /**
-     * @param php\Package|string|array $package
-     * @param string|callable|array ...$args
+     * @param Php\Package|string|array $package
+     * @param string|callable|array    ...$args
      *
-     * @return php\Cli
+     * @return Php\Cli
      */
-    public static function cli($package = null, ...$args): php\Cli
+    public static function cli($package = null, ...$args): Php\Cli
     {
-        $cli = php\cli(
+        $cli = Php\Cli::fromPackage(
             $package ?? [],
             (new DI\RegistryResolver)->container,
             [
-                InputInterface::class => static function (php\Cli $cli) : ArgvInput {
+                InputInterface::class => static function (Php\Cli $cli) : ArgvInput {
                     $input = new ArgvInput;
                     ($def = $cli->getDefinition())->addOption(self::shopOption());
                     try {
