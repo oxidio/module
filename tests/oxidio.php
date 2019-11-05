@@ -7,13 +7,13 @@
 namespace Oxidio;
 
 use OxidEsales\Eshop\Core\{Config, Module};
-use php;
+use Php;
 
 call_user_func(static function () {
     $file = file_exists($file = __DIR__ . '/../../../autoload.php') ? $file :  __DIR__ . '/../vendor/autoload.php';
     /** @noinspection PhpIncludeInspection */
     exit(call_user_func(require $file, static function () {
-        return cli('oxidio/oxidio', static function (php\Cli $cli) {
+        return cli('oxidio/oxidio', static function (Php\Cli $cli) {
 
             yield 'modules' => static function (Config $config) {
                 $dir = $config->getModulesDir();

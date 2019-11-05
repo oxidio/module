@@ -6,7 +6,7 @@
 namespace Oxidio\Bar\Cli;
 
 use Doctrine\DBAL\Schema;
-use php;
+use Php;
 use Oxidio;
 
 /**
@@ -22,10 +22,10 @@ class Db
      * show database information
      *
      * @param Oxidio\Core\Database $db
-     * @param php\Cli\IO $io
-     * @param string|null $filter
+     * @param Php\Cli\IO           $io
+     * @param string|null          $filter
      */
-    public function __invoke(Oxidio\Core\Database $db, php\Cli\IO $io, string $filter = null)
+    public function __invoke(Oxidio\Core\Database $db, Php\Cli\IO $io, string $filter = null)
     {
         $this->db = $db;
         $schema   = $this->db->schema;
@@ -37,18 +37,18 @@ class Db
             $query = $this->db->query($table->getName());
 
             $total = $io->isVerbose() ? "total ({$query->total})" : '';
-            $io->section(php\str(
+            $io->section(Php\str(
                 '%s [%s] %s',
                 $table->getName(),
-                php\map(Oxidio\Core\SimilarColumns::primary($table))->string(','),
+                Php\map(Oxidio\Core\SimilarColumns::primary($table))->string(','),
                 $total
             ));
             $io->isVerbose() && $io->listing($this->similar($table));
 
-            $columns = php\traverse($table->getColumns(), function (Schema\Column $column) {
+            $columns = Php\traverse($table->getColumns(), function (Schema\Column $column) {
                 return $column->toArray();
             });
-            $io->isVeryVerbose() && $io->table(php\keys(reset($columns)), $columns);
+            $io->isVeryVerbose() && $io->table(Php\keys(reset($columns)), $columns);
         }
 
         $io->isDebug() && $io->listing($this->db::all());
@@ -56,7 +56,7 @@ class Db
 
     protected function similar(Schema\Table $left): array
     {
-        return php\traverse((function () use ($left) {
+        return Php\traverse((function () use ($left) {
             foreach (Oxidio\Core\SimilarColumns::primary($left) as $name) {
                 $similar = new Oxidio\Core\SimilarColumns($this->db, $left, $left->getColumn($name));
                 foreach ($similar->queries() as $fqn => $query) {

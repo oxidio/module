@@ -5,7 +5,7 @@
 
 namespace Oxidio\Meta;
 
-use php;
+use Php;
 
 /**
  * @property-read ReflectionNamespace  $namespace
@@ -28,7 +28,7 @@ class Template
     {
         $diff = explode('_', $this->const->shortName);
 
-        return php\traverse($this->tags('block', 'name'), function(string $block, string $value) use($diff) {
+        return Php\traverse($this->tags('block', 'name'), function(string $block, string $value) use($diff) {
             $block = implode('_', array_diff(explode('_', $block), $diff));
             $block = $block  ?  "BLOCK_{$block}" : 'BLOCK';
 
@@ -47,7 +47,7 @@ class Template
      */
     protected function resolveIncludes(): array
     {
-        return php\traverse($this->tags('include', 'file'), function (string $name) {
+        return Php\traverse($this->tags('include', 'file'), function (string $name) {
             return $this->provider->template($name);
         });
     }
@@ -58,7 +58,7 @@ class Template
      */
     protected function resolveConst(): ReflectionConstant
     {
-        $includes = php\traverse($this->includes, function(Template $template) {
+        $includes = Php\traverse($this->includes, function(Template $template) {
             return "@see $template";
         });
 
@@ -88,8 +88,8 @@ class Template
         $content = file_get_contents($this->path);
         $matches = [];
         preg_match_all($pattern, $content, $matches);
-        return php\traverse($matches[1] ?? [], function(string $match) {
-            return php\mapKey($match)->andValue(self::unify($match));
+        return Php\traverse($matches[1] ?? [], function(string $match) {
+            return Php\mapKey($match)->andValue(self::unify($match));
         });
     }
 }

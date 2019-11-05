@@ -5,12 +5,12 @@
 
 namespace Oxidio;
 
-use php;
+use Php;
 use OxidEsales\EshopCommunity\{Core\Exception\DatabaseException, Setup\Dispatcher};
 use Oxidio\Cli;
 
 return [
-    'cli.commands' => static function (php\Cli $cli, Core\Shop $shop) {
+    'cli.commands' => static function (Php\Cli $cli, Core\Shop $shop) {
         try {
             $shop->id;
             yield 'setup:views' => new Cli\Setup\Views();

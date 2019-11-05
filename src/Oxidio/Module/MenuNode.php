@@ -5,7 +5,7 @@
 
 namespace Oxidio\Module;
 
-use php;
+use Php;
 
 /**
  */
@@ -84,7 +84,7 @@ class MenuNode
      */
     public function __toString()
     {
-        return php\map([
+        return Php\map([
             'id'       => $this->getId(),
             'cl'       => $this->class,
             'clparam'  => http_build_query($this->params, '', '&amp;'),

@@ -5,7 +5,7 @@
 
 namespace Oxidio\Core;
 
-use php\test\assert;
+use Php\test\assert;
 use OxidEsales\Eshop\Application\Model;
 use Oxidio;
 use Oxidio\Enum\Tables as T;

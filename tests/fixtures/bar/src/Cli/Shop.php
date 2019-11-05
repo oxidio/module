@@ -5,7 +5,7 @@
 
 namespace Oxidio\Bar\Cli;
 
-use php;
+use Php;
 use Oxidio;
 
 class Shop
@@ -13,10 +13,10 @@ class Shop
     /**
      * test Oxidio\Core\Shop component
      *
-     * @param php\Cli\IO $io
+     * @param Php\Cli\IO       $io
      * @param Oxidio\Core\Shop $shop
      */
-    public function __invoke(php\Cli\IO $io, Oxidio\Core\Shop $shop)
+    public function __invoke(Php\Cli\IO $io, Oxidio\Core\Shop $shop)
     {
         $io->writeln($shop->id);
     }

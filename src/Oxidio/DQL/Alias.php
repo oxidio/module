@@ -6,7 +6,7 @@
 namespace Oxidio\DQL;
 
 use ArrayAccess;
-use php;
+use Php;
 
 class Alias implements ArrayAccess
 {
@@ -48,11 +48,11 @@ class Alias implements ArrayAccess
 
     public function offsetSet($alias, $column): void
     {
-        php\fail($alias);
+        Php\fail($alias);
     }
 
     public function offsetUnset($alias): void
     {
-        php\fail($alias);
+        Php\fail($alias);
     }
 }

@@ -5,7 +5,7 @@
 
 namespace Oxidio;
 
-use php;
+use Php;
 use ReflectionClass;
 use ReflectionException;
 
@@ -48,7 +48,7 @@ class Oxidio
 
     public static function sanitize(string $input, string $suffix = '_'): string
     {
-        return in_array(strtolower($input), php\Composer\DIPackages::RESERVED, true) ? $input . $suffix : $input;
+        return in_array(strtolower($input), Php\Composer\DIPackages::RESERVED, true) ? $input . $suffix : $input;
     }
 
     public static function constName(string $value, string $class): ?string

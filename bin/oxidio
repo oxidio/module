@@ -7,7 +7,7 @@
 call_user_func(static function () {
     /** @noinspection PhpIncludeInspection */
     exit(call_user_func(require getcwd() . '/vendor/autoload.php', static function () {
-        $cli = Oxidio\cli(php\VENDOR\OXIDIO\OXIDIO, 'bin/di.php');
+        $cli = Oxidio\cli(Php\VENDOR\OXIDIO\OXIDIO, 'bin/di.php');
         $cli->setVersion(<<<EOL
  
                   _     __

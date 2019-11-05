@@ -5,8 +5,8 @@
 
 namespace Oxidio\Core;
 
-use php\test\assert;
-use php;
+use Php\test\assert;
+use Php;
 use Oxidio;
 use Oxidio\Enum\Tables as T;
 use PHPUnit\Framework\TestCase;
@@ -25,7 +25,7 @@ class DataModifyTest extends TestCase
         });
 
         $values = static function () {
-            return php\map(['a' => 'A', 'b' => true, 'c' => false, 'd' => null]);
+            return Php\map(['a' => 'A', 'b' => true, 'c' => false, 'd' => null]);
         };
 
         assert\equals(
@@ -128,8 +128,8 @@ class DataModifyTest extends TestCase
 
     private static function assertCommit(array $expected, iterable $commit): void
     {
-        $commit = php\traverse($commit, static function (array $counts) {
-            return php\map($counts, static function (int $count, string $sql) {
+        $commit = Php\traverse($commit, static function (array $counts) {
+            return Php\map($counts, static function (int $count, string $sql) {
                 return ['sql' => $sql, 'count' => $count];
             })->values;
         });

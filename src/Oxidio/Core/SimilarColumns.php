@@ -5,7 +5,7 @@
 
 namespace Oxidio\Core;
 
-use php;
+use Php;
 use Doctrine\DBAL\Schema;
 use Generator;
 use IteratorAggregate;
@@ -42,11 +42,11 @@ class SimilarColumns implements IteratorAggregate
     }
 
     /**
-     * @return Schema\Table[]|php\Map
+     * @return Schema\Table[]|Php\Map
      */
-    public function getIterator(): php\Map
+    public function getIterator(): Php\Map
     {
-        return php\map($this->db->tables, function(Schema\Table $table) {
+        return Php\map($this->db->tables, function(Schema\Table $table) {
             $similar = [];
             foreach ($table->getColumns() as $column) {
                 if ($this->table->getName() === $table->getName() && $this->column->getName() === $column->getName()) {

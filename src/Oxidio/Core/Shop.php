@@ -5,27 +5,27 @@
 
 namespace Oxidio\Core;
 
-use php;
+use Php;
 use Oxidio;
 use Generator;
 use Oxidio\Enum\Tables as T;
 
 /**
- * @property-read string $configKey
- * @property-read string $id
- * @property php\Map $config
- * @property-read php\Map|Extension[] $modules
- * @property-read php\Map|Extension[] $themes
- * @property-read Database $db
+ * @property-read string              $configKey
+ * @property-read string              $id
+ * @property Php\Map                  $config
+ * @property-read Php\Map|Extension[] $modules
+ * @property-read Php\Map|Extension[] $themes
+ * @property-read Database            $db
  */
 class Shop implements DataModificationInterface
 {
     /**
-     * @see \php\PropertiesTrait::propResolver
+     * @see \Php\PropertiesTrait::propResolver
      * @uses resolveId, resolveConfig, resolveModules, resolveThemes, resolveExtensions
      */
 
-    use php\PropertiesTrait\ReadOnly;
+    use Php\PropertiesTrait\ReadOnly;
 
     /**
      * @var string
@@ -61,14 +61,14 @@ class Shop implements DataModificationInterface
     public function __invoke(...$args): self
     {
         foreach ($args as $arg) {
-            $arg = php\isCallable($arg) ? $arg($this) : $arg;
+            $arg = Php\isCallable($arg) ? $arg($this) : $arg;
             foreach (is_iterable($arg) ? $arg : [] as $view => $value) {
-                $value = php\isCallable($value) ? $value($this) : $value;
+                $value = Php\isCallable($value) ? $value($this) : $value;
                 if (is_string($view)) {
                     $modify = $this->modify($view);
                     $value === null ? $modify->delete() : $modify->replace($value, T\SHOPS::ID);
                 } else if (is_iterable($value)) {
-                    php\traverse($value);
+                    Php\traverse($value);
                 }
             }
         }
@@ -176,36 +176,36 @@ class Shop implements DataModificationInterface
      */
     protected function resolveExtensions(): array
     {
-        return php\traverse(Extension::all($this), static function (Extension $extension) {
-            return php\mapGroup($extension->type)->andKey($extension->id)->andValue($extension);
+        return Php\traverse(Extension::all($this), static function (Extension $extension) {
+            return Php\mapGroup($extension->type)->andKey($extension->id)->andValue($extension);
         });
     }
 
     /**
      * @see $modules
-     * @return php\Map
+     * @return Php\Map
      */
-    protected function resolveModules(): php\Map
+    protected function resolveModules(): Php\Map
     {
-        return php\map($this->extensions[Extension::MODULE] ?? []);
+        return Php\map($this->extensions[Extension::MODULE] ?? []);
     }
 
     /**
      * @see $themes
-     * @return php\Map
+     * @return Php\Map
      */
-    protected function resolveThemes(): php\Map
+    protected function resolveThemes(): Php\Map
     {
-        return php\map($this->extensions[Extension::THEME] ?? []);
+        return Php\map($this->extensions[Extension::THEME] ?? []);
     }
 
     /**
      * @see $config
-     * @return php\Map
+     * @return Php\Map
      */
-    protected function resolveConfig(): php\Map
+    protected function resolveConfig(): Php\Map
     {
-        return $this->extensions[Extension::SHOP][Extension::SHOP]->config ?? php\map([]);
+        return $this->extensions[Extension::SHOP][Extension::SHOP]->config ?? Php\map([]);
     }
 
     /**
@@ -221,14 +221,14 @@ class Shop implements DataModificationInterface
 
     protected function modulesConfig(): Generator
     {
-        yield 'aDisabledModules' => php\map($this->modules, function(Extension $module) {
+        yield 'aDisabledModules' => Php\map($this->modules, function(Extension $module) {
             return $module->status === $module::STATUS_INACTIVE ? $module->id : null;
         })->sort()->values;
 
         foreach (Extension::CONFIG_KEYS as $key => $property) {
-            yield $key => php\map($this->modules, function(Extension $module) use($property) {
+            yield $key => Php\map($this->modules, function(Extension $module) use($property) {
                 return $module->status === $module::STATUS_ACTIVE && $module->$property ? $module->$property : null;
-            })->sort(php\Map\Sort::KEYS)->traverse;
+            })->sort(Php\Map\Sort::KEYS)->traverse;
         }
     }
 }

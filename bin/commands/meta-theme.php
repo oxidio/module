@@ -5,8 +5,8 @@
 
 namespace Oxidio;
 
-use php\{Cli\IO};
-use php;
+use Php\{Cli\IO};
+use Php;
 use OxidEsales\Eshop\Core\Theme;
 
 /**
@@ -42,8 +42,8 @@ return static function (
                 return "$key ($value)";
             };
             $io->title("{$template->const->shortName} ({$template->name})");
-            $io->isVeryVerbose() && $io->listing(php\traverse($template->blocks, $keyValue));
-            $io->isVeryVerbose() && $io->listing(php\traverse($template->includes, $keyValue));
+            $io->isVeryVerbose() && $io->listing(Php\traverse($template->blocks, $keyValue));
+            $io->isVeryVerbose() && $io->listing(Php\traverse($template->includes, $keyValue));
         })();
 
         $template->blocks;

@@ -8,7 +8,7 @@ namespace Oxidio\Cli\Meta;
 use Closure;
 use Generator;
 use OxidEsales\Eshop\Core\Model\BaseModel;
-use php;
+use Php;
 use Symfony\Component\Filesystem\Filesystem;
 use Oxidio;
 
@@ -22,13 +22,13 @@ class Tables
     /**
      * Analyze and generate table constants (tables, columns)
      *
-     * @param php\Cli\IO       $io
+     * @param Php\Cli\IO       $io
      * @param Oxidio\Core\Shop $shop
      * @param string           $class class name [Oxidio\Enum\Tables]
      * @param string           $dir
      */
     public function __invoke(
-        php\Cli\IO $io,
+        Php\Cli\IO $io,
         Oxidio\Core\Shop $shop,
         string $class = Oxidio\Enum\Tables::class,
         string $dir = null
@@ -65,7 +65,7 @@ interface {$class}
 
 EOL
         );
-        $this->fs->appendToFile($file, new php\Map($closure));
+        $this->fs->appendToFile($file, new Php\Map($closure));
         $this->fs->appendToFile($file, '}');
     }
 

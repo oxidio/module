@@ -9,14 +9,14 @@ use Generator;
 use OxidEsales\Eshop\Core;
 use Psr\{Container\ContainerInterface, Log\LoggerInterface};
 use ReflectionParameter;
-use php;
+use Php;
 
 /**
  * @property-read ContainerInterface $container
  */
 class RegistryResolver
 {
-    use php\PropertiesTrait\ReadOnly;
+    use Php\PropertiesTrait\ReadOnly;
 
     /**
      * @var string[]
@@ -52,12 +52,12 @@ class RegistryResolver
      */
     public function resolveContainer(): ContainerInterface
     {
-        $defs = php\traverse(static::DEFINITIONS, static function (string $method, string $class) {
+        $defs = Php\traverse(static::DEFINITIONS, static function (string $method, string $class) {
             return static function () use($method, $class) {
                 return Core\Registry::$method($class);
             };
         });
-        return php\DI::create($defs);
+        return Php\DI::create($defs);
     }
 
     /**

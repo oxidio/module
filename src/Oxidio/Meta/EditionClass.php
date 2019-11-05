@@ -5,7 +5,7 @@
 
 namespace Oxidio\Meta;
 
-use php;
+use Php;
 use Oxidio;
 use ReflectionClass;
 
@@ -31,18 +31,18 @@ use OxidEsales\Eshop\{
 };
 
 /**
- * @property-read string                $shortName
- * @property-read string                $edition
- * @property-read string                $template
- * @property-read string                $package
- * @property-read ReflectionClass       $reflection
- * @property-read ReflectionNamespace   $tableNs
- * @property-read ReflectionNamespace   $fieldNs
- * @property-read ReflectionConstant[]  $fields
- * @property-read php\Map|EditionClass[] $derivation
- * @property-read EditionClass|null     $parent
- * @property-read object|null           $instance
- * @property-read Table|null            $table
+ * @property-read string                 $shortName
+ * @property-read string                 $edition
+ * @property-read string                 $template
+ * @property-read string                 $package
+ * @property-read ReflectionClass        $reflection
+ * @property-read ReflectionNamespace    $tableNs
+ * @property-read ReflectionNamespace    $fieldNs
+ * @property-read ReflectionConstant[]   $fields
+ * @property-read Php\Map|EditionClass[] $derivation
+ * @property-read EditionClass|null      $parent
+ * @property-read object|null            $instance
+ * @property-read Table|null             $table
  */
 class EditionClass
 {
@@ -82,9 +82,9 @@ class EditionClass
 
     /**
      * @see $derivation
-     * @return php\Map
+     * @return Php\Map
      */
-    protected function resolveDerivation(): php\Map
+    protected function resolveDerivation(): Php\Map
     {
         $ref = $this->reflection;
         $parents = [];
@@ -92,7 +92,7 @@ class EditionClass
             $parents[] = $parent->getName();
             $ref = $parent;
         }
-        return php\map($parents, function(string $class) {
+        return Php\map($parents, function(string $class) {
             return strpos($class, $this->edition) === 0 ? $this->provider->class($class) : null;
         });
     }
@@ -147,9 +147,9 @@ class EditionClass
     {
         static $packages;
         if ($packages === null) {
-            $packages = php\map(self::PACKAGES)->sort(function(string $left, string $right) {
+            $packages = Php\map(self::PACKAGES)->sort(function(string $left, string $right) {
                 return $this->provider->class($left)->derivation->count() - $this->provider->class($right)->derivation->count();
-            }, php\Map\Sort::KEYS | php\Map\Sort::REVERSE)->traverse;
+            }, Php\Map\Sort::KEYS | Php\Map\Sort::REVERSE)->traverse;
         }
         foreach ($packages as $baseClass => $package) {
             if (is_a($this->name, $baseClass, true)) {
@@ -211,11 +211,11 @@ class EditionClass
 
     /**
      * @see $fields
-     * @return php\Map
+     * @return Php\Map
      */
-    protected function resolveFields(): php\Map
+    protected function resolveFields(): Php\Map
     {
-        return php\map(function () {
+        return Php\map(function () {
             if ($this->reflection->isSubclassOf(BaseModel::class)) {
                 $prefix = $this->fieldNs->shortName === $this->shortName . '\\' ? '' : $this->shortName . '_';
                 foreach ($this->instance->getFieldNames() as $fieldName) {
