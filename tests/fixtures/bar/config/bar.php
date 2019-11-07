@@ -131,7 +131,7 @@ return [
                     'bar-main-sub1-btn1',
                     ['label' => 'bar-main-sub1-btn2', 'class' => bar\main\sub1\btn2::class],
                 ]),
-                app('bar-app', function (SmartyTemplateVars $vars, App $ctrl, Config $config, ViewConfig $vc) {
+                App::menu('bar-app', function (SmartyTemplateVars $vars, App $ctrl, Config $config, ViewConfig $vc) {
                     return '<h2>' . implode('-', [
                             'bar-app',
                             get_class($ctrl),

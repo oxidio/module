@@ -78,22 +78,4 @@ namespace Oxidio\Module
         return new Block($callable, Block::OVERWRITE);
     }
 
-    /**
-     * @param mixed $label
-     * @param callable $callable
-     * @return Menu
-     */
-    function app($label, $callable): Menu
-    {
-        $menu           = new Menu($label);
-        $menu->class    = App::class;
-        $menu->callback = $callable;
-        $menu->params   = [
-            /* @see Module::params */
-            APP => function(Module $module, $menuKey) {
-                return $module->id . ":{$menuKey}";
-            }
-        ];
-        return $menu;
-    }
 }
