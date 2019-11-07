@@ -22,14 +22,4 @@ namespace Oxidio
         return db()->query(...$args);
     }
 
-    /**
-     * @param string|Core\Database $shop
-     * @param array $params
-     *
-     * @return Core\Shop
-     */
-    function shop($shop = null, array $params = []): Core\Shop
-    {
-        return Functions::shop(...func_get_args());
-    }
 }

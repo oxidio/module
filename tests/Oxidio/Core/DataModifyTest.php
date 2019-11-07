@@ -63,7 +63,7 @@ class DataModifyTest extends TestCase
 
     public function testIntegration(): void
     {
-        assert\type(Shop::class, $shop = Oxidio\shop());
+        assert\type(Shop::class, $shop = Oxidio\Functions::shop());
         assert\type(DataModify::class, $modify = $shop->modify(T::COUNTRY));
 
         assert\type('callable', $modify->delete([T\COUNTRY::ID => ['LIKE', 'test-%']]));
