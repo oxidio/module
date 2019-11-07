@@ -21,17 +21,6 @@ namespace Oxidio\Module
     const APP_TPL     = '/oxidio/views/admin/tpl/' . APP . '.tpl';
 }
 
-namespace Oxidio\Module\Settings
-{
-    const TYPE     = 'type';
-    const NAME     = 'name';
-    const GROUP    = 'group';
-    const VALUE    = 'value';
-    const LABEL    = 'label';
-    const SELECTED = 'selected';
-    const HELP     = '?';
-}
-
 namespace Oxidio\Module\Menu
 {
     /**

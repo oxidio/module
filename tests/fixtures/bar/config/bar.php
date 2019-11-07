@@ -26,13 +26,13 @@ return [
 
     SETTINGS => [
         'foo' => [
-            'string' => [SETTINGS\VALUE => 'string'],
-            'true'   => [SETTINGS\VALUE => true],
-            'false'  => [SETTINGS\VALUE => false],
-            'aarr'   => [SETTINGS\VALUE => ['a' => 'A', 'b' => 'B']],
+            'string' => [Settings::VALUE => 'string'],
+            'true'   => [Settings::VALUE => true],
+            'false'  => [Settings::VALUE => false],
+            'aarr'   => [Settings::VALUE => ['a' => 'A', 'b' => 'B']],
         ],
         'bar' => [
-            'selected' => [SETTINGS\VALUE => ['c' => 'C', 'd' => 'D', 'e' => 'E'], SETTINGS\SELECTED => 'd']
+            'selected' => [Settings::VALUE => ['c' => 'C', 'd' => 'D', 'e' => 'E'], Settings::SELECTED => 'd']
         ]
     ],
 
