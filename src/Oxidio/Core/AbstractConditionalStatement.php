@@ -97,7 +97,7 @@ abstract class AbstractConditionalStatement
      */
     protected function resolveView(): void
     {
-        Php\fail(__METHOD__);
+        Php::fail(__METHOD__);
     }
 
     /**
@@ -105,7 +105,7 @@ abstract class AbstractConditionalStatement
      */
     public function resolveDb(): void
     {
-        Php\fail(__METHOD__);
+        Php::fail(__METHOD__);
     }
 
     /**

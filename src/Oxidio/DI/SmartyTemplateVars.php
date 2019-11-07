@@ -85,7 +85,7 @@ class SmartyTemplateVars implements ArrayAccess, IteratorAggregate
      */
     public function offsetSet($offset, $value): void
     {
-        Php\fail($offset);
+        Php::fail($offset);
     }
 
     /**
@@ -93,6 +93,6 @@ class SmartyTemplateVars implements ArrayAccess, IteratorAggregate
      */
     public function offsetUnset($offset): void
     {
-        Php\fail($offset);
+        Php::fail($offset);
     }
 }

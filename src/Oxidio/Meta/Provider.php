@@ -74,7 +74,7 @@ class Provider
         if ($class = ($classes[$method] ?? null)) {
             return $this->get($class, ...$args);
         }
-        Php\fail\domain($method);
+        Php::fail($method);
     }
 
 

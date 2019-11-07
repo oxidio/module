@@ -48,11 +48,11 @@ class Alias implements ArrayAccess
 
     public function offsetSet($alias, $column): void
     {
-        Php\fail($alias);
+        Php::fail($alias);
     }
 
     public function offsetUnset($alias): void
     {
-        Php\fail($alias);
+        Php::fail($alias);
     }
 }

@@ -22,7 +22,7 @@ return static function (IO $io, Dispatcher $dispatcher, $action) {
         $method = str_replace('_', '', str_ireplace('step_', '', $id));
 
         return strtoupper($action) === $method;
-    }) || Php\fail('unsupported $action %s', $action);
+    }) || Php::fail('unsupported $action %s', $action);
 
     $controller = $dispatcher->getInstance('Controller');
     $view = $controller->getView();
