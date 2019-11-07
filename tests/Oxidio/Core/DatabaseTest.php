@@ -18,7 +18,7 @@ class DatabaseTest extends TestCase
 {
     public function testDefine(): void
     {
-        $define = Oxidio\db()->define(
+        $define = Database::get()->define(
             static function (DBAL\Schema\Schema $schema, Database $db, bool $down) {
                 $t1 = $schema->createTable('t1');
                 $t1->addColumn('c1', DBAL\Types\Type::STRING);

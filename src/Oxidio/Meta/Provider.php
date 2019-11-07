@@ -41,7 +41,7 @@ class Provider
      */
     protected function resolveDb(): Oxidio\Core\Database
     {
-        return Oxidio\db($this->properties['db'] ?? null);
+        return Oxidio\Core\Database::get($this->properties['db'] ?? null);
     }
 
     /**

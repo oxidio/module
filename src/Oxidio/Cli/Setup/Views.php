@@ -46,7 +46,7 @@ class Views
 
     protected static function verbose(Php\Cli\IO $io): void
     {
-        $db = Oxidio\db();
+        $db = Oxidio\Core\Database::get();
 
         $views = Php\keys($db->views, static function (string $view) {
             [, $table] = explode('_', $view);
