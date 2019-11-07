@@ -14,17 +14,6 @@ namespace Oxidio
     }
 
     /**
-     * @param string $sql
-     * @param callable ...$mapper
-     *
-     * @return Php\Map|array[]
-     */
-    function select($sql, callable ...$mapper): Php\Map
-    {
-        return Php\map(db()->select((string)$sql), ...$mapper);
-    }
-
-    /**
      * @param mixed ...$args
      *
      * @return Core\DataQuery
