@@ -42,7 +42,7 @@ class Define
             $io->title($name);
         });
         foreach ($diff($dryRun) as $sql => $count) {
-            $io->writeln(Php\str("$sql: %s", json_encode($count)));
+            $io->writeln(Php::str("$sql: %s", json_encode($count)));
         }
     }
 }

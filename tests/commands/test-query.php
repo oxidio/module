@@ -45,5 +45,5 @@ return static function (
 
     yield from $query;
 
-    yield new Php\Cli\Renderable(Php\str('(%s) %s', $query->total, $query), Php\Cli\IO::VERBOSITY_VERBOSE);
+    yield new Php\Cli\Renderable(Php::str('(%s) %s', $query->total, $query), Php\Cli\IO::VERBOSITY_VERBOSE);
 };

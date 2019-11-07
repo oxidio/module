@@ -80,7 +80,7 @@ class Extension implements JsonSerializable
      */
     protected static function shopData(Shop $shop): array
     {
-        $from = Php\str('(SELECT ' .
+        $from = Php::str('(SELECT ' .
             Php\map([
                 '{c.shop} shop',
                 '{c.mod} module',

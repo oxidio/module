@@ -58,7 +58,7 @@ class Views
             $query = $db->query($name);
 
             $total = $io->isVeryVerbose() ? "<comment>total ({$query->total})</comment>" : '';
-            $io->writeln(Php\str(
+            $io->writeln(Php::str(
                 '  * <info>%s</info> %s',
                 $name,
                 $total

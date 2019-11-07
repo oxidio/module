@@ -37,7 +37,7 @@ class Db
             $query = $this->db->query($table->getName());
 
             $total = $io->isVerbose() ? "total ({$query->total})" : '';
-            $io->section(Php\str(
+            $io->section(Php::str(
                 '%s [%s] %s',
                 $table->getName(),
                 Php\map(Oxidio\Core\SimilarColumns::primary($table))->string(','),
