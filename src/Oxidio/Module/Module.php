@@ -118,7 +118,7 @@ class Module implements JsonSerializable
             return Php\traverse($name, function ($default, $name) {
                 if (is_numeric($name)) {
                     $name    = $default;
-                    $default = Php\mapNull();
+                    $default = Php::mapNull();
                 }
                 return Php\mapKey($name)->andValue(
                     $this->container->has($name) ? $this->container->get($name) : ($this->$name ?? $default)
