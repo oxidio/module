@@ -62,7 +62,7 @@ class Module implements JsonSerializable
      */
     protected function resolveCli(): Php\Cli
     {
-        $cli = Oxidio\cli($this->package, $this->container);
+        $cli = Oxidio\Functions::cli($this->package, $this->container);
         $this->container->set(get_class($cli), $cli);
         $this->container->set(CLI, $this->get(CLI, $cli));
         return $cli;

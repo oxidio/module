@@ -55,7 +55,7 @@ class FunctionsTest extends TestCase
     private static function assertCli(string $expected, callable $callable): void
     {
         $_ENV = ['OXIDIO_SHOP_FOO' => DatabaseInterface::FETCH_MODE_BOTH];
-        $cli = cli(Php\VENDOR\OXIDIO\OXIDIO, $callable);
+        $cli = Functions::cli(Php\VENDOR\OXIDIO\OXIDIO, $callable);
         assert\true($cli->getDefinition()->hasOption('shop'));
         $cli->setAutoExit(false);
         assert\type(Php\Cli::class, $cli);

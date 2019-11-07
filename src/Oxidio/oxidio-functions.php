@@ -5,7 +5,6 @@
 
 namespace Oxidio
 {
-    use Php;
     use OxidEsales\Eshop;
 
     function db(...$args): Core\Database
@@ -32,16 +31,5 @@ namespace Oxidio
     function shop($shop = null, array $params = []): Core\Shop
     {
         return Functions::shop(...func_get_args());
-    }
-
-    /**
-     * @param Php\Package|string|array $package
-     * @param string|callable|array    ...$args
-     *
-     * @return Php\Cli
-     */
-    function cli($package = null, ...$args): Php\Cli
-    {
-        return Functions::cli(...func_get_args());
     }
 }
