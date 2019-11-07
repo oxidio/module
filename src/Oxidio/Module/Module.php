@@ -26,8 +26,9 @@ use Invoker\ParameterResolver;
 class Module implements JsonSerializable
 {
     use Php\PropertiesTrait\ReadOnly;
-    public const APP_TPL = '/oxidio/views/admin/tpl/' . self::APP . '.tpl';
+
     public const APP = 'oxidio-app';
+    protected const APP_TPL = '/oxidio/views/admin/tpl/' . self::APP . '.tpl';
     public const MENU = 'menu';
     public const CLI = 'cli';
     public const EXTEND = 'extend';

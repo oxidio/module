@@ -97,7 +97,7 @@ return [
     Oxidio\Bar\Cli\Shop::class => DI\create(),
 
     Module::MENU => [
-        Menu\ADMIN => [ // merge
+        Menu::ADMIN => [ // merge
             Menu::create(['admin-main'], [ // register new main menu under ADMIN
                 admin\main\sub1::class => Menu::create(['label' => 'admin-main-sub1']),
                 admin\main\sub2::class => Menu::create('admin-main-sub2', [
@@ -107,7 +107,7 @@ return [
                 ]),
             ]),
 
-            Menu\ADMIN\USERS => [
+            Menu::ADMIN_USERS => [
                 // register new sub menus under ADMIN/USERS
                 admin\users\sub1::class => Menu::create(['admin-users-sub1', 'list' => 'user_list', 'groups' => ['g1', 'g2'], 'rights' => ['r1']]),
                 admin\users\sub2::class => Menu::create('admin-users-sub2', [
@@ -116,7 +116,7 @@ return [
                     'admin-users-sub2-btn1',
                 ]),
 
-                Menu\ADMIN\USERS\GROUPS => [ // register new tabs and buttons under ADMIN/USERS/GROUPS,
+                Menu::ADMIN_USERS_GROUPS => [ // register new tabs and buttons under ADMIN/USERS/GROUPS,
                     admin\users\groups\t1::class => 'admin-users-groups-t1',
                     admin\users\groups\t2::class => ['de' => 'admin-users-groups-t2-de', 'en' => 'admin-users-groups-t2-en'],
                     'admin-users-groups-btn1',

@@ -8,11 +8,9 @@ namespace Oxidio\Module;
 use Generator;
 use Php;
 use IteratorAggregate;
+use Oxidio\Enum;
 
-/**
- *
- */
-class Menu extends MenuNode implements IteratorAggregate
+class Menu extends MenuNode implements IteratorAggregate, Enum\Menu
 {
     /**
      * @var string
@@ -115,7 +113,7 @@ class Menu extends MenuNode implements IteratorAggregate
         foreach ($data as $key => $item) {
             $id = $class = null;
             if (!is_numeric($key)) {
-                strpos($key, Menu\ADMIN) === 0 ? $id = array_reverse(explode('/', $key))[0] : $class = $key;
+                strpos($key, static::ADMIN) === 0 ? $id = array_reverse(explode('/', $key))[0] : $class = $key;
             }
 
             // new

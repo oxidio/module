@@ -58,14 +58,14 @@ class MenuTest extends TestCase
 
         assert\same(
             [
-                0       => Menu\ADMIN,
+                0       => Menu::ADMIN,
                 '0/0'   => 'admin-main',
                 '0/0/0' => 'admin-main-sub1',
                 '0/0/1' => 'admin-main-sub2',
-                '0/1'   => explode('/', Menu\ADMIN\USERS)[1],
+                '0/1'   => explode('/', Menu::ADMIN_USERS)[1],
                 '0/1/0' => 'admin-users-sub1',
                 '0/1/1' => 'admin-users-sub2',
-                '0/1/2' => explode('/', Menu\ADMIN\USERS\GROUPS)[2],
+                '0/1/2' => explode('/', Menu::ADMIN_USERS_GROUPS)[2],
                 1       => 'bar',
                 '1/0'   => 'bar-main',
                 '1/0/0' => 'bar-main-sub1',
@@ -80,7 +80,7 @@ class MenuTest extends TestCase
 
         $menus = $module->getMenu();
         self::assertToString([
-            ['    <OXMENU id="%s">', Menu\ADMIN],
+            ['    <OXMENU id="%s">', Menu::ADMIN],
             ['        <MAINMENU id="%s">', 'admin-main'],
             ['            <SUBMENU id="%s">', 'admin-main-sub1'],
             '            </SUBMENU>',
@@ -90,7 +90,7 @@ class MenuTest extends TestCase
             ['                <BTN id="%s" />', 'admin-main-sub2-btn2'],
             '            </SUBMENU>',
             '        </MAINMENU>',
-            ['        <MAINMENU id="%s">', array_reverse(explode('/', Menu\ADMIN\USERS))[0]],
+            ['        <MAINMENU id="%s">', array_reverse(explode('/', Menu::ADMIN_USERS))[0]],
             ['            <SUBMENU id="%s" cl="%s" list="%s" groups="%s" rights="%s">',
                 'admin-users-sub1',
                 admin\users\sub1::class,
@@ -104,7 +104,7 @@ class MenuTest extends TestCase
             ['                <TAB id="%s" cl="%s" />', 'admin-users-sub2-t2', admin\users\sub2\t2::class],
             ['                <BTN id="%s" />', 'admin-users-sub2-btn1'],
             '            </SUBMENU>',
-            ['            <SUBMENU id="%s">', array_reverse(explode('/', Menu\ADMIN\USERS\GROUPS))[0]],
+            ['            <SUBMENU id="%s">', array_reverse(explode('/', Menu::ADMIN_USERS_GROUPS))[0]],
             ['                <TAB id="%s" cl="%s" />', 'admin-users-groups-t1', admin\users\groups\t1::class],
             ['                <TAB id="%s" cl="%s" />', 'admin-users-groups-t2-de', admin\users\groups\t2::class],
             ['                <BTN id="%s" />', 'admin-users-groups-btn1'],
