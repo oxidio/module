@@ -66,14 +66,14 @@ class DataQuery extends AbstractSelectStatement
 
         if ($params[0]->isArray()) {
             return function(array $row) use($from, $params) {
-                $args = Php\values(static::args($row, ...array_slice($params, 1)));
+                $args = Php::values(static::args($row, ...array_slice($params, 1)));
                 return $from($row, ...$args);
             };
         }
 
         return ($class = $params[0]->getClass())
             ? $this->fromCallableWithClass($from, $class, array_slice($params, 1)) : function (array $row) use($from, $params) {
-                $args = Php\values(static::args($row, $params[0], ...array_slice($params, 1)));
+                $args = Php::values(static::args($row, $params[0], ...array_slice($params, 1)));
                 return $from(...$args);
             };
     }
@@ -87,7 +87,7 @@ class DataQuery extends AbstractSelectStatement
                 /** @var BaseModel $model */
                 $model = oxNew($class->name);
                 if ($model->load($row['OXID'])) {
-                    $args = Php\values(static::args($row, ...$params));
+                    $args = Php::values(static::args($row, ...$params));
                     return $from($model, ...$args);
                 }
                 return null;
@@ -95,7 +95,7 @@ class DataQuery extends AbstractSelectStatement
         }
 
         return function(array $row) use($from, $class, $params) {
-            $args = Php\values(static::args($row, ...$params));
+            $args = Php::values(static::args($row, ...$params));
             return $from(oxNew($class->getName(), $row), ...$args);
         };
     }

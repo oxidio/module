@@ -65,7 +65,7 @@ class FunctionsTest extends TestCase
         $_SERVER['argv'] = [];
         assert\same(0, $cli->run(null, $out));
         $content = $out->fetch();
-        assert\true(Php\every(
+        assert\true(Php::every(
             [Php\VENDOR\OXIDIO\OXIDIO, 'Usage:', 'Options:', '[ foo ]', 'Available commands:'],
             static function ($token) use ($content) {
                 return strpos($content, $token) !== false;

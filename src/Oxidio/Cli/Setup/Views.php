@@ -48,7 +48,7 @@ class Views
     {
         $db = Oxidio\Core\Database::get();
 
-        $views = Php\keys($db->views, static function (string $view) {
+        $views = Php::keys($db->views, static function (string $view) {
             [, $table] = explode('_', $view);
             return Php::mapGroup($table);
         });
@@ -67,11 +67,11 @@ class Views
                 $io->writeln("    * $view");
             }
 
-            $columns = Php\map($table->getColumns(), function (Column $column) {
+            $columns = Php::map($table->getColumns(), function (Column $column) {
                 return $column->toArray();
             });
-            $io->isDebug() && ($columns = Php\traverse($columns)) && $io->table(
-                Php\keys(reset($columns)),
+            $io->isDebug() && ($columns = Php::traverse($columns)) && $io->table(
+                Php::keys(reset($columns)),
                 $columns
             );
         }

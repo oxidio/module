@@ -43,10 +43,10 @@ class Settings implements IteratorAggregate, JsonSerializable
         foreach ($this->groups as $groupLabel => $group) {
             foreach ($group as $name => $setting) {
                 if (empty($setting[self::TYPE])) {
-                    $setting = Php\merge($setting, $this->type($setting));
+                    $setting = Php::merge($setting, $this->type($setting));
                 }
                 unset($setting[self::LABEL], $setting[self::HELP]);
-                yield Php\merge([self::GROUP => $groupLabel, self::NAME => $name], $setting);
+                yield Php::merge([self::GROUP => $groupLabel, self::NAME => $name], $setting);
             }
         }
     }
@@ -56,7 +56,7 @@ class Settings implements IteratorAggregate, JsonSerializable
      */
     public function jsonSerialize()
     {
-        return Php\traverse($this);
+        return Php::traverse($this);
     }
 
     /**
@@ -121,7 +121,7 @@ class Settings implements IteratorAggregate, JsonSerializable
      */
     private function constraints($value): Php\Map
     {
-        return Php\map(is_iterable($value) ? $value : [], function($value, &$key) {
+        return Php::map(is_iterable($value) ? $value : [], function ($value, &$key) {
             if (is_numeric($key)) {
                 $key = $value;
             }

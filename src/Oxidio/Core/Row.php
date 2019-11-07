@@ -26,7 +26,7 @@ class Row implements ArrayAccess, IteratorAggregate, JsonSerializable
      */
     public function __construct(iterable $data)
     {
-        $this->data = array_change_key_case(Php\traverse($data));
+        $this->data = array_change_key_case(Php::traverse($data));
     }
 
     /**
@@ -44,7 +44,7 @@ class Row implements ArrayAccess, IteratorAggregate, JsonSerializable
      */
     public function getIterator()
     {
-        return Php\map($this->children);
+        return Php::map($this->children);
     }
 
     /**

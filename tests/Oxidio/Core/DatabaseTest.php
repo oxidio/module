@@ -35,13 +35,13 @@ class DatabaseTest extends TestCase
         assert\type('callable', $up = $define->up());
         assert\same(
             "INSERT INTO t1 (\n  c2, c1\n) VALUES (\n  :c2, :c1\n) ON DUPLICATE KEY UPDATE\n  c2 = VALUES(c2)",
-            Php\map($up(true))->keys[1]
+            Php::map($up(true))->keys[1]
         );
 
         assert\type('callable', $down = $define->down());
         assert\same([
             'DROP TABLE t1' => true,
             'DROP TABLE t2' => true,
-        ], Php\traverse($down(true)));
+        ], Php::traverse($down(true)));
     }
 }

@@ -57,8 +57,8 @@ abstract class AbstractConditionalStatement
      */
     public function buildWhere(array $terms, string $prefix = "\nWHERE "): string
     {
-        $where = implode(' OR ', Php\traverse($terms, function ($term) {
-            if ($term = is_iterable($term) ? implode(' AND ', Php\traverse($term, function ($candidate, $column) {
+        $where = implode(' OR ', Php::traverse($terms, function ($term) {
+            if ($term = is_iterable($term) ? implode(' AND ', Php::traverse($term, function ($candidate, $column) {
                 $value = $candidate;
                 $operator = null;
                 if (is_iterable($candidate)) {
@@ -71,7 +71,7 @@ abstract class AbstractConditionalStatement
                     $value = 'NULL';
                     $operator = $operator ?: 'IS';
                 } else if (is_iterable($value)) {
-                    $value = Php\traverse($value, function ($entry) {
+                    $value = Php::traverse($value, function ($entry) {
                         return "'$entry'";
                     });
                     if (($operator === 'IN' || $operator === 'NOT IN') && !$value) {

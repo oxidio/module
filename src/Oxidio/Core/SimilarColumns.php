@@ -46,7 +46,7 @@ class SimilarColumns implements IteratorAggregate
      */
     public function getIterator(): Php\Map
     {
-        return Php\map($this->db->tables, function(Schema\Table $table) {
+        return Php::map($this->db->tables, function (Schema\Table $table) {
             $similar = [];
             foreach ($table->getColumns() as $column) {
                 if ($this->table->getName() === $table->getName() && $this->column->getName() === $column->getName()) {

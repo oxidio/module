@@ -28,9 +28,9 @@ class Template
     {
         $diff = explode('_', $this->const->shortName);
 
-        return Php\traverse($this->tags('block', 'name'), function(string $block, string $value) use($diff) {
+        return Php::traverse($this->tags('block', 'name'), function (string $block, string $value) use ($diff) {
             $block = implode('_', array_diff(explode('_', $block), $diff));
-            $block = $block  ?  "BLOCK_{$block}" : 'BLOCK';
+            $block = $block ? "BLOCK_{$block}" : 'BLOCK';
 
             $this->const->add('docBlock', 'blocks:', "@see \\{$this->const}\\{$block}");
 
@@ -47,7 +47,7 @@ class Template
      */
     protected function resolveIncludes(): array
     {
-        return Php\traverse($this->tags('include', 'file'), function (string $name) {
+        return Php::traverse($this->tags('include', 'file'), function (string $name) {
             return $this->provider->template($name);
         });
     }
@@ -58,7 +58,7 @@ class Template
      */
     protected function resolveConst(): ReflectionConstant
     {
-        $includes = Php\traverse($this->includes, function(Template $template) {
+        $includes = Php::traverse($this->includes, function (Template $template) {
             return "@see $template";
         });
 
@@ -88,7 +88,7 @@ class Template
         $content = file_get_contents($this->path);
         $matches = [];
         preg_match_all($pattern, $content, $matches);
-        return Php\traverse($matches[1] ?? [], function(string $match) {
+        return Php::traverse($matches[1] ?? [], function (string $match) {
             return Php::mapKey($match)->andValue(self::unify($match));
         });
     }

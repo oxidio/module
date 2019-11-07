@@ -73,7 +73,7 @@ class MenuTest extends TestCase
                 '1/1'   => 'bar-users',
                 2       => 'foo',
             ],
-            Php\traverse($module->getMenu(true), function(Menu $menu) {
+            Php::traverse($module->getMenu(true), function (Menu $menu) {
                 return $menu->getId();
             })
         );
@@ -144,7 +144,7 @@ class MenuTest extends TestCase
 
     private static function assertToString(array $lines, Menu $menu): void
     {
-        assert\same(implode(PHP_EOL, Php\traverse($lines, function($line) {
+        assert\same(implode(PHP_EOL, Php::traverse($lines, function ($line) {
             return is_array($line) ? sprintf(...$line) : $line;
         })), (string) $menu);
     }

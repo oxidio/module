@@ -42,8 +42,8 @@ return static function (
                 return "$key ($value)";
             };
             $io->title("{$template->const->shortName} ({$template->name})");
-            $io->isVeryVerbose() && $io->listing(Php\traverse($template->blocks, $keyValue));
-            $io->isVeryVerbose() && $io->listing(Php\traverse($template->includes, $keyValue));
+            $io->isVeryVerbose() && $io->listing(Php::traverse($template->blocks, $keyValue));
+            $io->isVeryVerbose() && $io->listing(Php::traverse($template->includes, $keyValue));
         })();
 
         $template->blocks;

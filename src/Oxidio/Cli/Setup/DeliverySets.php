@@ -37,7 +37,7 @@ class DeliverySets
         }
         return $shop->query(T::COUNTRY, static function (Core\Row $row) {
             return $row(T\COUNTRY::ISOALPHA2, T\COUNTRY::ID);
-        }, [T\COUNTRY::ISOALPHA2 => ['IN', Php\values($countries)]]);
+        }, [T\COUNTRY::ISOALPHA2 => ['IN', Php::values($countries)]]);
     }
 
     public function __invoke(Core\Shop $shop, bool $commit = false): Generator
@@ -47,7 +47,7 @@ class DeliverySets
         $categories = function (...$args) use ($shop) {
             static $data;
             if ($data === null) {
-                $data = Php\traverse($shop->query(T::CATEGORIES, function(Core\Row $row) {
+                $data = Php::traverse($shop->query(T::CATEGORIES, function (Core\Row $row) {
                     return Php::mapKey($row[T\CATEGORIES::ID])->andValue($row);
                 }));
                 foreach ($data as $row) {
@@ -79,7 +79,7 @@ class DeliverySets
                     T\O2PAYMENT::TYPE => T::COUNTRY,
                 ];
             }
-            foreach (Php\keys($this->sets) as $setId) {
+            foreach (Php::keys($this->sets) as $setId) {
                 $o2p["{$id}_{$setId}"] = [
                     T\O2PAYMENT::PAYMENTID => $id,
                     T\O2PAYMENT::OBJECTID => $setId,
@@ -95,12 +95,12 @@ class DeliverySets
             }
         }
         $shop->modify(T::O2PAYMENT)->delete(
-            [T\O2PAYMENT::PAYMENTID => ['IN', Php\keys($this->payments)]],
-            [T\O2PAYMENT::OBJECTID => ['IN', Php\keys($this->sets)]]
+            [T\O2PAYMENT::PAYMENTID => ['IN', Php::keys($this->payments)]],
+            [T\O2PAYMENT::OBJECTID => ['IN', Php::keys($this->sets)]]
         );
         $shop->modify(T::O2PAYMENT)->replace($o2p, T\O2PAYMENT::ID);
 
-        $shop->modify(T::O2GROUP)->delete([T\O2GROUP::OBJECTID => ['IN', Php\keys($this->payments)]]);
+        $shop->modify(T::O2GROUP)->delete([T\O2GROUP::OBJECTID => ['IN', Php::keys($this->payments)]]);
         $shop->modify(T::O2GROUP)->replace($o2g, T\O2GROUP::ID);
 
         $shop->modify(T::DELIVERYSET)->update([T\DELIVERYSET::ACTIVE => false]);
@@ -139,13 +139,13 @@ class DeliverySets
                 }
             }
         }
-        $shop->modify(T::O2DELIVERY)->delete([T\O2DELIVERY::DELIVERYID => ['IN', Php\keys($this->sets, $del)]]);
+        $shop->modify(T::O2DELIVERY)->delete([T\O2DELIVERY::DELIVERYID => ['IN', Php::keys($this->sets, $del)]]);
         $shop->modify(T::O2DELIVERY)->replace($s2c, T\O2DELIVERY::ID);
 
         $shop->modify(T::DELIVERY)->update([T\DELIVERY::ACTIVE => false]);
         $shop->modify(T::DELIVERY)->replace($del, T\DELIVERY::ID);
 
-        $shop->modify(T::DEL2DELSET)->delete([T\DEL2DELSET::DELSETID => ['IN', Php\keys($this->sets)]]);
+        $shop->modify(T::DEL2DELSET)->delete([T\DEL2DELSET::DELSETID => ['IN', Php::keys($this->sets)]]);
         $shop->modify(T::DEL2DELSET)->replace($d2s, T\DEL2DELSET::ID);
 
         foreach ($shop->commit($commit) as $result) {

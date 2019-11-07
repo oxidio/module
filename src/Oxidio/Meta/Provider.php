@@ -53,7 +53,7 @@ class Provider
      */
     private function get(string $class, $name, array $properties = [])
     {
-        is_iterable($name) && $name = Php\map($name, static function($part) {
+        is_iterable($name) && $name = Php::map($name, static function ($part) {
             return trim($part, '\\') ?: null;
         })->string('\\');
 
@@ -115,7 +115,7 @@ class Provider
     public function resolveClasses(): array
     {
         $provider = new UnifiedNameSpaceClassMapProvider(new Facts);
-        return Php\keys($provider->getClassMap(), function (string $name) {
+        return Php::keys($provider->getClassMap(), function (string $name) {
             $class = $this->class($name, ['tableNs' => $this->tableNs, 'fieldNs' => $this->fieldNs]);
             return Php::mapKey($name)->andValue($class);
         });
@@ -146,7 +146,7 @@ class Provider
     public function resolveNamespaces(): iterable
     {
         $cached = $this->data[ReflectionNamespace::class] ?? [];
-        return Php\map($cached)->sort(static function(ReflectionNamespace $left, ReflectionNamespace $right) {
+        return Php::map($cached)->sort(static function(ReflectionNamespace $left, ReflectionNamespace $right) {
             return (count($left->use) - count($right->use)) ?: strcmp($left, $right);
         });
     }

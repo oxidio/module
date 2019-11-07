@@ -32,7 +32,7 @@ class Table
     private function detail($detail): ?string
     {
         static $details;
-        $details || $details = Php\traverse($this->provider->db->tables, function (SchemaTable $table) {
+        $details || $details = Php::traverse($this->provider->db->tables, function (SchemaTable $table) {
             return Php::mapKey($table->getName())->andValue($table->getOptions());
         });
         return $details[$this->name][$detail] ?? null;
@@ -99,7 +99,7 @@ class Table
             ];
         }
 
-        return Php\traverse($columns, function (array $column, $name) use ($nls) {
+        return Php::traverse($columns, function (array $column, $name) use ($nls) {
             $column['type'] .= (($nls[$name] ?? false) ? '-i18n' : '');
             return new Column($this->provider, ['name' => $name] + $column);
         });

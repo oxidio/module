@@ -76,7 +76,7 @@ class Menu extends MenuNode implements IteratorAggregate, Enum\Menu
      */
     public function getIterator(): Php\Map
     {
-        return Php\map($this->menus);
+        return Php::map($this->menus);
     }
 
     /**
@@ -93,7 +93,7 @@ class Menu extends MenuNode implements IteratorAggregate, Enum\Menu
 
         yield "$indent<$tag $attrs>";
         foreach ($this->menus as $item) {
-            yield Php\map($item->toString(self::TAGS[$tag], $newIndent))->string;
+            yield Php::map($item->toString(self::TAGS[$tag], $newIndent))->string;
         }
         foreach ($this->tabs as $item) {
             yield "$newIndent<TAB $item />";
@@ -143,7 +143,7 @@ class Menu extends MenuNode implements IteratorAggregate, Enum\Menu
      */
     public function __toString()
     {
-        return Php\map($this->toString('OXMENU'))->string;
+        return Php::map($this->toString('OXMENU'))->string;
     }
 
     /**

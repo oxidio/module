@@ -21,7 +21,7 @@ class Functions
      */
     public static function shopUrls(): array
     {
-        return Php\traverse($_ENV ?? [], static function ($url, &$var) {
+        return Php::traverse($_ENV ?? [], static function ($url, &$var) {
             if (strpos($var, static::URL_PREFIX) !== 0) {
                 return null;
             }
@@ -50,7 +50,7 @@ class Functions
 
     private static function shopOption(): InputOption
     {
-        if ($urls = implode(' | ', Php\keys(static::shopUrls()))) {
+        if ($urls = implode(' | ', Php::keys(static::shopUrls()))) {
             $urls = "[ $urls ]";
         }
         return new InputOption(

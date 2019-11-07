@@ -99,7 +99,7 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
      */
     protected function resolveTables(): array
     {
-        return Php\traverse($this->schema->getTables(), function (DBAL\Schema\Table $table) {
+        return Php::traverse($this->schema->getTables(), function (DBAL\Schema\Table $table) {
             return Php::mapValue($table)->andKey($table->getName());
         });
     }

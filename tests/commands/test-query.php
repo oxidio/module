@@ -33,12 +33,12 @@ return static function (
     $query = $shop->query($from, function(array $row) use($columns, $shop) {
 
         // fails if PDO::MYSQL_ATTR_USE_BUFFERED_QUERY is disabled
-        Php\traverse($shop->query(T::SHOPS));
+        Php::traverse($shop->query(T::SHOPS));
 
         if (!$columns) {
             return $row;
         }
-        $row =  Php\traverse([new Row($row)], Php::mapRow($columns));
+        $row = Php::traverse([new Row($row)], Php::mapRow($columns));
         return $row[0];
 
     })->orderBy($order)->limit($limit, $start);

@@ -138,7 +138,7 @@ class DataModify extends AbstractConditionalStatement
             $this->where(...$where);
             [$values, $types, $bindings] = $this->convertData($data);
 
-            $set = Php\map($bindings, static function ($binding, $column) {
+            $set = Php::map($bindings, static function ($binding, $column) {
                 return "$column = $binding";
             })->string(",\n  ");
 
@@ -221,7 +221,7 @@ class DataModify extends AbstractConditionalStatement
                         ') VALUES (',
                         '  ' . implode(', ', $bindings),
                         ') ON DUPLICATE KEY UPDATE',
-                        '  ' . implode(', ', Php\keys($bindings, static function (string $column) use($key) {
+                        '  ' . implode(', ', Php::keys($bindings, static function (string $column) use ($key) {
                             return $column === $key ? null : "$column = VALUES($column)";
                         })),
                     ]);
