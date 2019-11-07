@@ -110,7 +110,7 @@ class Menu extends MenuNode implements IteratorAggregate
      * @param iterable $data
      * @return self[]|Generator
      */
-    public static function create(iterable $data): Generator
+    public static function generate(iterable $data): Generator
     {
         foreach ($data as $key => $item) {
             $id = $class = null;
@@ -128,7 +128,7 @@ class Menu extends MenuNode implements IteratorAggregate
 
             // merge
             if ($id) {
-                $item = new static(null, is_iterable($item) ? static::create($item) : []);
+                $item = new static(null, is_iterable($item) ? static::generate($item) : []);
                 $item->id     = $id;
                 $item->merged = true;
                 yield $item;
@@ -163,5 +163,16 @@ class Menu extends MenuNode implements IteratorAggregate
         foreach ($this->buttons as $item) {
             yield $item->getId() => $item->getLabel($lang);
         }
+    }
+
+    /**
+     * @param mixed $label
+     * @param mixed ...$args
+     *
+     * @return self
+     */
+    public static function create($label, ...$args): self
+    {
+        return new static($label, ...$args);
     }
 }

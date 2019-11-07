@@ -17,7 +17,7 @@ class MenuTest extends TestCase
 {
     public function testConstructor(): void
     {
-        assert\type(Menu::class, $menu = menu('label'));
+        assert\type(Menu::class, $menu = Menu::create('label'));
         assert\same('label', $menu->label);
         assert\same(null, $menu->class);
         assert\same([], $menu->menus);
@@ -30,9 +30,9 @@ class MenuTest extends TestCase
 
     public function testGetId(): void
     {
-        assert\same('label', menu('label')->getId());
-        assert\same('de', menu(['de', 'en'])->getId());
-        assert\same('en', menu(['en', 'de'])->getId());
+        assert\same('label', Menu::create('label')->getId());
+        assert\same('de', Menu::create(['de', 'en'])->getId());
+        assert\same('en', Menu::create(['en', 'de'])->getId());
     }
 
     public function testToString(): void
@@ -40,7 +40,7 @@ class MenuTest extends TestCase
         self::assertToString([
             '    <OXMENU id="label">',
             '    </OXMENU>',
-        ], menu('label'));
+        ], Menu::create('label'));
 
         self::assertToString([
             '    <OXMENU id="menu">',
@@ -49,7 +49,7 @@ class MenuTest extends TestCase
             '            </SUBMENU>',
             '        </MAINMENU>',
             '    </OXMENU>',
-        ], menu('menu', menu('main', menu('sub'))));
+        ], Menu::create('menu', Menu::create('main', Menu::create('sub'))));
     }
 
     public function testGetMenu(): void

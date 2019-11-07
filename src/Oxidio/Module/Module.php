@@ -210,7 +210,7 @@ class Module implements JsonSerializable
      */
     public function getMenu(bool $flatten = false): array
     {
-        return Php\flatten(Menu::create($this->get(MENU, [])), function(
+        return Php\flatten(Menu::generate($this->get(MENU, [])), function(
             Menu $menu,
             $key,
             Php\Map\Path $it

@@ -97,9 +97,9 @@ return [
 
     MENU => [
         Menu\ADMIN => [ // merge
-            menu(['admin-main'], [ // register new main menu under ADMIN
-                admin\main\sub1::class => menu(['label' => 'admin-main-sub1']),
-                admin\main\sub2::class => menu('admin-main-sub2', [
+            Menu::create(['admin-main'], [ // register new main menu under ADMIN
+                admin\main\sub1::class => Menu::create(['label' => 'admin-main-sub1']),
+                admin\main\sub2::class => Menu::create('admin-main-sub2', [
                     admin\main\sub2\t1::class => 'admin-main-sub2-t1',
                     'admin-main-sub2-btn1',
                     'admin-main-sub2-btn2',
@@ -108,8 +108,8 @@ return [
 
             Menu\ADMIN\USERS => [
                 // register new sub menus under ADMIN/USERS
-                admin\users\sub1::class => menu(['admin-users-sub1', 'list' => 'user_list', 'groups' => ['g1', 'g2'], 'rights' => ['r1']]),
-                admin\users\sub2::class => menu('admin-users-sub2', [
+                admin\users\sub1::class => Menu::create(['admin-users-sub1', 'list' => 'user_list', 'groups' => ['g1', 'g2'], 'rights' => ['r1']]),
+                admin\users\sub2::class => Menu::create('admin-users-sub2', [
                     admin\users\sub2\t1::class => 'admin-users-sub2-t1',
                     admin\users\sub2\t2::class => 'admin-users-sub2-t2',
                     'admin-users-sub2-btn1',
@@ -124,26 +124,26 @@ return [
             ],
         ],
 
-        menu(['bar'], // create
-            menu('bar-main', [ // create new main menu under BAR
-                bar\main\sub1::class => menu('bar-main-sub1', [
+        Menu::create(['bar'], // create
+            Menu::create('bar-main', [ // create new main menu under BAR
+                bar\main\sub1::class => Menu::create('bar-main-sub1', [
                     bar\main\sub1\t1::class => ['bar-main-sub1-t1', 'params' => ['a' => 'b', 'c' => ['d', 'e']]],
                     'bar-main-sub1-btn1',
                     ['label' => 'bar-main-sub1-btn2', 'class' => bar\main\sub1\btn2::class],
                 ]),
-                app('bar-app', function(SmartyTemplateVars $vars, App $ctrl, Config $config, ViewConfig $vc) {
+                app('bar-app', function (SmartyTemplateVars $vars, App $ctrl, Config $config, ViewConfig $vc) {
                     return '<h2>' . implode('-', [
-                        'bar-app',
-                        get_class($ctrl),
-                        get_class($vars),
-                        get_class($config),
-                        get_class($vc),
-                    ]) . '</h2>';
+                            'bar-app',
+                            get_class($ctrl),
+                            get_class($vars),
+                            get_class($config),
+                            get_class($vc),
+                        ]) . '</h2>';
                 })
             ]),
-            [menu(['bar-users', 'params' => ['bar' => 'user'], 'class' => bar\users::class])]
+            [Menu::create(['bar-users', 'params' => ['bar' => 'user'], 'class' => bar\users::class])]
         ),
 
-        foo::class => menu('foo'),
+        foo::class => Menu::create('foo'),
     ],
 ];

@@ -80,17 +80,6 @@ namespace Oxidio\Module
 
     /**
      * @param mixed $label
-     * @param mixed ...$args
-     *
-     * @return Menu
-     */
-    function menu($label, ...$args): Menu
-    {
-        return new Menu($label, ...$args);
-    }
-
-    /**
-     * @param mixed $label
      * @param callable $callable
      * @return Menu
      */
