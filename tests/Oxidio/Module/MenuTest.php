@@ -127,7 +127,7 @@ class MenuTest extends TestCase
             ['                <BTN id="%s" cl="%s" />', 'bar-main-sub1-btn2', bar\main\sub1\btn2::class],
             '            </SUBMENU>',
             ['            <SUBMENU id="%s" cl="%s" clparam="%s">', 'bar-app', App::class, http_build_query([
-                APP => $module->id . ':1/0/1'
+                Module::APP => $module->id . ':1/0/1'
             ])],
             '            </SUBMENU>',
             '        </MAINMENU>',

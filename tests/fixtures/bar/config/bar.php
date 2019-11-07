@@ -22,9 +22,9 @@ use Oxidio;
 use Smarty;
 
 return [
-    TITLE    => 'bar module (oxidio)',
+    Module::TITLE => 'bar module (oxidio)',
 
-    SETTINGS => [
+    Module::SETTINGS => [
         'foo' => [
             'string' => [Settings::VALUE => 'string'],
             'true'   => [Settings::VALUE => true],
@@ -36,11 +36,11 @@ return [
         ]
     ],
 
-    EXTEND => [
+    Module::EXTEND => [
         SeoDecoder::class => Oxidio\Bar\Core\BarSeoDecoder::class,
     ],
 
-    BLOCKS   => [
+    Module::BLOCKS => [
         Theme\LAYOUT_BASE   => [
             Theme\LAYOUT_BASE\BLOCK_HEAD_META_ROBOTS  => Block::prepend(function () {
 
@@ -71,7 +71,7 @@ return [
         ],
     ],
 
-    CLI   => static function (Php\Cli $cli) {
+    Module::CLI => static function (Php\Cli $cli) {
         $cli->command('bar', function (Php\Cli\IO $io) {
             $io->success('bar');
         });
@@ -96,7 +96,7 @@ return [
     Oxidio\Bar\Cli\Db::class => DI\create(),
     Oxidio\Bar\Cli\Shop::class => DI\create(),
 
-    MENU => [
+    Module::MENU => [
         Menu\ADMIN => [ // merge
             Menu::create(['admin-main'], [ // register new main menu under ADMIN
                 admin\main\sub1::class => Menu::create(['label' => 'admin-main-sub1']),

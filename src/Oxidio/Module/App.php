@@ -12,7 +12,7 @@ use OxidEsales\Eshop\Core\Registry;
  */
 class App extends AdminController
 {
-    protected $_sThisTemplate = APP;
+    protected $_sThisTemplate = Module::APP;
 
     /**
      * @see Module::activate
@@ -20,7 +20,7 @@ class App extends AdminController
      */
     public function renderApp(): string
     {
-        [$id, $app] = explode(':', Registry::getRequest()->getRequestParameter(APP));
+        [$id, $app] = explode(':', Registry::getRequest()->getRequestParameter(Module::APP));
         return Module::instance($id)->renderApp($app);
     }
 
@@ -36,7 +36,7 @@ class App extends AdminController
         $menu->callback = $callable;
         $menu->params = [
             /* @see Module::params */
-            APP => function (Module $module, $menuKey) {
+            Module::APP => function (Module $module, $menuKey) {
                 return $module->id . ":{$menuKey}";
             }
         ];

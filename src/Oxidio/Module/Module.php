@@ -26,6 +26,20 @@ use Invoker\ParameterResolver;
 class Module implements JsonSerializable
 {
     use Php\PropertiesTrait\ReadOnly;
+    public const APP_TPL = '/oxidio/views/admin/tpl/' . self::APP . '.tpl';
+    public const APP = 'oxidio-app';
+    public const MENU = 'menu';
+    public const CLI = 'cli';
+    public const EXTEND = 'extend';
+    public const BLOCKS = 'blocks';
+    public const SETTINGS = 'settings';
+    public const EMAIL = 'email';
+    public const AUTHOR = 'author';
+    public const VERSION = 'version';
+    public const URL = 'url';
+    public const DESCRIPTION = 'description';
+    public const TITLE = 'title';
+    public const ID = 'id';
 
     /**
      * @var static[]
@@ -50,7 +64,7 @@ class Module implements JsonSerializable
         $package = $this->package;
         ($di = $package->extra['di'] ?? []) && $di = $package->file($di);
         return Php\DI::create(
-            [ID => $this->id, self::class => $this,],
+            [self::ID => $this->id, self::class => $this,],
             $di,
             Php\Composer\DIClassLoader::instance()->getContainer()
         );
@@ -64,7 +78,7 @@ class Module implements JsonSerializable
     {
         $cli = Oxidio\Functions::cli($this->package, $this->container);
         $this->container->set(get_class($cli), $cli);
-        $this->container->set(CLI, $this->get(CLI, $cli));
+        $this->container->set(self::CLI, $this->get(self::CLI, $cli));
         return $cli;
     }
 
@@ -78,7 +92,7 @@ class Module implements JsonSerializable
 
     private function getBlocks(): Blocks
     {
-        return new Blocks($this->get(BLOCKS, []));
+        return new Blocks($this->get(self::BLOCKS, []));
     }
 
     /**
@@ -165,7 +179,7 @@ class Module implements JsonSerializable
             return;
         }
 
-        $fs->dumpFile($modulesDir . APP_TPL, implode(PHP_EOL, [
+        $fs->dumpFile($modulesDir . self::APP_TPL, implode(PHP_EOL, [
             '[{ $oView->renderApp() }]',
         ]));
 
@@ -210,7 +224,7 @@ class Module implements JsonSerializable
      */
     public function getMenu(bool $flatten = false): array
     {
-        return Php\flatten(Menu::generate($this->get(MENU, [])), function(
+        return Php\flatten(Menu::generate($this->get(self::MENU, [])), function(
             Menu $menu,
             $key,
             Php\Map\Path $it
@@ -230,18 +244,18 @@ class Module implements JsonSerializable
     {
         $author = $this->package->authors[0] ?? [];
         return [
-            ID          => $this->id,
-            TITLE       => $this->get(TITLE, $this->id),
-            DESCRIPTION => $this->get(DESCRIPTION, $this->package->description),
-            URL         => $this->get(URL, $this->package->homepage),
-            VERSION     => $this->get(VERSION, $this->package->version()),
-            AUTHOR      => $this->get(AUTHOR, $author['name'] ?? ''),
-            EMAIL       => $this->get(EMAIL, $author['email'] ?? ''),
-            SETTINGS    => new Settings($this->get(SETTINGS, [])),
-            BLOCKS      => $this->getBlocks(),
-            EXTEND      => $this->get(EXTEND, []),
+            self::ID => $this->id,
+            self::TITLE => $this->get(self::TITLE, $this->id),
+            self::DESCRIPTION => $this->get(self::DESCRIPTION, $this->package->description),
+            self::URL => $this->get(self::URL, $this->package->homepage),
+            self::VERSION => $this->get(self::VERSION, $this->package->version()),
+            self::AUTHOR => $this->get(self::AUTHOR, $author['name'] ?? ''),
+            self::EMAIL => $this->get(self::EMAIL, $author['email'] ?? ''),
+            self::SETTINGS => new Settings($this->get(self::SETTINGS, [])),
+            self::BLOCKS => $this->getBlocks(),
+            self::EXTEND => $this->get(self::EXTEND, []),
             'events'    => new Events,
-            'templates' => [APP  => APP_TPL],
+            'templates' => [self::APP => self::APP_TPL],
         ];
     }
 
@@ -261,7 +275,7 @@ class Module implements JsonSerializable
      */
     private function getTranslations(string $lang): Generator
     {
-        yield from (new Settings($this->get(SETTINGS, [])))->translate($lang);
+        yield from (new Settings($this->get(self::SETTINGS, [])))->translate($lang);
         foreach ($this->getMenu(true) as $menu) {
             yield from $menu->translate($lang);
         }
