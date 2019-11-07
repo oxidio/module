@@ -89,7 +89,7 @@ class Template
         $matches = [];
         preg_match_all($pattern, $content, $matches);
         return Php\traverse($matches[1] ?? [], function(string $match) {
-            return Php\mapKey($match)->andValue(self::unify($match));
+            return Php::mapKey($match)->andValue(self::unify($match));
         });
     }
 }

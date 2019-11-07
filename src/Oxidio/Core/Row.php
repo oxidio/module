@@ -66,7 +66,7 @@ class Row implements ArrayAccess, IteratorAggregate, JsonSerializable
         }
 
         if (count($args) > 1) {
-            return Php\mapKey($this[$args[0]] ?? null)->andValue($this[$args[1]] ?? null);
+            return Php::mapKey($this[$args[0]] ?? null)->andValue($this[$args[1]] ?? null);
         }
         if (is_iterable($args[0])) {
             $array = [];

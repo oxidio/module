@@ -26,11 +26,11 @@ class RowTest extends TestCase
             '1 arg: null' => [null, null],
             "1 arg: ['a', 'b', 'D']" => [['a' => 'v-a', 'b' => 'v-b'], ['a', 'b', 'D']],
             "1 arg: ['a', 'b', 'c' => 'D']" => [['a' => 'v-a', 'b' => 'v-b', 'D' => null], ['a', 'b', 'c' => 'D']],
-            '2 args: a, b' => [Php\mapKey('v-a')->andValue('v-b'), 'a', 'b'],
-            '2 args: a, c' => [Php\mapKey('v-a'), 'a', 'c'],
-            '2 args: c, a' => [Php\mapValue('v-a'), 'c', 'a'],
-            '2 args: c, d' => [Php\mapValue(), 'c', 'd'],
-            '2 args: null, null' => [Php\mapValue(), null, null],
+            '2 args: a, b' => [Php::mapKey('v-a')->andValue('v-b'), 'a', 'b'],
+            '2 args: a, c' => [Php::mapKey('v-a'), 'a', 'c'],
+            '2 args: c, a' => [Php::mapValue('v-a'), 'c', 'a'],
+            '2 args: c, d' => [Php::mapValue(), 'c', 'd'],
+            '2 args: null, null' => [Php::mapValue(), null, null],
         ];
     }
 

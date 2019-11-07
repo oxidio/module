@@ -177,7 +177,7 @@ class Shop implements DataModificationInterface
     protected function resolveExtensions(): array
     {
         return Php\traverse(Extension::all($this), static function (Extension $extension) {
-            return Php\mapGroup($extension->type)->andKey($extension->id)->andValue($extension);
+            return Php::mapGroup($extension->type)->andKey($extension->id)->andValue($extension);
         });
     }
 

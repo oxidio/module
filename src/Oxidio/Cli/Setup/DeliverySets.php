@@ -48,7 +48,7 @@ class DeliverySets
             static $data;
             if ($data === null) {
                 $data = Php\traverse($shop->query(T::CATEGORIES, function(Core\Row $row) {
-                    return Php\mapKey($row[T\CATEGORIES::ID])->andValue($row);
+                    return Php::mapKey($row[T\CATEGORIES::ID])->andValue($row);
                 }));
                 foreach ($data as $row) {
                     $parent = $row;

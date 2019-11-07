@@ -115,11 +115,11 @@ class Extension implements JsonSerializable
                 if ($module && strpos($module, ':') === false) {
                     $module = static::MODULE . ':' . $module;
                 }
-                return Php\mapGroup($module)->andKey($name)->andValue($value);
+                return Php::mapGroup($module)->andKey($name)->andValue($value);
             }
         ), static function (array $config, $module) {
             [$type, $module] = explode(':', $module . ':');
-            return Php\mapKey((string)$module)->andValue([
+            return Php::mapKey((string)$module)->andValue([
                 'config' => $config,
                 'type' => (string)$type,
             ]);
@@ -137,7 +137,7 @@ class Extension implements JsonSerializable
 
         $attr = function (array $data, $attr): array {
             return Php\traverse($data, static function ($value, $module) use ($attr) {
-                return Php\mapKey($module)->andValue([$attr => $value]);
+                return Php::mapKey($module)->andValue([$attr => $value]);
             });
         };
 

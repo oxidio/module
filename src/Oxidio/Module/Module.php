@@ -120,7 +120,7 @@ class Module implements JsonSerializable
                     $name    = $default;
                     $default = Php::mapNull();
                 }
-                return Php\mapKey($name)->andValue(
+                return Php::mapKey($name)->andValue(
                     $this->container->has($name) ? $this->container->get($name) : ($this->$name ?? $default)
                 );
             });

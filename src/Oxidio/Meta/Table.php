@@ -33,7 +33,7 @@ class Table
     {
         static $details;
         $details || $details = Php\traverse($this->provider->db->tables, function (SchemaTable $table) {
-            return Php\mapKey($table->getName())->andValue($table->getOptions());
+            return Php::mapKey($table->getName())->andValue($table->getOptions());
         });
         return $details[$this->name][$detail] ?? null;
     }

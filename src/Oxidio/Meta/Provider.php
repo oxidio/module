@@ -117,7 +117,7 @@ class Provider
         $provider = new UnifiedNameSpaceClassMapProvider(new Facts);
         return Php\keys($provider->getClassMap(), function (string $name) {
             $class = $this->class($name, ['tableNs' => $this->tableNs, 'fieldNs' => $this->fieldNs]);
-            return Php\mapKey($name)->andValue($class);
+            return Php::mapKey($name)->andValue($class);
         });
     }
 

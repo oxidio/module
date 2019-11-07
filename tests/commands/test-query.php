@@ -38,7 +38,7 @@ return static function (
         if (!$columns) {
             return $row;
         }
-        $row =  Php\traverse([new Row($row)], Php\mapRow($columns));
+        $row =  Php\traverse([new Row($row)], Php::mapRow($columns));
         return $row[0];
 
     })->orderBy($order)->limit($limit, $start);

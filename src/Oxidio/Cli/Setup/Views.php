@@ -50,7 +50,7 @@ class Views
 
         $views = Php\keys($db->views, static function (string $view) {
             [, $table] = explode('_', $view);
-            return Php\mapGroup($table);
+            return Php::mapGroup($table);
         });
 
         $io->title($db->schema->getName());
