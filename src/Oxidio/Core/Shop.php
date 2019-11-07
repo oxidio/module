@@ -61,9 +61,9 @@ class Shop implements DataModificationInterface
     public function __invoke(...$args): self
     {
         foreach ($args as $arg) {
-            $arg = Php\isCallable($arg) ? $arg($this) : $arg;
+            $arg = Php::isCallable($arg) ? $arg($this) : $arg;
             foreach (is_iterable($arg) ? $arg : [] as $view => $value) {
-                $value = Php\isCallable($value) ? $value($this) : $value;
+                $value = Php::isCallable($value) ? $value($this) : $value;
                 if (is_string($view)) {
                     $modify = $this->modify($view);
                     $value === null ? $modify->delete() : $modify->replace($value, T\SHOPS::ID);

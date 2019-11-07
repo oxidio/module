@@ -214,7 +214,7 @@ class Module implements JsonSerializable
     {
         foreach ($nodes as $node) {
             $node->params = Php\traverse($node->params, function($value) use($key) {
-                return Php\isCallable($value) ? $value($this, $key) : $value;
+                return Php::isCallable($value) ? $value($this, $key) : $value;
             });
         }
     }

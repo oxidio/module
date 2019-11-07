@@ -25,13 +25,13 @@ class DataQuery extends AbstractSelectStatement
      */
     public function __construct($from = null, $mapper = null, ...$where)
     {
-        if (Php\isCallable($from)) {
+        if (Php::isCallable($from)) {
             $this->mapper = $this->fromCallable($from);
         } else {
             $this->properties['view'] = $from;
         }
 
-        if (Php\isCallable($mapper)) {
+        if (Php::isCallable($mapper)) {
             $this->mapper = $this->fromCallable($mapper);
             $this->where(...$where);
         } else if ($mapper) {

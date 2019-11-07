@@ -30,7 +30,7 @@ class Define
      */
     public function __invoke(IO $io, Core\Database $db, string $filter = null, bool $dryRun = false, bool $down = false)
     {
-        $versions = Php\isCallable($this->versions) ? call_user_func($this->versions) : $this->versions;
+        $versions = Php::isCallable($this->versions) ? call_user_func($this->versions) : $this->versions;
         $versions = Php\traverse($versions, static function ($version, $name) use ($io, $filter) {
             if ($filter && stripos($name, $filter) === false) {
                 $io->isVerbose() && $io->note("filter: $name");
