@@ -42,10 +42,10 @@ return [
 
     BLOCKS   => [
         Theme\LAYOUT_BASE   => [
-            Theme\LAYOUT_BASE\BLOCK_HEAD_META_ROBOTS  => prepend(function () {
+            Theme\LAYOUT_BASE\BLOCK_HEAD_META_ROBOTS  => Block::prepend(function () {
 
             }),
-            Theme\LAYOUT_BASE\BLOCK_HEAD_TITLE => overwrite(function (
+            Theme\LAYOUT_BASE\BLOCK_HEAD_TITLE => Block::overwrite(function (
                 FrontendController $ctrl,
                 SmartyTemplateVars $vars,
                 Smarty $smarty,
@@ -66,7 +66,8 @@ return [
             }),
         ],
         Theme\LAYOUT_FOOTER => [
-            Theme\LAYOUT_FOOTER\BLOCK_MAIN => append(function () {}),
+            Theme\LAYOUT_FOOTER\BLOCK_MAIN => Block::append(function () {
+            }),
         ],
     ],
 

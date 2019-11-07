@@ -7,14 +7,11 @@ namespace Oxidio\Module;
 
 use JsonSerializable;
 
-/**
- */
 class Block implements JsonSerializable
 {
-    public const APPEND     = true;
-    public const PREPEND    = false;
-    public const OVERWRITE  = null;
-
+    private const APPEND     = true;
+    private const PREPEND    = false;
+    private const OVERWRITE  = null;
     private const PARENT  = '[{$smarty.block.parent}]';
 
     /**
@@ -74,5 +71,35 @@ class Block implements JsonSerializable
             '[{/php}]',
             $this->action === self::PREPEND ? self::PARENT : null,
         ]);
+    }
+
+    /**
+     * @param $callable
+     *
+     * @return static
+     */
+    public static function overwrite($callable): self
+    {
+        return new static($callable, static::OVERWRITE);
+    }
+
+    /**
+     * @param $callable
+     *
+     * @return static
+     */
+    public static function prepend($callable): self
+    {
+        return new static($callable, static::PREPEND);
+    }
+
+    /**
+     * @param $callable
+     *
+     * @return static
+     */
+    public static function append($callable): self
+    {
+        return new static($callable, static::APPEND);
     }
 }
