@@ -46,11 +46,6 @@ class Oxidio
         return $input;
     }
 
-    public static function sanitize(string $input, string $suffix = '_'): string
-    {
-        return in_array(strtolower($input), Php\Composer\DIPackages::RESERVED, true) ? $input . $suffix : $input;
-    }
-
     public static function constName(string $value, string $class): ?string
     {
         static $cache = [];
