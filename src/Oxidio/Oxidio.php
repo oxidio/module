@@ -69,21 +69,14 @@ class Oxidio
         );
     }
 
-    public static function cast(array $row, string ...$booleans): array
+    public static function cast(array $row, array $booleans = [], array $numbers = []): array
     {
-        foreach ($row as $key => $value) {
-            if (is_numeric($value)) {
-                $row[$key] = static::castValue($value, in_array($key, $booleans, true));
-            }
+        foreach ($booleans as $key) {
+            isset($row[$key]) && $row[$key] = (bool)$row[$key];
+        }
+        foreach ($numbers as $key) {
+            isset($row[$key]) && $row[$key] = 0 + $row[$key];
         }
         return $row;
-    }
-
-    protected static function castValue($value, bool $bool = false)
-    {
-        if ($bool) {
-            return (bool)$value;
-        }
-        return $value + 0;
     }
 }

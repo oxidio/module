@@ -14,8 +14,6 @@ use Oxidio;
 use ReflectionClass;
 use ReflectionParameter;
 
-/**
- */
 class DataQuery extends AbstractSelectStatement
 {
     /**
@@ -94,7 +92,7 @@ class DataQuery extends AbstractSelectStatement
             };
         }
 
-        return function(array $row) use($from, $class, $params) {
+        return function (array $row) use ($from, $class, $params) {
             $args = Php::values(static::args($row, ...$params));
             return $from(oxNew($class->getName(), $row), ...$args);
         };

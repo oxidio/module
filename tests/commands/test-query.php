@@ -14,11 +14,11 @@ use Oxidio\Enum\Tables as T;
  * Test query functionality
  *
  * @param Core\Shop $shop
- * @param string[] $columns
- * @param string $from
- * @param string[] $order
- * @param int $limit
- * @param int $start
+ * @param string[]  $columns
+ * @param string    $from
+ * @param string[]  $order
+ * @param int       $limit
+ * @param int       $start
  *
  * @return Generator
  */
@@ -30,7 +30,7 @@ return static function (
     int $limit = 0,
     int $start = 0
 ) {
-    $query = $shop->query($from, function(array $row) use($columns, $shop) {
+    $query = $shop->query($from, function (array $row) use ($columns, $shop) {
 
         // fails if PDO::MYSQL_ATTR_USE_BUFFERED_QUERY is disabled
         Php::traverse($shop->query(T::SHOPS));

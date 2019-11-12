@@ -82,7 +82,7 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
                         $direction = 'ASC';
                     }
 
-                    return "{$this->getColumnName($property)} {$direction}";
+                    return "$property $direction";
                 }));
         }));
 
@@ -134,6 +134,7 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
     {
         $limitTerm = $this->buildLimit($limit, $start);
         $limitTerm = $limitTerm ? "\nLIMIT {$limitTerm}" : null;
+
 
         return "SELECT {$this->columns}\nFROM {$this->view}"
             . $this->buildWhere($this->whereTerms)

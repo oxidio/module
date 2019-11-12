@@ -33,11 +33,6 @@ abstract class AbstractConditionalStatement
         return $this;
     }
 
-    protected function getColumnName($candidate): string
-    {
-        return $candidate;
-    }
-
     /**
      * @param array ...$terms
      *
@@ -83,7 +78,7 @@ abstract class AbstractConditionalStatement
                 }
 
                 $operator = $operator ?: '=';
-                return "{$this->getColumnName($column)} {$operator} {$value}";
+                return "{$column} {$operator} {$value}";
             })) : $term) {
                 return "($term)";
             }
