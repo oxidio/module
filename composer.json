@@ -12,8 +12,8 @@
   "require": {
     "oxidio/bin": "^1.0",
     "oxidio/constants": "^1.0",
-    "oxidio/shop": "~6.4.0",
-    "oxidio/composer-plugin": "^2.0",
+    "oxidio/shop": "^6.5",
+    "oxidio/composer-plugin": "^4.0",
     "oxidio/unified-namespace-generator": "^2.0",
     "oxidio/facts": "^2.0",
     "symfony/yaml": "^3.4",
