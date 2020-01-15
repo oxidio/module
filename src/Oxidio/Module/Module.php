@@ -5,8 +5,8 @@
 
 namespace Oxidio\Module;
 
-use OxidEsales\EshopCommunity\Internal\Application\BootstrapContainer\BootstrapContainerFactory;
-use OxidEsales\EshopCommunity\Internal\Application\Utility\BasicContextInterface;
+use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Transition\Utility\BasicContextInterface;
 use Oxidio;
 use Php;
 use Generator;
@@ -23,7 +23,6 @@ use Invoker\ParameterResolver;
  * @property-read Php\Cli          $cli
  * @property-read Php\DI\Container $container
  * @property-read Php\DI\Invoker   $invoker
- * @property-read string $id
  * @property-read BasicContextInterface $context
  * @property-read string[] $languages
  */
