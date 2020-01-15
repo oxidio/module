@@ -68,6 +68,6 @@ class Blocks implements IteratorAggregate, JsonSerializable
      */
     public function jsonSerialize()
     {
-        return $this->serialized ?: $this->serialized = Php\traverse($this);
+        return $this->serialized ?: $this->serialized = Php::traverse($this);
     }
 }

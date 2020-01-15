@@ -18,7 +18,7 @@ class DatabaseTest extends TestCase
 {
     public function testDefine(): void
     {
-        $define = Oxidio\db()->define(
+        $define = Database::get()->define(
             static function (DBAL\Schema\Schema $schema, Database $db, bool $down) {
                 $t1 = $schema->createTable('t1');
                 $t1->addColumn('c1', DBAL\Types\Type::STRING);
@@ -33,16 +33,15 @@ class DatabaseTest extends TestCase
         );
         assert\type(DataDefine::class, $define);
         assert\type('callable', $up = $define->up());
-        assert\same([
-            'CREATE TABLE t1 (c1 VARCHAR(255) NOT NULL, c2 VARCHAR(255) NOT NULL) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB' => true,
-           "INSERT INTO t1 (\n  c2, c1\n) VALUES (\n  :c2, :c1\n) ON DUPLICATE KEY UPDATE\n  c2 = VALUES(c2)" => 0,
-            'CREATE TABLE t2 (c1 VARCHAR(255) NOT NULL) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB' => true,
-        ], Php\traverse($up(true)));
+        assert\same(
+            "INSERT INTO t1 (\n  c2, c1\n) VALUES (\n  :c2, :c1\n) ON DUPLICATE KEY UPDATE\n  c2 = VALUES(c2)",
+            Php::map($up(true))->keys[1]
+        );
 
         assert\type('callable', $down = $define->down());
         assert\same([
             'DROP TABLE t1' => true,
             'DROP TABLE t2' => true,
-        ], Php\traverse($down(true)));
+        ], Php::traverse($down(true)));
     }
 }

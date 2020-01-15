@@ -25,15 +25,15 @@ return static function (
     string $status = '',
     ...$modules
 ): Generator {
-    yield Php\traverse($shop->modules, function (Core\Extension $module) use ($modules, $status, $invert) {
+    yield Php::traverse($shop->modules, function (Core\Extension $module) use ($modules, $status, $invert) {
         return [
             'id' => $module->id,
             'version' => $module->version,
             'status:before' => $module->status,
-            'status:after' => ($invert xor Php\hasValue($module->id, $modules)) ?
+            'status:after' => ($invert xor Php::hasValue($module->id, $modules)) ?
                 $module->status = $status :
                 $module->status,
-            'config' => json_encode(Php\traverse($module->config), JSON_PRETTY_PRINT),
+            'config' => json_encode(Php::traverse($module->config), JSON_PRETTY_PRINT),
         ];
     });
 

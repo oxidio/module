@@ -84,14 +84,14 @@ class MenuNode
      */
     public function __toString()
     {
-        return Php\map([
-            'id'       => $this->getId(),
-            'cl'       => $this->class,
-            'clparam'  => http_build_query($this->params, '', '&amp;'),
-            'list'     => $this->list,
-            'groups'   => implode(',', $this->groups), // nogroups?
-            'rights'   => implode(',', $this->rights), // norights?
-        ], function($value, $key) {
+        return Php::map([
+            'id' => $this->getId(),
+            'cl' => $this->class,
+            'clparam' => http_build_query($this->params, '', '&amp;'),
+            'list' => $this->list,
+            'groups' => implode(',', $this->groups), // nogroups?
+            'rights' => implode(',', $this->rights), // norights?
+        ], function ($value, $key) {
             return $value ? "$key=\"$value\"" : null;
         })->string(' ');
     }

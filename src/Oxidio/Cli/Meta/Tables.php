@@ -110,6 +110,6 @@ EOL
     private static function constName(string $value, string $class, $replace = 'ox'): string
     {
         return Oxidio\Oxidio::constName($value, $class) ??
-            strtoupper(Oxidio\Oxidio::sanitize(Oxidio\Oxidio::after($value, $replace)));
+            strtoupper(Php\Lang::sanitize(Oxidio\Oxidio::after($value, $replace)));
     }
 }

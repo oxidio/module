@@ -17,7 +17,7 @@ class MenuTest extends TestCase
 {
     public function testConstructor(): void
     {
-        assert\type(Menu::class, $menu = menu('label'));
+        assert\type(Menu::class, $menu = Menu::create('label'));
         assert\same('label', $menu->label);
         assert\same(null, $menu->class);
         assert\same([], $menu->menus);
@@ -30,9 +30,9 @@ class MenuTest extends TestCase
 
     public function testGetId(): void
     {
-        assert\same('label', menu('label')->getId());
-        assert\same('de', menu(['de', 'en'])->getId());
-        assert\same('en', menu(['en', 'de'])->getId());
+        assert\same('label', Menu::create('label')->getId());
+        assert\same('de', Menu::create(['de', 'en'])->getId());
+        assert\same('en', Menu::create(['en', 'de'])->getId());
     }
 
     public function testToString(): void
@@ -40,7 +40,7 @@ class MenuTest extends TestCase
         self::assertToString([
             '    <OXMENU id="label">',
             '    </OXMENU>',
-        ], menu('label'));
+        ], Menu::create('label'));
 
         self::assertToString([
             '    <OXMENU id="menu">',
@@ -49,7 +49,7 @@ class MenuTest extends TestCase
             '            </SUBMENU>',
             '        </MAINMENU>',
             '    </OXMENU>',
-        ], menu('menu', menu('main', menu('sub'))));
+        ], Menu::create('menu', Menu::create('main', Menu::create('sub'))));
     }
 
     public function testGetMenu(): void
@@ -58,14 +58,14 @@ class MenuTest extends TestCase
 
         assert\same(
             [
-                0       => Menu\ADMIN,
+                0       => Menu::ADMIN,
                 '0/0'   => 'admin-main',
                 '0/0/0' => 'admin-main-sub1',
                 '0/0/1' => 'admin-main-sub2',
-                '0/1'   => explode('/', Menu\ADMIN\USERS)[1],
+                '0/1'   => explode('/', Menu::ADMIN_USERS)[1],
                 '0/1/0' => 'admin-users-sub1',
                 '0/1/1' => 'admin-users-sub2',
-                '0/1/2' => explode('/', Menu\ADMIN\USERS\GROUPS)[2],
+                '0/1/2' => explode('/', Menu::ADMIN_USERS_GROUPS)[2],
                 1       => 'bar',
                 '1/0'   => 'bar-main',
                 '1/0/0' => 'bar-main-sub1',
@@ -73,14 +73,14 @@ class MenuTest extends TestCase
                 '1/1'   => 'bar-users',
                 2       => 'foo',
             ],
-            Php\traverse($module->getMenu(true), function(Menu $menu) {
+            Php::traverse($module->getMenu(true), function (Menu $menu) {
                 return $menu->getId();
             })
         );
 
         $menus = $module->getMenu();
         self::assertToString([
-            ['    <OXMENU id="%s">', Menu\ADMIN],
+            ['    <OXMENU id="%s">', Menu::ADMIN],
             ['        <MAINMENU id="%s">', 'admin-main'],
             ['            <SUBMENU id="%s">', 'admin-main-sub1'],
             '            </SUBMENU>',
@@ -90,7 +90,7 @@ class MenuTest extends TestCase
             ['                <BTN id="%s" />', 'admin-main-sub2-btn2'],
             '            </SUBMENU>',
             '        </MAINMENU>',
-            ['        <MAINMENU id="%s">', array_reverse(explode('/', Menu\ADMIN\USERS))[0]],
+            ['        <MAINMENU id="%s">', array_reverse(explode('/', Menu::ADMIN_USERS))[0]],
             ['            <SUBMENU id="%s" cl="%s" list="%s" groups="%s" rights="%s">',
                 'admin-users-sub1',
                 admin\users\sub1::class,
@@ -104,7 +104,7 @@ class MenuTest extends TestCase
             ['                <TAB id="%s" cl="%s" />', 'admin-users-sub2-t2', admin\users\sub2\t2::class],
             ['                <BTN id="%s" />', 'admin-users-sub2-btn1'],
             '            </SUBMENU>',
-            ['            <SUBMENU id="%s">', array_reverse(explode('/', Menu\ADMIN\USERS\GROUPS))[0]],
+            ['            <SUBMENU id="%s">', array_reverse(explode('/', Menu::ADMIN_USERS_GROUPS))[0]],
             ['                <TAB id="%s" cl="%s" />', 'admin-users-groups-t1', admin\users\groups\t1::class],
             ['                <TAB id="%s" cl="%s" />', 'admin-users-groups-t2-de', admin\users\groups\t2::class],
             ['                <BTN id="%s" />', 'admin-users-groups-btn1'],
@@ -127,7 +127,7 @@ class MenuTest extends TestCase
             ['                <BTN id="%s" cl="%s" />', 'bar-main-sub1-btn2', bar\main\sub1\btn2::class],
             '            </SUBMENU>',
             ['            <SUBMENU id="%s" cl="%s" clparam="%s">', 'bar-app', App::class, http_build_query([
-                APP => $module->id . ':1/0/1'
+                Module::APP => $module->id . ':1/0/1'
             ])],
             '            </SUBMENU>',
             '        </MAINMENU>',
@@ -144,7 +144,7 @@ class MenuTest extends TestCase
 
     private static function assertToString(array $lines, Menu $menu): void
     {
-        assert\same(implode(PHP_EOL, Php\traverse($lines, function($line) {
+        assert\same(implode(PHP_EOL, Php::traverse($lines, function ($line) {
             return is_array($line) ? sprintf(...$line) : $line;
         })), (string) $menu);
     }

@@ -8,11 +8,9 @@ namespace Oxidio\Module;
 use Generator;
 use Php;
 use IteratorAggregate;
+use Oxidio\Enum;
 
-/**
- *
- */
-class Menu extends MenuNode implements IteratorAggregate
+class Menu extends MenuNode implements IteratorAggregate, Enum\Menu
 {
     /**
      * @var string
@@ -78,7 +76,7 @@ class Menu extends MenuNode implements IteratorAggregate
      */
     public function getIterator(): Php\Map
     {
-        return Php\map($this->menus);
+        return Php::map($this->menus);
     }
 
     /**
@@ -95,7 +93,7 @@ class Menu extends MenuNode implements IteratorAggregate
 
         yield "$indent<$tag $attrs>";
         foreach ($this->menus as $item) {
-            yield Php\map($item->toString(self::TAGS[$tag], $newIndent))->string;
+            yield Php::map($item->toString(self::TAGS[$tag], $newIndent))->string;
         }
         foreach ($this->tabs as $item) {
             yield "$newIndent<TAB $item />";
@@ -110,12 +108,12 @@ class Menu extends MenuNode implements IteratorAggregate
      * @param iterable $data
      * @return self[]|Generator
      */
-    public static function create(iterable $data): Generator
+    public static function generate(iterable $data): Generator
     {
         foreach ($data as $key => $item) {
             $id = $class = null;
             if (!is_numeric($key)) {
-                strpos($key, Menu\ADMIN) === 0 ? $id = array_reverse(explode('/', $key))[0] : $class = $key;
+                strpos($key, static::ADMIN) === 0 ? $id = array_reverse(explode('/', $key))[0] : $class = $key;
             }
 
             // new
@@ -128,7 +126,7 @@ class Menu extends MenuNode implements IteratorAggregate
 
             // merge
             if ($id) {
-                $item = new static(null, is_iterable($item) ? static::create($item) : []);
+                $item = new static(null, is_iterable($item) ? static::generate($item) : []);
                 $item->id     = $id;
                 $item->merged = true;
                 yield $item;
@@ -145,7 +143,7 @@ class Menu extends MenuNode implements IteratorAggregate
      */
     public function __toString()
     {
-        return Php\map($this->toString('OXMENU'))->string;
+        return Php::map($this->toString('OXMENU'))->string;
     }
 
     /**
@@ -163,5 +161,16 @@ class Menu extends MenuNode implements IteratorAggregate
         foreach ($this->buttons as $item) {
             yield $item->getId() => $item->getLabel($lang);
         }
+    }
+
+    /**
+     * @param mixed $label
+     * @param mixed ...$args
+     *
+     * @return self
+     */
+    public static function create($label, ...$args): self
+    {
+        return new static($label, ...$args);
     }
 }

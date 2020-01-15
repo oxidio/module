@@ -22,30 +22,30 @@ use Oxidio;
 use Smarty;
 
 return [
-    TITLE    => 'bar module (oxidio)',
+    Module::TITLE => 'bar module (oxidio)',
 
-    SETTINGS => [
+    Module::SETTINGS => [
         'foo' => [
-            'string' => [SETTINGS\VALUE => 'string'],
-            'true'   => [SETTINGS\VALUE => true],
-            'false'  => [SETTINGS\VALUE => false],
-            'aarr'   => [SETTINGS\VALUE => ['a' => 'A', 'b' => 'B']],
+            'string' => [Settings::VALUE => 'string'],
+            'true'   => [Settings::VALUE => true],
+            'false'  => [Settings::VALUE => false],
+            'aarr'   => [Settings::VALUE => ['a' => 'A', 'b' => 'B']],
         ],
         'bar' => [
-            'selected' => [SETTINGS\VALUE => ['c' => 'C', 'd' => 'D', 'e' => 'E'], SETTINGS\SELECTED => 'd']
+            'selected' => [Settings::VALUE => ['c' => 'C', 'd' => 'D', 'e' => 'E'], Settings::SELECTED => 'd']
         ]
     ],
 
-    EXTEND => [
+    Module::EXTEND => [
         SeoDecoder::class => Oxidio\Bar\Core\BarSeoDecoder::class,
     ],
 
-    BLOCKS   => [
+    Module::BLOCKS => [
         Theme\LAYOUT_BASE   => [
-            Theme\LAYOUT_BASE\BLOCK_HEAD_META_ROBOTS  => prepend(function () {
+            Theme\LAYOUT_BASE\BLOCK_HEAD_META_ROBOTS  => Block::prepend(function () {
 
             }),
-            Theme\LAYOUT_BASE\BLOCK_HEAD_TITLE => overwrite(function (
+            Theme\LAYOUT_BASE\BLOCK_HEAD_TITLE => Block::overwrite(function (
                 FrontendController $ctrl,
                 SmartyTemplateVars $vars,
                 Smarty $smarty,
@@ -66,11 +66,12 @@ return [
             }),
         ],
         Theme\LAYOUT_FOOTER => [
-            Theme\LAYOUT_FOOTER\BLOCK_MAIN => append(function () {}),
+            Theme\LAYOUT_FOOTER\BLOCK_MAIN => Block::append(function () {
+            }),
         ],
     ],
 
-    CLI   => static function (Php\Cli $cli) {
+    Module::CLI => static function (Php\Cli $cli) {
         $cli->command('bar', function (Php\Cli\IO $io) {
             $io->success('bar');
         });
@@ -95,27 +96,27 @@ return [
     Oxidio\Bar\Cli\Db::class => DI\create(),
     Oxidio\Bar\Cli\Shop::class => DI\create(),
 
-    MENU => [
-        Menu\ADMIN => [ // merge
-            menu(['admin-main'], [ // register new main menu under ADMIN
-                admin\main\sub1::class => menu(['label' => 'admin-main-sub1']),
-                admin\main\sub2::class => menu('admin-main-sub2', [
+    Module::MENU => [
+        Menu::ADMIN => [ // merge
+            Menu::create(['admin-main'], [ // register new main menu under ADMIN
+                admin\main\sub1::class => Menu::create(['label' => 'admin-main-sub1']),
+                admin\main\sub2::class => Menu::create('admin-main-sub2', [
                     admin\main\sub2\t1::class => 'admin-main-sub2-t1',
                     'admin-main-sub2-btn1',
                     'admin-main-sub2-btn2',
                 ]),
             ]),
 
-            Menu\ADMIN\USERS => [
+            Menu::ADMIN_USERS => [
                 // register new sub menus under ADMIN/USERS
-                admin\users\sub1::class => menu(['admin-users-sub1', 'list' => 'user_list', 'groups' => ['g1', 'g2'], 'rights' => ['r1']]),
-                admin\users\sub2::class => menu('admin-users-sub2', [
+                admin\users\sub1::class => Menu::create(['admin-users-sub1', 'list' => 'user_list', 'groups' => ['g1', 'g2'], 'rights' => ['r1']]),
+                admin\users\sub2::class => Menu::create('admin-users-sub2', [
                     admin\users\sub2\t1::class => 'admin-users-sub2-t1',
                     admin\users\sub2\t2::class => 'admin-users-sub2-t2',
                     'admin-users-sub2-btn1',
                 ]),
 
-                Menu\ADMIN\USERS\GROUPS => [ // register new tabs and buttons under ADMIN/USERS/GROUPS,
+                Menu::ADMIN_USERS_GROUPS => [ // register new tabs and buttons under ADMIN/USERS/GROUPS,
                     admin\users\groups\t1::class => 'admin-users-groups-t1',
                     admin\users\groups\t2::class => ['de' => 'admin-users-groups-t2-de', 'en' => 'admin-users-groups-t2-en'],
                     'admin-users-groups-btn1',
@@ -124,26 +125,26 @@ return [
             ],
         ],
 
-        menu(['bar'], // create
-            menu('bar-main', [ // create new main menu under BAR
-                bar\main\sub1::class => menu('bar-main-sub1', [
+        Menu::create(['bar'], // create
+            Menu::create('bar-main', [ // create new main menu under BAR
+                bar\main\sub1::class => Menu::create('bar-main-sub1', [
                     bar\main\sub1\t1::class => ['bar-main-sub1-t1', 'params' => ['a' => 'b', 'c' => ['d', 'e']]],
                     'bar-main-sub1-btn1',
                     ['label' => 'bar-main-sub1-btn2', 'class' => bar\main\sub1\btn2::class],
                 ]),
-                app('bar-app', function(SmartyTemplateVars $vars, App $ctrl, Config $config, ViewConfig $vc) {
+                App::menu('bar-app', function (SmartyTemplateVars $vars, App $ctrl, Config $config, ViewConfig $vc) {
                     return '<h2>' . implode('-', [
-                        'bar-app',
-                        get_class($ctrl),
-                        get_class($vars),
-                        get_class($config),
-                        get_class($vc),
-                    ]) . '</h2>';
+                            'bar-app',
+                            get_class($ctrl),
+                            get_class($vars),
+                            get_class($config),
+                            get_class($vc),
+                        ]) . '</h2>';
                 })
             ]),
-            [menu(['bar-users', 'params' => ['bar' => 'user'], 'class' => bar\users::class])]
+            [Menu::create(['bar-users', 'params' => ['bar' => 'user'], 'class' => bar\users::class])]
         ),
 
-        foo::class => menu('foo'),
+        foo::class => Menu::create('foo'),
     ],
 ];

@@ -61,7 +61,7 @@ class SmartyTemplateVars implements ArrayAccess, IteratorAggregate
      */
     public function getIterator(): Php\Map
     {
-        return Php\map($this->smarty->get_template_vars());
+        return Php::map($this->smarty->get_template_vars());
     }
 
     /**
@@ -85,7 +85,7 @@ class SmartyTemplateVars implements ArrayAccess, IteratorAggregate
      */
     public function offsetSet($offset, $value): void
     {
-        Php\fail($offset);
+        Php::fail($offset);
     }
 
     /**
@@ -93,6 +93,6 @@ class SmartyTemplateVars implements ArrayAccess, IteratorAggregate
      */
     public function offsetUnset($offset): void
     {
-        Php\fail($offset);
+        Php::fail($offset);
     }
 }

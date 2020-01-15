@@ -43,7 +43,7 @@ class ShopConfig
         }
         (new Php\Cli\Renderable($table))->toCli($io);
 
-        $io->isVeryVerbose() && (new Php\Cli\Renderable(Php\map($shop->config, static function ($value, $name) {
+        $io->isVeryVerbose() && (new Php\Cli\Renderable(Php::map($shop->config, static function ($value, $name) {
             return "'$name' => " . (is_array($value) ? new Php\ArrayExport($value) : var_export($value, true)) . ',';
         })->string))->toCli($io);
 

@@ -46,11 +46,11 @@ class Views
 
     protected static function verbose(Php\Cli\IO $io): void
     {
-        $db = Oxidio\db();
+        $db = Oxidio\Core\Database::get();
 
-        $views = Php\keys($db->views, static function (string $view) {
+        $views = Php::keys($db->views, static function (string $view) {
             [, $table] = explode('_', $view);
-            return Php\mapGroup($table);
+            return Php::mapGroup($table);
         });
 
         $io->title($db->schema->getName());
@@ -58,7 +58,7 @@ class Views
             $query = $db->query($name);
 
             $total = $io->isVeryVerbose() ? "<comment>total ({$query->total})</comment>" : '';
-            $io->writeln(Php\str(
+            $io->writeln(Php::str(
                 '  * <info>%s</info> %s',
                 $name,
                 $total
@@ -67,11 +67,11 @@ class Views
                 $io->writeln("    * $view");
             }
 
-            $columns = Php\map($table->getColumns(), function (Column $column) {
+            $columns = Php::map($table->getColumns(), function (Column $column) {
                 return $column->toArray();
             });
-            $io->isDebug() && ($columns = Php\traverse($columns)) && $io->table(
-                Php\keys(reset($columns)),
+            $io->isDebug() && ($columns = Php::traverse($columns)) && $io->table(
+                Php::keys(reset($columns)),
                 $columns
             );
         }

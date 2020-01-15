@@ -80,8 +80,8 @@ class Extension implements JsonSerializable
      */
     protected static function shopData(Shop $shop): array
     {
-        $from = Php\str('(SELECT ' .
-            Php\map([
+        $from = Php::str('(SELECT ' .
+            Php::map([
                 '{c.shop} shop',
                 '{c.mod} module',
                 '{c.var} name',
@@ -108,18 +108,18 @@ class Extension implements JsonSerializable
         );
 
         $query = $shop->query($from, ['shop' => $shop->id])->orderBy('module', 'gr', 'pos', 'name');
-        return Php\traverse(Php\map($query,
+        return Php::traverse(Php::map($query,
             static function (array $row) {
                 ['module' => $module, 'value' => $value, 'name' => $name] = $row;
                 strpos($row['type'], 'rr') && $value = unserialize($value, [null]);
                 if ($module && strpos($module, ':') === false) {
                     $module = static::MODULE . ':' . $module;
                 }
-                return Php\mapGroup($module)->andKey($name)->andValue($value);
+                return Php::mapGroup($module)->andKey($name)->andValue($value);
             }
         ), static function (array $config, $module) {
             [$type, $module] = explode(':', $module . ':');
-            return Php\mapKey((string)$module)->andValue([
+            return Php::mapKey((string)$module)->andValue([
                 'config' => $config,
                 'type' => (string)$type,
             ]);
@@ -136,8 +136,8 @@ class Extension implements JsonSerializable
         $conf = $data[self::SHOP]['config'] ?? [];
 
         $attr = function (array $data, $attr): array {
-            return Php\traverse($data, static function ($value, $module) use ($attr) {
-                return Php\mapKey($module)->andValue([$attr => $value]);
+            return Php::traverse($data, static function ($value, $module) use ($attr) {
+                return Php::mapKey($module)->andValue([$attr => $value]);
             });
         };
 
@@ -153,11 +153,11 @@ class Extension implements JsonSerializable
         );
 
         unset($data[self::SHOP]['config']['aDisabledModules']);
-        foreach (Php\keys(self::CONFIG_KEYS) as $key) {
+        foreach (Php::keys(self::CONFIG_KEYS) as $key) {
             unset($data[self::SHOP]['config'][$key]);
         }
 
-        return Php\map($data, static function (array $ext, $id) use ($shop) {
+        return Php::map($data, static function (array $ext, $id) use ($shop) {
             return new static($shop, $ext + ['id' => $id]);
         });
     }
@@ -192,6 +192,6 @@ class Extension implements JsonSerializable
      */
     protected function resolveConfig(): Php\Map
     {
-        return Php\map($this->properties['config'] ?? []);
+        return Php::map($this->properties['config'] ?? []);
     }
 }

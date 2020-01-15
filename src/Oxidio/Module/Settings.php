@@ -14,6 +14,14 @@ use JsonSerializable;
  */
 class Settings implements IteratorAggregate, JsonSerializable
 {
+    public const TYPE = 'type';
+    public const NAME = 'name';
+    public const GROUP = 'group';
+    public const VALUE = 'value';
+    public const LABEL = 'label';
+    public const SELECTED = 'selected';
+    public const HELP = '?';
+
     /**
      * @var iterable
      */
@@ -34,11 +42,11 @@ class Settings implements IteratorAggregate, JsonSerializable
     {
         foreach ($this->groups as $groupLabel => $group) {
             foreach ($group as $name => $setting) {
-                if (empty($setting[Settings\TYPE])) {
-                    $setting = Php\merge($setting, $this->type($setting));
+                if (empty($setting[self::TYPE])) {
+                    $setting = Php::merge($setting, $this->type($setting));
                 }
-                unset($setting[Settings\LABEL], $setting[Settings\HELP]);
-                yield Php\merge([Settings\GROUP => $groupLabel, Settings\NAME => $name], $setting);
+                unset($setting[self::LABEL], $setting[self::HELP]);
+                yield Php::merge([self::GROUP => $groupLabel, self::NAME => $name], $setting);
             }
         }
     }
@@ -48,7 +56,7 @@ class Settings implements IteratorAggregate, JsonSerializable
      */
     public function jsonSerialize()
     {
-        return Php\traverse($this);
+        return Php::traverse($this);
     }
 
     /**
@@ -62,17 +70,17 @@ class Settings implements IteratorAggregate, JsonSerializable
         foreach ($this->groups as $groupLabel => $group) {
             yield 'SHOP_MODULE_GROUP_' . $groupLabel => $groupLabel;
             foreach ($group as $name => $setting) {
-                $label = $setting[Settings\LABEL] ?? $name;
+                $label = $setting[self::LABEL] ?? $name;
                 $key   = 'SHOP_MODULE_' . $name;
 
                 yield $key => is_array($label) ? $label[$lang] ?? current($label) : $label;
-                if ($help = $setting[Settings\HELP] ?? []) {
+                if ($help = $setting[self::HELP] ?? []) {
                     yield 'HELP_' . $key => is_array($help) ? $help[$lang] ?? current($help) : $help;
                 }
-                if (!isset($setting[Settings\SELECTED])) {
+                if (!isset($setting[self::SELECTED])) {
                     continue;
                 }
-                foreach ($this->constraints($setting[Settings\VALUE] ?? []) as $value => $label) {
+                foreach ($this->constraints($setting[self::VALUE] ?? []) as $value => $label) {
                     yield "{$key}_{$value}" => is_array($label) ? $label[$lang] ?? current($label) : $label;
                 }
             }
@@ -86,24 +94,24 @@ class Settings implements IteratorAggregate, JsonSerializable
      */
     private function type(array $setting): array
     {
-        $value = $setting[Settings\VALUE] ?? null;
+        $value = $setting[self::VALUE] ?? null;
 
         if (is_bool($value)) {
-            return [Settings\TYPE => 'bool', Settings\VALUE => $value ? 'true' : 'false'];
+            return [self::TYPE => 'bool', self::VALUE => $value ? 'true' : 'false'];
         }
         if (!is_iterable($value)) {
-            return [Settings\TYPE => 'str', Settings\VALUE => $value];
+            return [self::TYPE => 'str', self::VALUE => $value];
         }
 
-        if ($selected = $setting[Settings\SELECTED] ?? null) {
+        if ($selected = $setting[self::SELECTED] ?? null) {
             return [
-                Settings\TYPE        => 'select',
-                Settings\VALUE       => $selected,
+                self::TYPE => 'select',
+                self::VALUE => $selected,
                 'constraints' => $this->constraints($value)->keys()->string('|')
             ];
         }
 
-        return [Settings\TYPE => 'aarr', Settings\VALUE => $value];
+        return [self::TYPE => 'aarr', self::VALUE => $value];
     }
 
     /**
@@ -113,7 +121,7 @@ class Settings implements IteratorAggregate, JsonSerializable
      */
     private function constraints($value): Php\Map
     {
-        return Php\map(is_iterable($value) ? $value : [], function($value, &$key) {
+        return Php::map(is_iterable($value) ? $value : [], function ($value, &$key) {
             if (is_numeric($key)) {
                 $key = $value;
             }

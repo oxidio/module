@@ -25,7 +25,7 @@ class DataModifyTest extends TestCase
         });
 
         $values = static function () {
-            return Php\map(['a' => 'A', 'b' => true, 'c' => false, 'd' => null]);
+            return Php::map(['a' => 'A', 'b' => true, 'c' => false, 'd' => null]);
         };
 
         assert\equals(
@@ -63,7 +63,7 @@ class DataModifyTest extends TestCase
 
     public function testIntegration(): void
     {
-        assert\type(Shop::class, $shop = Oxidio\shop());
+        assert\type(Shop::class, $shop = Oxidio\Functions::shop());
         assert\type(DataModify::class, $modify = $shop->modify(T::COUNTRY));
 
         assert\type('callable', $modify->delete([T\COUNTRY::ID => ['LIKE', 'test-%']]));
@@ -128,8 +128,8 @@ class DataModifyTest extends TestCase
 
     private static function assertCommit(array $expected, iterable $commit): void
     {
-        $commit = Php\traverse($commit, static function (array $counts) {
-            return Php\map($counts, static function (int $count, string $sql) {
+        $commit = Php::traverse($commit, static function (array $counts) {
+            return Php::map($counts, static function (int $count, string $sql) {
                 return ['sql' => $sql, 'count' => $count];
             })->values;
         });

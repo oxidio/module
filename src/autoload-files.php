@@ -15,5 +15,3 @@ call_user_func(static function(...$files) {
     __DIR__ . '/../../../../source/bootstrap.php',
     getcwd() . '/source/bootstrap.php' // for cli scripts, if library is linked to vendor/oxidio/oxidio directory
 );
-require_once __DIR__ . '/constants.php';
-require_once __DIR__ . '/Oxidio/oxidio-functions.php';

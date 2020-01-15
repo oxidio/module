@@ -44,7 +44,7 @@ trait ReflectionTrait
     {
         $this->__get($property);
         foreach ($lines as $line) {
-            if (!$line || !Php\hasValue($line, $this->$property)) {
+            if (!$line || !Php::hasValue($line, $this->$property)) {
                 $this->properties[$property][] = $line;
             }
         }

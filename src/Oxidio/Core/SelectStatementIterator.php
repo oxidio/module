@@ -31,7 +31,7 @@ class SelectStatementIterator implements OuterIterator
     private $chunkSize;
     private $counter = 0;
 
-    public function __construct(AbstractSelectStatement $query, Database $db, $fetchMode, $chunkSize = 50)
+    public function __construct(AbstractSelectStatement $query, Database $db, $fetchMode, $chunkSize = 500)
     {
         $this->query = $query;
         $this->db = $db;

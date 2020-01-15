@@ -40,7 +40,7 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
     protected function data(): array
     {
         if ($this->data === null) {
-            $this->data = Php\traverse($this->properties['it'] ?? $this->getIterator());
+            $this->data = Php::traverse($this->properties['it'] ?? $this->getIterator());
         }
         return $this->data;
     }
@@ -74,15 +74,15 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
      */
     public function buildOrderBy(array $terms, string $prefix = "\nORDER BY "): string
     {
-        $order = implode(', ', Php\traverse($terms, function ($term) {
+        $order = implode(', ', Php::traverse($terms, function ($term) {
             return implode(', ',
-                Php\traverse(is_iterable($term) ? $term : (array)$term, function ($direction, $property) {
+                Php::traverse(is_iterable($term) ? $term : (array)$term, function ($direction, $property) {
                     if (is_numeric($property)) {
                         $property = $direction;
                         $direction = 'ASC';
                     }
 
-                    return "{$this->getColumnName($property)} {$direction}";
+                    return "$property $direction";
                 }));
         }));
 
@@ -134,6 +134,7 @@ abstract class AbstractSelectStatement extends AbstractConditionalStatement impl
     {
         $limitTerm = $this->buildLimit($limit, $start);
         $limitTerm = $limitTerm ? "\nLIMIT {$limitTerm}" : null;
+
 
         return "SELECT {$this->columns}\nFROM {$this->view}"
             . $this->buildWhere($this->whereTerms)

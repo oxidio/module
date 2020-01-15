@@ -18,11 +18,11 @@ use OxidEsales\EshopCommunity\Setup\{Dispatcher, Exception\SetupControllerExitEx
  */
 return static function (IO $io, Dispatcher $dispatcher, $action) {
     $setup = $dispatcher->getInstance('Setup');
-    Php\some(Php\keys($setup->getSteps()), function (string $id) use ($action) {
+    Php::some(Php::keys($setup->getSteps()), function (string $id) use ($action) {
         $method = str_replace('_', '', str_ireplace('step_', '', $id));
 
         return strtoupper($action) === $method;
-    }) || Php\fail('unsupported $action %s', $action);
+    }) || Php::fail('unsupported $action %s', $action);
 
     $controller = $dispatcher->getInstance('Controller');
     $view = $controller->getView();

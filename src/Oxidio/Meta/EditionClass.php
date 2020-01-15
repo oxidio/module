@@ -92,7 +92,7 @@ class EditionClass
             $parents[] = $parent->getName();
             $ref = $parent;
         }
-        return Php\map($parents, function(string $class) {
+        return Php::map($parents, function (string $class) {
             return strpos($class, $this->edition) === 0 ? $this->provider->class($class) : null;
         });
     }
@@ -147,7 +147,7 @@ class EditionClass
     {
         static $packages;
         if ($packages === null) {
-            $packages = Php\map(self::PACKAGES)->sort(function(string $left, string $right) {
+            $packages = Php::map(self::PACKAGES)->sort(function(string $left, string $right) {
                 return $this->provider->class($left)->derivation->count() - $this->provider->class($right)->derivation->count();
             }, Php\Map\Sort::KEYS | Php\Map\Sort::REVERSE)->traverse;
         }
@@ -215,13 +215,13 @@ class EditionClass
      */
     protected function resolveFields(): Php\Map
     {
-        return Php\map(function () {
+        return Php::map(function () {
             if ($this->reflection->isSubclassOf(BaseModel::class)) {
                 $prefix = $this->fieldNs->shortName === $this->shortName . '\\' ? '' : $this->shortName . '_';
                 foreach ($this->instance->getFieldNames() as $fieldName) {
                     $name = strtoupper($prefix . Oxidio\Oxidio::after($fieldName, 'ox'));
                     yield $fieldName => $this->provider->const([$this->fieldNs, $name], [
-                        'value'    => "'$fieldName'",
+                        'value' => "'$fieldName'",
                         'docBlock' => ["@see \\{$this->name}"]
                     ]);
                 }
