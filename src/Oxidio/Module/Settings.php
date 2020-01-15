@@ -45,7 +45,7 @@ class Settings implements IteratorAggregate, JsonSerializable
                 if (empty($setting[self::TYPE])) {
                     $setting = Php::merge($setting, $this->type($setting));
                 }
-                unset($setting[self::LABEL], $setting[self::HELP]);
+                unset($setting[self::LABEL], $setting[self::HELP], $setting[self::SELECTED]);
                 yield Php::merge([self::GROUP => $groupLabel, self::NAME => $name], $setting);
             }
         }
