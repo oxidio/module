@@ -30,12 +30,24 @@ class ShopConfig
      * @param Php\Cli\IO $io
      * @param Core\Shop  $shop
      * @param bool       $dryRun
+     * @param string[]   $only modules
      * @param string     $action update|clean
      */
-    public function __invoke(Php\Cli\IO $io, Core\Shop $shop, bool $dryRun = false, string $action = null): void
-    {
+    public function __invoke(
+        Php\Cli\IO $io,
+        Core\Shop $shop,
+        bool $dryRun = false,
+        array $only = [],
+        string $action = null
+    ): void {
         $table = [];
-        foreach ($this->config->diff([Core\Extension::SHOP => $shop->config]) as $name => [$value, $diff, $module]) {
+
+        $modules = $this->config->modules($shop);
+
+        foreach ($this->config->diff($modules) as $name => [$value, $diff, $module]) {
+            if ($only && !Php::hasValue($module, $only)) {
+                continue;
+            }
             if ($diff !== false) {
                 $name = $diff ? "<error>$name</error>" : "<info>$name</info>";
             }

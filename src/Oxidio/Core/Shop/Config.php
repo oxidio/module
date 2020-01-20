@@ -9,10 +9,22 @@ use Generator;
 use Oxidio\Core;
 use Oxidio\Enum\Tables as T;
 use SebastianBergmann\Diff\{Differ, Output\UnifiedDiffOutputBuilder};
+use Php;
 
-
+/**
+ * @property-read iterable $types
+ * @property-read iterable $values
+ */
 class Config
 {
+    use Php\PropertiesTrait\ReadOnly;
+
+    public const T_ARR = 'arr';
+    public const T_AARR = 'aarr';
+    public const T_BOOL = 'bool';
+    public const T_PASSWORD = 'password';
+    public const T_SELECT = 'select';
+    public const T_STR = 'str';
     public const INITIAL = [
         'aCacheViews' => ['start', 'alist', 'details'],
         'aCMSfolder' => ['CMSFOLDER_EMAILS' => '#706090', 'CMSFOLDER_USERINFO' => '#303030', 'CMSFOLDER_PRODUCTINFO' => '#303030', 'CMSFOLDER_NONE' => '#904040'],
@@ -153,14 +165,17 @@ class Config
 
     private const DIFF = [1 => '+ ', 2 => '- '];
 
-    /**
-     * @var iterable
-     */
-    private $config;
-
-    public function __construct(iterable $config = [Core\Extension::SHOP => self::INITIAL])
+    public function __construct(iterable $modules = [Core\Extension::SHOP => self::INITIAL])
     {
-        $this->config = $config;
+        $this->properties = ['types' => [], 'values' => []];
+        foreach ($modules as $module => $values) {
+            foreach ($values as $key => $value) {
+                $parts =  explode(':', $key);
+                $key = $parts[0];
+                $this->properties['types'][$module][$key] = $parts[1] ?? self::assumeType($value, $key);
+                $this->properties['values'][$module][$key] = $value;
+            }
+        }
     }
 
     public function diff(iterable $modules): Generator
@@ -170,10 +185,10 @@ class Config
             foreach ($config as $name => $value) {
                 $converted = self::convert($value);
                 $diff = false;
-                if (isset($this->config[$module][$name])) {
+                if (isset($this->values[$module][$name])) {
                     $lines = [];
                     $count = 0;
-                    foreach ($differ->diffToArray(self::convert($this->config[$module][$name]), $converted) as $line) {
+                    foreach ($differ->diffToArray(self::convert($this->values[$module][$name]), $converted) as $line) {
                         $count += $line[1];
                         $lines[] = (self::DIFF[$line[1]] ?? '  ') . $line[0];
                     }
@@ -186,7 +201,23 @@ class Config
 
     private static function convert($value)
     {
-        return is_string($value) ? $value : json_encode($value, JSON_PRETTY_PRINT);
+        return is_string($value) ? $value : json_encode(is_bool($value) ? (int)$value : $value, JSON_PRETTY_PRINT);
+    }
+
+    private static function id($id): string
+    {
+        $id = explode(':', $id);
+        return strtolower($id[1] ?? $id[0]);
+    }
+
+    public function modules(Core\Shop $shop): array
+    {
+        $ids = Php::arr(Php::keys($this->values), function ($id) {
+            yield [self::id($id)] => $id;
+        });
+        return Php::arr([Core\Extension::SHOP => $shop], $shop->modules, function ($ext, $id) use ($ids) {
+            yield [$ids[self::id($id)] ?? $id] => $ext->config;
+        });
     }
 
     /**
@@ -196,12 +227,11 @@ class Config
     public function __invoke(Core\Shop $shop): Generator
     {
         yield T::CONFIG => function (Core\Shop $shop) {
-            foreach ($this->config as $module => $config) {
+            foreach ($this->values as $module => $config) {
                 foreach ($config as $key => $value) {
-                    yield $shop::id($module, $key) => [
-                        T\CONFIG::MODULE => $module,
-                        T\CONFIG::VARNAME => $key,
-                        T\CONFIG::VARTYPE => self::assumeType($value, $key),
+                    yield [T\CONFIG::MODULE => $module, T\CONFIG::VARNAME => $key] => [
+                        T\CONFIG::ID => $shop::id($module, $key),
+                        T\CONFIG::VARTYPE => $this->types[$module][$key],
                         T\CONFIG::VARVALUE => static function ($column) use ($value, $shop) {
                             return ["ENCODE(:$column, '{$shop->configKey}')" => is_array($value) ? serialize($value) : $value];
                         },
@@ -214,11 +244,11 @@ class Config
     private static function assumeType($value, $key): string
     {
         if (is_array($value)) {
-            return is_array(current($value)) ? 'aarr' : 'arr';
+            return is_array(current($value)) ? self::T_AARR : self::T_ARR;
         }
         if (strpos($key, 'bl') === 0) {
-            return 'bool';
+            return self::T_BOOL;
         }
-        return 'str';
+        return self::T_STR;
     }
 }
