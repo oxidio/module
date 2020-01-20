@@ -69,7 +69,6 @@ class DataModify extends AbstractConditionalStatement
             } elseif ($value === null) {
                 $types[$column] = PDO::PARAM_NULL;
             }
-
         }
 
         return [$values, $types, $bindings];
@@ -192,42 +191,99 @@ class DataModify extends AbstractConditionalStatement
     /**
      * @see DataModify::replace
      *
+     * delete by primary key: ->replace($records, 'p1')
+     * yield 'P1-num' => null
+     * delete by unique index: ->replace($records)
+     * yield ['u1' => '1', 'u2' => '2a'] => null
+     * yield ['u1' => '1', 'u2' => '2b'] => null
+     *
      * INSERT INTO `view` (
-     *   `key`, `c1`, `c2`
+     *   `p1`, `c1`, `c2`
      * ) VALUES (
-     *   :key, :c1, ENCODE(:c2, 'phrase')
+     *   :p1, :c1, ENCODE(:c2, 'phrase')
      * ) ON DUPLICATE KEY UPDATE
      *   `c1` = VALUES(c1),
      *   `c2` = VALUES(c2)
      *
-     * @param iterable|callable $records
-     * @param string $key
+     * merge by primary keys: ->replace($records, 'p1')
+     * yield ['p1' => 'P1', 'c1' => '1', 'c2' => '1']
+     * yield 'P1-num' => ['c1' => '2', 'c2' => '2']
      *
+     *
+     * INSERT INTO `view` (
+     *   `p1`, `p2`, `u1`, `u2`, `c1`, `c2`
+     * ) SELECT `p1`, `p2`, `u1`, `u2`, `c1`, `c2` FROM  (
+     *   SELECT 1 `_`, `p1`, `p2`, `u1`, `u2`, `c1`, `c2` FROM `view` WHERE `u1` = :u1 AND `u2` = :u2
+     *   UNION
+     *   SELECT 2 `_`, :p1, :p2, :u1, :u2, :c1, :c2
+     * ) `_` ORDER BY `_` LIMIT 1
+     * ON DUPLICATE KEY UPDATE
+     *   `c1` = :c1,
+     *   `c2` = :c2
+     *
+     * merge by unique index: ->replace($records, 'p1', 'p2')
+     * yield ['u1' => 'U1', 'u2' => 'U2-foo'] => ['p1' => 'P1', 'p2' => 'P2-foo', 'c1' => 'C1', 'c2' => 'C2-foo']
+     * yield ['u1' => 'U1', 'u2' => 'U2-bar'] => ['p1' => 'P1', 'p2' => 'P2-bar', 'c1' => 'C1', 'c2' => 'C2-bar']
+     *
+     * @param iterable|callable $records
+     * @param string ...$pks primary keys
      * @return callable
      */
-    protected function _replace($records, string $key): callable
+    protected function _replace($records, string ...$pks): callable
     {
-        return function (bool $dryRun = false) use ($records, $key) {
+        return function (bool $dryRun = false) use ($records, $pks) {
             $result = [];
             foreach (Php::isCallable($records) ? $records($this) : $records as $id => $record) {
-                [$values, $types, $bindings] = $this->convertData(($record ?? []) + [$key => $id]);
-                if ($record === null) {
-                    $sql = "DELETE FROM {$this->view} WHERE $key = :$key";
+                $index = [];
+                if (!is_iterable($id)) {
+                    $pks && $index[$pks[0]] = $id;
+                } else {
+                    foreach ($id as $idKey => $idValue) {
+                        if (is_numeric($idKey)) {
+                            $index[$pks[$idKey]] = $idValue;
+                        } else {
+                            $index[$idKey] = $idValue;
+                        }
+                    }
+                }
+                [$values, $types, $bindings] = $this->convertData(($record ?? []) + $index);
+
+                $terms = Php::arr(array_keys($index), function ($column) use ($bindings) {
+                    yield "$column = {$bindings[$column]}";
+                });              if ($record === null) {
+                    $sql = "DELETE FROM {$this->view} WHERE " . implode(' AND ', $terms);
                     $count = $dryRun ? 0 : ($this->db)($sql, $values, $types);
                 } else {
-                    $sql = implode("\n", [
-                        "INSERT INTO {$this->view} (",
-                        '  ' . implode(', ', array_keys($bindings)),
-                        ') VALUES (',
-                        '  ' . implode(', ', $bindings),
-                        ') ON DUPLICATE KEY UPDATE',
-                        '  ' . implode(', ', Php::keys($bindings, static function (string $column) use ($key) {
-                            return $column === $key ? null : "$column = VALUES($column)";
-                        })),
-                    ]);
+                    $colTerm = implode(', ', array_keys($bindings));
+                    $valTerm  = implode(', ', $bindings);
+                    if (!is_iterable($id)) {
+                        $sql = implode("\n", [
+                            "INSERT INTO {$this->view} (",
+                            '  ' . $colTerm,
+                            ') VALUES (',
+                            '  ' . $valTerm,
+                            ') ON DUPLICATE KEY UPDATE',
+                            '  ' . implode(', ', Php::arr(array_keys($bindings), static function (string $column) use ($pks) {
+                                Php::hasValue($column, $pks) || yield "$column = VALUES($column)";
+                            })),
+                        ]);
+                    } else {
+                        $sql = implode("\n", [
+                            "INSERT INTO {$this->view} (",
+                            '  ' . $colTerm,
+                            ") SELECT $colTerm FROM (",
+                            "  SELECT 1 `_`, $colTerm FROM {$this->view} WHERE " . implode(' AND ', $terms),
+                            '  UNION',
+                            "  SELECT 2 `_`, $valTerm",
+                            ') `_` ORDER BY `_` LIMIT 1',
+                            'ON DUPLICATE KEY UPDATE',
+                            '  ' . implode(', ', Php::arr($bindings, static function (string $binding, string $column) use ($pks, $index) {
+                                Php::hasValue($column, $pks) || isset($index[$column]) || yield "$column = $binding";
+                            })),
+                        ]);
+                    }
                     $count = $dryRun ? 0 : ($this->db)($sql, $values, $types);
                 }
-
                 isset($result[$sql]) || $result[$sql] = 0;
                 $result[$sql] += $count;
             }

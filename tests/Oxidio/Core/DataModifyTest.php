@@ -16,8 +16,6 @@ use PHPUnit\Framework\TestCase;
  */
 class DataModifyTest extends TestCase
 {
-    /**
-     */
     public function testModify(): void
     {
         $modify = (new DataModify('view'))->withDb(static function () {
@@ -114,13 +112,25 @@ class DataModifyTest extends TestCase
             yield 'test-b' => null;
             yield 'test-b' => null;
             yield 'test-D-first' => null;
+            yield [T\COUNTRY::TITLE => 'test-c-second'] => null;
+            yield [T\COUNTRY::TITLE => 'test-c-first'] => [T\COUNTRY::ID => 'ignore', T\COUNTRY::LONGDESC => 'foobar'];
+            yield [T\COUNTRY::TITLE => 'test-z'] => [T\COUNTRY::ID => 'test-z', T\COUNTRY::LONGDESC => 'foobar'];
         }, T\COUNTRY::ID);
 
         self::assertCommit([[
             'INSERT' => 2,
             'INSERT|active' => 1,
-            'DELETE' => 2,
+            'DELETE|id'  => 2,
+            'DELETE|title' => 1,
+            'INSERT|longdesc|UNION' => 3,
         ]], $shop->commit());
+
+        assert\equals(
+            ['test-c-first', 'test-z'],
+            $shop->query(T::COUNTRY, function ($id) {
+                return $id;
+            }, [T\COUNTRY::LONGDESC => 'foobar'])->jsonSerialize()
+        );
 
         $modify->delete([T\COUNTRY::ID => ['LIKE', 'test-%']]);
         self::assertCommit([['DELETE|LIKE' => 6]], $shop->commit());
