@@ -21,12 +21,12 @@ class Functions
      */
     public static function shopUrls(): array
     {
-        return Php::traverse($_ENV ?? [], static function ($url, &$var) {
+        return Php::arr($_ENV ?? [], static function ($url, &$var) {
             if (strpos($var, static::URL_PREFIX) !== 0) {
-                return null;
+                return;
             }
             $var = str_replace('_', '-', strtolower(substr($var, strlen(static::URL_PREFIX))));
-            return $url;
+            yield $url;
         });
     }
 
