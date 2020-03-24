@@ -15,20 +15,18 @@ use ReflectionParameter;
 use Smarty;
 
 /**
+ * @property-read Smarty $smarty
  */
 class SmartyTemplateVars implements ArrayAccess, IteratorAggregate
 {
-    /**
-     * @var Smarty
-     */
-    private $smarty;
+    use Php\PropertiesTrait\ReadOnly;
 
     /**
      * @param Smarty|null $smarty
      */
     public function __construct(Smarty $smarty = null)
     {
-        $this->smarty = $smarty ?: Registry::getUtilsView()->getSmarty();
+        $this->properties['smarty'] = $smarty ?: Registry::getUtilsView()->getSmarty();
     }
 
     /**

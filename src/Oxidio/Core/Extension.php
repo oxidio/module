@@ -134,10 +134,15 @@ class Extension implements JsonSerializable
     {
         $data = static::shopData($shop);
         $conf = $data[self::SHOP]['config'] ?? [];
+        $ids = Php::arr(array_keys($data), static function ($id) {
+            $parts = explode(':', $id);
+            yield [$id] => strtolower($parts[1] ?? $parts[0]);
+        });
 
-        $attr = function (array $data, $attr): array {
-            return Php::traverse($data, static function ($value, $module) use ($attr) {
-                return Php::mapKey($module)->andValue([$attr => $value]);
+        $attr = function (array $values, $attr) use($ids) : array {
+            return Php::arr($values, static function ($value, $module) use ($attr, $ids) {
+                $id = array_search(strtolower($module), $ids, true);
+                yield [$id === false ? strtolower($module) : $id] => [$attr => $value];
             });
         };
 
