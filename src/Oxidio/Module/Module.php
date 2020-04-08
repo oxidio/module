@@ -93,7 +93,7 @@ class Module implements JsonSerializable
     {
         $package = $this->package;
         ($di = $package->extra['di'] ?? []) && $di = $package->file($di);
-        return Php\DI::create(
+        return Php::di(
             [self::ID => $this->id, self::class => $this,],
             $di,
             Php\Composer\DIClassLoader::instance()->getContainer()

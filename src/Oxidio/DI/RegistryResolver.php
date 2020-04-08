@@ -57,7 +57,7 @@ class RegistryResolver
                 return Core\Registry::$method($class);
             };
         });
-        return Php\DI::create($defs);
+        return Php::di($defs);
     }
 
     /**
