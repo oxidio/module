@@ -5,7 +5,10 @@
 
 namespace Oxidio;
 
-use Php;
+use Exception;
+use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
 
@@ -78,5 +81,20 @@ class Oxidio
             isset($row[$key]) && $row[$key] = 0 + $row[$key];
         }
         return $row;
+    }
+
+    public static function di(): ContainerInterface
+    {
+        static $bootstrapContainer;
+        try {
+            return ContainerFactory::getInstance()->getContainer();
+        } catch (Exception $e) {
+            return $bootstrapContainer ?? $bootstrapContainer = BootstrapContainerFactory::getBootstrapContainer();
+        }
+    }
+
+    public static function get(string $id)
+    {
+        return static::di()->get($id);
     }
 }
