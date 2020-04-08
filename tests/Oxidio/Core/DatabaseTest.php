@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (C) oxidio. See LICENSE file for license details.
  */
@@ -6,14 +6,10 @@
 namespace Oxidio\Core;
 
 use Doctrine\DBAL;
-use Php\test\assert;
 use Php;
 use Oxidio;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @coversDefaultClass Database
- */
 class DatabaseTest extends TestCase
 {
     public function testDefine(): void
@@ -31,17 +27,16 @@ class DatabaseTest extends TestCase
                 $schema->createTable('t2')->addColumn('c1', DBAL\Types\Type::STRING);
             }
         );
-        assert\type(DataDefine::class, $define);
-        assert\type('callable', $up = $define->up());
-        assert\same(
+        self::assertIsCallable($up = $define->up());
+        self::assertSame(
             "INSERT INTO t1 (\n  c2, c1\n) VALUES (\n  :c2, :c1\n) ON DUPLICATE KEY UPDATE\n  c2 = VALUES(c2)",
             Php::map($up(true))->keys[1]
         );
 
-        assert\type('callable', $down = $define->down());
-        assert\same([
+        self::assertIsCallable($down = $define->down());
+        self::assertSame([
             'DROP TABLE t1' => true,
             'DROP TABLE t2' => true,
-        ], Php::traverse($down(true)));
+        ], Php::arr($down(true)));
     }
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (C) oxidio. See LICENSE file for license details.
  */
@@ -6,33 +6,29 @@
 namespace Oxidio\Module;
 
 use Php;
-use Php\test\assert;
 use Oxidio;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @coversDefaultClass Menu
- */
 class MenuTest extends TestCase
 {
     public function testConstructor(): void
     {
-        assert\type(Menu::class, $menu = Menu::create('label'));
-        assert\same('label', $menu->label);
-        assert\same(null, $menu->class);
-        assert\same([], $menu->menus);
-        assert\same([], $menu->params);
-        assert\same([], $menu->groups);
-        assert\same([], $menu->rights);
-        assert\same([], $menu->tabs);
-        assert\same([], $menu->buttons);
+        self::assertInstanceOf(Menu::class, $menu = Menu::create('label'));
+        self::assertSame('label', $menu->label);
+        self::assertNull($menu->class);
+        self::assertSame([], $menu->menus);
+        self::assertSame([], $menu->params);
+        self::assertSame([], $menu->groups);
+        self::assertSame([], $menu->rights);
+        self::assertSame([], $menu->tabs);
+        self::assertSame([], $menu->buttons);
     }
 
     public function testGetId(): void
     {
-        assert\same('label', Menu::create('label')->getId());
-        assert\same('de', Menu::create(['de', 'en'])->getId());
-        assert\same('en', Menu::create(['en', 'de'])->getId());
+        self::assertSame('label', Menu::create('label')->getId());
+        self::assertSame('de', Menu::create(['de', 'en'])->getId());
+        self::assertSame('en', Menu::create(['en', 'de'])->getId());
     }
 
     public function testToString(): void
@@ -56,7 +52,7 @@ class MenuTest extends TestCase
     {
         $module = Module::instance(Php\VENDOR\OXIDIO\MODULE_BAR);
 
-        assert\same(
+        self::assertSame(
             [
                 0       => Menu::ADMIN,
                 '0/0'   => 'admin-main',
@@ -144,7 +140,7 @@ class MenuTest extends TestCase
 
     private static function assertToString(array $lines, Menu $menu): void
     {
-        assert\same(implode(PHP_EOL, Php::traverse($lines, function ($line) {
+        self::assertSame(implode(PHP_EOL, Php::arr($lines, function ($line) {
             return is_array($line) ? sprintf(...$line) : $line;
         })), (string) $menu);
     }

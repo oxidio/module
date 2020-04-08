@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (C) oxidio. See LICENSE file for license details.
  */
@@ -6,13 +6,9 @@
 namespace Oxidio\Core;
 
 use Php;
-use Php\test\assert;
 use Oxidio;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @coversDefaultClass Row
- */
 class RowTest extends TestCase
 {
     public function providerInvoke(): array
@@ -44,18 +40,18 @@ class RowTest extends TestCase
     {
         $row = new Row(['A' => 'v-a', 'b' => 'v-b', 'c' => null]);
 
-        assert\equals($expected, $row(...$args));
+        self::assertEquals($expected, $row(...$args));
     }
 
     public function testJsonSerialize(): void
     {
         $row = new Row(['A' => 'v-a', 'b' => 'v-b', 'c' => null]);
-        assert\same(json_encode($row()), json_encode($row));
+        self::assertSame(json_encode($row()), json_encode($row));
     }
 
     public function testToString(): void
     {
-        assert\same('', (string)new Row([]));
-        assert\same('lowercase', (string)new Row(['OxId' => 'lowercase']));
+        self::assertSame('', (string)new Row([]));
+        self::assertSame('lowercase', (string)new Row(['OxId' => 'lowercase']));
     }
 }

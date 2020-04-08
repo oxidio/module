@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (C) oxidio. See LICENSE file for license details.
  */
 
 namespace Oxidio\Core;
 
-use Php\test\assert;
 use Php;
 use Oxidio;
 use Oxidio\Enum\Tables as T;
@@ -26,22 +25,22 @@ class DataModifyTest extends TestCase
             return Php::map(['a' => 'A', 'b' => true, 'c' => false, 'd' => null]);
         };
 
-        assert\equals(
+        self::assertEquals(
             ["INSERT INTO view (\n  a, b, c, d\n) VALUES (\n  :a, :b, :c, :d\n)" => 1],
             $modify->insert($values)()
         );
 
-        assert\equals(
+        self::assertEquals(
             ["UPDATE view SET\n  a = :a,\n  b = :b,\n  c = :c,\n  d = :d\nWHERE (foo = 'bar' AND bar = 'foo')" => 1],
             $modify->update($values, ['foo' => 'bar', 'bar' => 'foo'])()
         );
 
-        assert\equals(
+        self::assertEquals(
             ["DELETE FROM view\nWHERE (foo = 'bar' AND bar = 'foo')" => 1],
             $modify->delete(['foo' => 'bar', 'bar' => 'foo'])()
         );
 
-        assert\equals(
+        self::assertEquals(
             [
                 "INSERT INTO view (\n  a, b\n) VALUES (\n  :a, :b\n)" => 2,
                 "INSERT INTO view (\n  a, b, c\n) VALUES (\n  :a, :b, :c\n)" => 1,
@@ -49,7 +48,7 @@ class DataModifyTest extends TestCase
             $modify->insert(['a' => 1, 'b' => 1], ['a' => 2, 'b' => 2], ['a' => 3, 'b' => 3, 'c' => 3])()
         );
 
-        assert\equals([
+        self::assertEquals([
             "INSERT INTO view (\n  a, b\n) VALUES (\n  :a, ENCODE(:b, 'pass')\n)" => 1
         ], $modify->insert([
             'a' => 'A',
@@ -61,15 +60,14 @@ class DataModifyTest extends TestCase
 
     public function testIntegration(): void
     {
-        assert\type(Shop::class, $shop = Oxidio\Functions::shop());
-        assert\type(DataModify::class, $modify = $shop->modify(T::COUNTRY));
+        self::assertInstanceOf(Shop::class, $shop = Oxidio\Functions::shop());
+        self::assertInstanceOf(DataModify::class, $modify = $shop->modify(T::COUNTRY));
 
-        assert\type('callable', $modify->delete([T\COUNTRY::ID => ['LIKE', 'test-%']]));
+        self::assertIsCallable($modify->delete([T\COUNTRY::ID => ['LIKE', 'test-%']]));
         self::assertCommit([['DELETE|LIKE' => 0]], $shop->commit());
-        assert\same(0, $shop->query(T::COUNTRY, [T\COUNTRY::ID => ['LIKE', 'test-%']])->total);
+        self::assertSame(0, $shop->query(T::COUNTRY, [T\COUNTRY::ID => ['LIKE', 'test-%']])->total);
 
-        assert\type(
-            'callable',
+        self::assertIsCallable(
             $modify->insert(
                 [T\COUNTRY::ID => 'test-a', T\COUNTRY::TITLE => 'test-a'],
                 [T\COUNTRY::ID => 'test-b', T\COUNTRY::TITLE => 'test-b'],
@@ -78,14 +76,10 @@ class DataModifyTest extends TestCase
         );
         self::assertCommit([['INSERT INTO' => 2, 'INSERT INTO|active' => 1]], $shop->commit());
         self::assertCommit([], $shop->commit());
-        assert\type(
-            'callable',
-            $modify->update([T\COUNTRY::SHORTDESC => 'test'], [T\COUNTRY::ID => ['LIKE', 'test-%']])
-        );
+        self::assertIsCallable($modify->update([T\COUNTRY::SHORTDESC => 'test'], [T\COUNTRY::ID => ['LIKE', 'test-%']]));
         self::assertCommit([['UPDATE' => 3]], $shop->commit());
 
-        assert\type(
-            'callable',
+        self::assertIsCallable(
             $modify->map(['test-d' => 'test-D', 'test-c' => 'test-C'], static function (DataModify $modify, $value, $key) {
                 yield $modify->insert([T\COUNTRY::ID => "$key-first", T\COUNTRY::TITLE => "$value-first"]);
                 yield $modify->insert([T\COUNTRY::TITLE => "$value-second", T\COUNTRY::ID => "$key-second"]);
@@ -104,7 +98,7 @@ class DataModifyTest extends TestCase
             ['UPDATE|= UPPER(' => 2],
         ], $shop->commit());
 
-        assert\same(1, $shop->query(T::COUNTRY, [T\COUNTRY::TITLE => 'TEST-C-FIRST'])->total);
+        self::assertSame(1, $shop->query(T::COUNTRY, [T\COUNTRY::TITLE => 'TEST-C-FIRST'])->total);
 
         $modify->replace(static function () {
             yield 'test-a' => [T\COUNTRY::TITLE => 'test-a-replaced'];
@@ -125,7 +119,7 @@ class DataModifyTest extends TestCase
             'INSERT|longdesc|UNION' => 3,
         ]], $shop->commit());
 
-        assert\equals(
+        self::assertEquals(
             ['test-c-first', 'test-z'],
             $shop->query(T::COUNTRY, function ($id) {
                 return $id;
@@ -143,11 +137,11 @@ class DataModifyTest extends TestCase
                 return ['sql' => $sql, 'count' => $count];
             })->values;
         });
-        assert\same(count($expected), count($commit));
+        self::assertCount(count($expected), $commit);
         foreach ($expected as $i => $counts) {
             $j = 0;
             foreach ($counts as $sql => $count) {
-                assert\same($count, $commit[$i][$j]['count'] ?? null);
+                self::assertSame($count, $commit[$i][$j]['count'] ?? null);
                 foreach (explode('|', $sql) as $token) {
                     self::assertStringContainsString($token, $commit[$i][$j]['sql'] ?? null);
                 }
