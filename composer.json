@@ -37,6 +37,9 @@
     "psr-4": {
       "Oxidio\\": [
         "src/Oxidio"
+      ],
+      "": [
+        "src"
       ]
     },
     "files": [
