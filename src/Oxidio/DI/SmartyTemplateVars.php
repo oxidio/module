@@ -6,13 +6,18 @@
 namespace Oxidio\DI;
 
 use ArrayAccess;
+use Invoker\ParameterResolver\AssociativeArrayResolver;
+use Invoker\ParameterResolver\Container\ParameterNameContainerResolver;
+use Invoker\ParameterResolver\DefaultValueResolver;
 use Php;
 use Generator;
 use Invoker\ParameterResolver\TypeHintVariadicResolver;
 use IteratorAggregate;
 use OxidEsales\Eshop\Core\Registry;
+use Psr\Container\ContainerInterface;
 use ReflectionParameter;
 use Smarty;
+use DI;
 
 /**
  * @property-read Smarty $smarty
@@ -27,6 +32,28 @@ class SmartyTemplateVars implements ArrayAccess, IteratorAggregate
     public function __construct(Smarty $smarty = null)
     {
         $this->properties['smarty'] = $smarty ?: Registry::getUtilsView()->getSmarty();
+    }
+
+    public static function container(...$args): ContainerInterface
+    {
+        $rr = new RegistryResolver();
+        return Php::di(...$args, ...[$rr->container, [
+            RegistryResolver::class => $rr,
+            self::class => DI\create(),
+            Smarty::class => function (self $stv) {
+                return $stv->smarty;
+            },
+            Php\DI\Invoker::class => function (ContainerInterface $c, self $stv, RegistryResolver $rr) {
+                return new Php\DI\Invoker(
+                    $stv,
+                    new AssociativeArrayResolver(),
+                    $c,
+                    new ParameterNameContainerResolver($c),
+                    $rr,
+                    new DefaultValueResolver()
+                );
+            },
+        ]]);
     }
 
     /**

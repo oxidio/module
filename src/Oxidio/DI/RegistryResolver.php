@@ -50,14 +50,14 @@ class RegistryResolver
      * @see $container
      * @return ContainerInterface
      */
-    public function resolveContainer(): ContainerInterface
+    protected function resolveContainer(): ContainerInterface
     {
         $defs = Php::arr(static::DEFINITIONS, static function (string $method, string $class) {
             yield static function () use ($method, $class) {
                 return Core\Registry::$method($class);
             };
         });
-        return Php::di($defs);
+        return Php::di($defs, [static::class => $this]);
     }
 
     /**

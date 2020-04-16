@@ -8,6 +8,8 @@ namespace Oxidio;
 use Exception;
 use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+use Oxidio\DI\Container;
+use Oxidio\DI\SmartyTemplateVars;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
@@ -83,18 +85,28 @@ class Oxidio
         return $row;
     }
 
-    public static function di(): ContainerInterface
+    /**
+     * @param string|iterable|null $name
+     * @param mixed $default
+     *
+     * @return mixed|Container
+     */
+    public static function di($name = null, $default = null)
     {
-        static $bootstrapContainer;
-        try {
-            return ContainerFactory::getInstance()->getContainer();
-        } catch (Exception $e) {
-            return $bootstrapContainer ?? $bootstrapContainer = BootstrapContainerFactory::getBootstrapContainer();
+        static $container;
+        if (!$container) {
+            try {
+                $oe = ContainerFactory::getInstance()->getContainer();
+            } catch (Exception $e) {
+                $oe = BootstrapContainerFactory::getBootstrapContainer();
+            }
+            $container = new Container(SmartyTemplateVars::container($oe));
         }
+        return $container->di(...func_get_args());
     }
 
-    public static function get(string $id)
+    public static function call($callable, array $params = [])
     {
-        return static::di()->get($id);
+        return static::di()->call(...func_get_args());
     }
 }
