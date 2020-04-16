@@ -8,7 +8,9 @@
   "license": "GPL-3.0",
   "extra": {
     "oxideshop": {
-      "whitelist-filter": ["metadata.php"],
+      "blacklist-filter": [
+        "*.json"
+      ],
       "target-directory": "oxidio/module-foo"
     }
   }

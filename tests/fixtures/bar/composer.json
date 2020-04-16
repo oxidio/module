@@ -11,7 +11,11 @@
   },
   "extra": {
     "oxideshop": {
-      "whitelist-filter": ["metadata.php"],
+      "blacklist-filter": [
+        "config/**/*",
+        "src/**/*",
+        "*.json"
+      ],
       "target-directory": "oxidio/module-bar"
     },
     "di": "config/bar.php"
