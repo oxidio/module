@@ -1,6 +1,6 @@
 {
   "name": "oxidio/oxidio",
-  "type": "library",
+  "type": "oxideshop-component",
   "description": "shared functionality for oxid(io) modules",
   "license": "GPL-3.0",
   "repositories": [

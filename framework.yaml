@@ -1,0 +1,13 @@
+services:
+
+  Oxidio\Framework\Configuration\ShopEnvironmentDaoDecorator:
+    decorates: OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Dao\ShopEnvironmentConfigurationDaoInterface
+    arguments:
+      - '@Oxidio\Framework\Configuration\ShopEnvironmentDaoDecorator.inner'
+      - '@oxidio.module.settings'
+
+  oxidio.module.settings:
+    class: EmptyIterator
+
+  OxidEsales\EshopCommunity\Internal\Framework\Module\Install\Service\ProjectConfigurationGenerator:
+    alias: oxid_esales.module.install.service.launched_shop_project_configuration_generator

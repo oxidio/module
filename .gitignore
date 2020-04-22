@@ -3,6 +3,7 @@
 !/bin/
 !/src/
 !/tests/
+!/*.yaml
 !/.gitattributes
 !/.gitignore
 !/.travis.yml
