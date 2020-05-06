@@ -1,4 +1,8 @@
 services:
-  Oxidio\Cli\App:
+  _defaults:
     public: true
     autowire: true
+
+  Oxidio\Cli\App: ~
+  Oxidio\Framework\Configuration\Shops: ~
+  Oxidio\Framework\Context: ~
