@@ -1,9 +1,10 @@
 services:
 
-  Oxidio\Framework\Configuration\ShopEnvironmentDaoDecorator:
-    decorates: OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Dao\ShopEnvironmentConfigurationDaoInterface
+  Oxidio\Framework\Configuration\Decorator\ShopDao:
+    decorates: OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Dao\ShopConfigurationDaoInterface
     arguments:
-      - '@Oxidio\Framework\Configuration\ShopEnvironmentDaoDecorator.inner'
+      - '@Oxidio\Framework\Configuration\Decorator\ShopDao.inner'
+      - '@OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\DataMapper\ShopConfigurationDataMapperInterface'
       - '@oxidio.module.settings'
 
   oxidio.module.settings:
