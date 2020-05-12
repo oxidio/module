@@ -11,6 +11,7 @@ use Dotenv\Dotenv;
 use OxidEsales\Eshop\Core\ConfigFile as ShopConfigFile;
 use OxidEsales\Eshop\Core\Config;
 use OxidEsales\Facts\Config\ConfigFile as FactsConfigFile;
+use Symfony\Component\Debug\Debug;
 
 class Bootstrap
 {
@@ -48,6 +49,9 @@ class Bootstrap
             $this->sSSLShopURL = getenv('SHOP_URL') ?: 'localhost';
             $this->sAdminEmail = getenv('SHOP_ADMIN') ?: 'webmaster@localhost';
             $this->iDebug      = getenv('SHOP_DEBUG') ?: 0;
+            if ($this->iDebug < 0 && class_exists(Debug::class)) {
+                Debug::enable(E_ALL & ~E_DEPRECATED);
+            }
 
             $isSandBox = (bool) getenv('SHOP_SANDBOX');
             $sandBox = $isSandBox ? 'SANDBOX_' : '';
