@@ -5,10 +5,12 @@
 
 namespace Oxidio\DI;
 
+use Exception;
 use Php;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 
-class Container implements ContainerInterface
+class Container implements Php\DI\MutableContainerInterface
 {
     use Php\DI\AwareTrait;
     use Php\DI\CallerTrait;
@@ -31,5 +33,16 @@ class Container implements ContainerInterface
     public function has($id): bool
     {
         return $this->proxy->has($id);
+    }
+
+    public function set(string $id, $value): void
+    {
+        if ($this->proxy instanceof Php\DI\MutableContainerInterface) {
+            $this->proxy->set($id, $value);
+            return;
+        }
+        throw new class(
+            Php::str('missing %s', Php\DI\MutableContainerInterface::class)
+        ) extends Exception implements ContainerExceptionInterface{};
     }
 }
