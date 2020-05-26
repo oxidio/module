@@ -29,7 +29,7 @@ class Module implements JsonSerializable
 {
     /**
      * @see Php\PropertiesTrait::propResolver
-     * @uses resolveContext, resolveLanguages, resolvePackage, resolveContainer, resolveCli, resolveInvoker
+     * @uses resolveContext, resolveLanguages, resolvePackage, resolveContainer, resolveInvoker
      */
     use Php\PropertiesTrait\ReadOnly;
     use Php\DI\AwareTrait;
@@ -37,7 +37,6 @@ class Module implements JsonSerializable
     public const APP = 'oxidio-app';
     protected const APP_TPL = '/oxidio/views/admin/tpl/' . self::APP . '.tpl';
     public const MENU = 'menu';
-    public const CLI = 'cli';
     public const EXTEND = 'extend';
     public const BLOCKS = 'blocks';
     public const SETTINGS = 'settings';
@@ -91,18 +90,6 @@ class Module implements JsonSerializable
             $di,
             Php\Composer\DIClassLoader::instance()->getContainer()
         );
-    }
-
-    /**
-     * @see $cli
-     * @return Php\Cli
-     */
-    protected function resolveCli(): Php\Cli
-    {
-        $cli = Oxidio\Functions::cli($this->package, $this->container);
-        $this->container->set(get_class($cli), $cli);
-        $this->container->set(self::CLI, $this->di(self::CLI, $cli));
-        return $cli;
     }
 
     /**

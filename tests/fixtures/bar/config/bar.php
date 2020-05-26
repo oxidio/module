@@ -71,28 +71,6 @@ return [
         ],
     ],
 
-    Module::CLI => static function (Php\Cli $cli) {
-        $cli->command('bar', function (Php\Cli\IO $io) {
-            $io->success('bar');
-        });
-
-        $cli->command('db', Oxidio\Bar\Cli\Db::class , ['filter']);
-        $cli->command('shop', Oxidio\Bar\Cli\Shop::class);
-
-        $cli->command('db:define', new Oxidio\Cli\Db\Define(static function () {
-            yield 'bar:v1' => static function (Schema $schema) {
-                $schema->createTable('bar')->addColumn('c1', Type::STRING);
-            };
-
-            yield 'bar:v2' => static function (Schema $schema) {
-                $schema->getTable('bar')->addColumn('c2', Type::STRING);
-            };
-
-        }), ['filter']);
-
-        return $cli;
-    },
-
     Oxidio\Bar\Cli\Db::class => DI\create(),
     Oxidio\Bar\Cli\Shop::class => DI\create(),
 
