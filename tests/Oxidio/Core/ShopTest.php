@@ -35,4 +35,22 @@ class ShopTest extends TestCase
         self::assertSame(9, strlen($id = Shop::id('foo', true)));
         self::assertSame('foo', substr($id, 0, 3));
     }
+
+    public function testUrls(): void
+    {
+        $_ENV = [];
+        self::assertSame([], Shop::urls());
+        $_ENV = [
+            'OXIDIO_SHOP_FOO' => 'url-foo',
+            'OXIDIO_SHOP_bar' => 'url-bar',
+            'OXIDIO_SHOP_foo_BAR' => 'url-foo-bar',
+            'does_not_match' => 'does_not_match',
+        ];
+        self::assertSame([
+            'foo' => 'url-foo',
+            'bar' => 'url-bar',
+            'foo-bar' => 'url-foo-bar',
+        ], Shop::urls());
+    }
+
 }

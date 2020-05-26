@@ -15,23 +15,6 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 class FunctionsTest extends TestCase
 {
-    public function testShopUrls(): void
-    {
-        $_ENV = [];
-        self::assertSame([], Functions::shopUrls());
-        $_ENV = [
-            'OXIDIO_SHOP_FOO' => 'url-foo',
-            'OXIDIO_SHOP_bar' => 'url-bar',
-            'OXIDIO_SHOP_foo_BAR' => 'url-foo-bar',
-            'does_not_match' => 'does_not_match',
-        ];
-        self::assertSame([
-            'foo' => 'url-foo',
-            'bar' => 'url-bar',
-            'foo-bar' => 'url-foo-bar',
-        ], Functions::shopUrls());
-    }
-
     public function testCli(): void
     {
         self::assertCli('foobar', static function () {

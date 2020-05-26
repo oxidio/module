@@ -12,45 +12,9 @@ use Symfony\Component\Console\Input\{ArgvInput, InputInterface, InputOption};
 
 class Functions
 {
-    protected static $shops = [];
-
-    protected const URL_PREFIX = 'OXIDIO_SHOP_';
-
-    /**
-     * @return string[]
-     */
-    public static function shopUrls(): array
-    {
-        return Php::arr($_ENV ?? [], static function ($url, &$var) {
-            if (strpos($var, static::URL_PREFIX) !== 0) {
-                return;
-            }
-            $var = str_replace('_', '-', strtolower(substr($var, strlen(static::URL_PREFIX))));
-            yield $url;
-        });
-    }
-
-    /**
-     * @param string|Core\Database $locator
-     * @param array $params
-     *
-     * @return Core\Shop
-     */
-    public static function shop($locator = null, array $params = []): Core\Shop
-    {
-        if (is_string($locator) && $shop = self::shopUrls()[$locator] ?? null) {
-            $params += ['locator' => $locator];
-        } else {
-            $shop = $locator;
-        }
-        $db = $shop instanceof Core\Database ? $shop : Core\Database::get($shop);
-        $hash = md5(json_encode([spl_object_hash($db), $params]));
-        return self::$shops[$hash] ?? self::$shops[$hash] = new Core\Shop($db, $params);
-    }
-
     private static function shopOption(): InputOption
     {
-        if ($urls = implode(' | ', Php::keys(static::shopUrls()))) {
+        if ($urls = implode(' | ', Php::keys(Core\Shop::urls()))) {
             $urls = "[ $urls ]";
         }
         return new InputOption(
@@ -63,6 +27,8 @@ class Functions
     }
 
     /**
+     * @deprecated
+     *
      * @param Php\Package|string|array $package
      * @param string|callable|array    ...$args
      *
@@ -85,7 +51,7 @@ class Functions
                 },
 
                 Core\Shop::class => static function (InputInterface $input): Core\Shop {
-                    return static::shop($input->hasOption('shop') ? $input->getOption('shop') : null);
+                    return Core\Shop::get($input->hasOption('shop') ? $input->getOption('shop') : null);
                 },
 
                 Core\Database::class => static function (Core\Shop $shop): Core\Database {

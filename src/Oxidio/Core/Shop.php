@@ -53,6 +53,41 @@ class Shop implements DataModificationInterface
         $this->properties = ['db' => $db] + $params + ['configKey' => self::DEFAULT_CONFIG_KEY, 'locator' => null];
     }
 
+    protected const URL_PREFIX = 'OXIDIO_SHOP_';
+    protected static $shops = [];
+
+    /**
+     * @return string[]
+     */
+    public static function urls(): array
+    {
+        return Php::arr($_ENV ?? [], static function ($url, &$var) {
+            if (strpos($var, static::URL_PREFIX) !== 0) {
+                return;
+            }
+            $var = str_replace('_', '-', strtolower(substr($var, strlen(static::URL_PREFIX))));
+            yield $url;
+        });
+    }
+
+    /**
+     * @param string|Database $locator
+     * @param array $params
+     *
+     * @return self
+     */
+    public static function get($locator = null, array $params = []): self
+    {
+        if (is_string($locator) && $shop = static::urls()[$locator] ?? null) {
+            $params += ['locator' => $locator];
+        } else {
+            $shop = $locator;
+        }
+        $db = $shop instanceof Database ? $shop : Database::get($shop);
+        $hash = md5(json_encode([spl_object_hash($db), $params], JSON_THROW_ON_ERROR));
+        return self::$shops[$hash] ?? self::$shops[$hash] = new Shop($db, $params);
+    }
+
     public function __toString()
     {
         return (string)($this->locator ?? '');
