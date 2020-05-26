@@ -27,9 +27,12 @@ EOL;
 
     public function __construct(CommandsProviderInterface $provider)
     {
-        parent::__construct(static::di(Php\VENDOR\OXIDIO\OXIDIO, Oxidio::di()));
-        $this->addCommands($provider->getCommands());
+        parent::__construct(static::di(Php\VENDOR\OXIDIO\OXIDIO, Oxidio::di(), [
+            Oxidio\Core\Shop::class => ($shop = new Oxidio\Cli\Shop\OptionProvider())->getFactory(),
+        ]));
         $this->setVersion($this->getVersion() . self::AVATAR);
+        $this->addCommands($provider->getCommands());
+        $shop->addTo($this->command('io:meta:tables', new Meta\Tables(), ['dir']));
     }
 
     public function getCommands()
@@ -38,7 +41,5 @@ EOL;
         yield 'io:shop:generate' => new Shop\Generate();
         yield 'io:setup:views' => new Setup\Views();
         yield 'io:meta:theme' => new Meta\Theme();
-        yield 'io:meta:tables' => [new Meta\Tables(), ['dir']]; // @todo shop parameter
     }
-
 }
