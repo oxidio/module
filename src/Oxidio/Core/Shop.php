@@ -84,7 +84,7 @@ class Shop implements DataModificationInterface
             $shop = $locator;
         }
         $db = $shop instanceof Database ? $shop : Database::get($shop);
-        $hash = md5(json_encode([spl_object_hash($db), $params], JSON_THROW_ON_ERROR));
+        $hash = md5(json_encode([spl_object_hash($db), $params]));
         return self::$shops[$hash] ?? self::$shops[$hash] = new Shop($db, $params);
     }
 
