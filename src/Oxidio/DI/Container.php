@@ -23,6 +23,8 @@ class Container implements Php\DI\MutableContainerInterface
     public function __construct(ContainerInterface $proxy)
     {
         $this->proxy = $proxy;
+        $this->set(static::class, $this);
+        $this->set(self::class, $this);
     }
 
     public function get($id)
