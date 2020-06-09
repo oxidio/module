@@ -6,13 +6,19 @@
 namespace Oxidio\Cli\Shop;
 
 
+use Generator;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Install\Service\ProjectConfigurationGenerator;
 
 class Generate
 {
-    public function __invoke(
-        ProjectConfigurationGenerator $generator
-    ) {
+    /**
+     * Generates default project configuration
+     *
+     * @param ProjectConfigurationGenerator $generator
+     * @return Generator
+     */
+    public function __invoke(ProjectConfigurationGenerator $generator): Generator
+    {
         $generator->generate();
         yield '<info>ok</info>';
     }
