@@ -51,7 +51,7 @@ class Oxidio
         return $input;
     }
 
-    public static function constName(string $value, string $class): ?string
+    public static function constName($value, string $class): ?string
     {
         static $cache = [];
         if (!isset($cache[$class])) {
