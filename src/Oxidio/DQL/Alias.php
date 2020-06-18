@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (C) oxidio. See LICENSE file for license details.
  */
@@ -6,7 +6,7 @@
 namespace Oxidio\DQL;
 
 use ArrayAccess;
-use Php;
+use Php\Php;
 
 class Alias implements ArrayAccess
 {
