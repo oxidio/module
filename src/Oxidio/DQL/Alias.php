@@ -10,13 +10,31 @@ use Php\Php;
 
 class Alias implements ArrayAccess
 {
-    private $alias;
+    private $view;
     private $columns;
 
-    public function __construct(string $alias, array ...$columns)
+    public function __construct(?string $view = null, array ...$columns)
     {
-        $this->alias = $alias;
+        $this->view = $view;
+        $columns = Php::arr($columns, function (array $columns) {
+            yield Php::arr($columns, function ($column, $alias) {
+                if ($column instanceof Column) {
+                    yield [$column->alias ?: $alias] => Php::str($column->name, ['v' => $this->view]);
+                } else {
+                    $alias = is_numeric($alias) ? $column : $alias;
+                    yield [$alias] => $this->concat('.', "`$column`");
+                }
+            });
+        });
         $this->columns = array_merge([], ...$columns);
+    }
+
+    private function concat(?string ...$strings): ?string
+    {
+        if ($this->view) {
+            return "`{$this->view}`" . implode('', $strings);
+        }
+        return $strings[count($strings) - 1] ?? null;
     }
 
     public function __invoke(string ...$aliases): string
@@ -24,7 +42,7 @@ class Alias implements ArrayAccess
         $pieces = [];
         foreach ($aliases as $candidate) {
             foreach ($candidate === '*' ? array_keys($this->columns) : [$candidate] as $alias) {
-                $pieces[] = "{$this[$alias]} AS `$alias`";
+                $pieces[] = "{$this->get($alias, true)} AS `$alias`";
             }
         }
         return implode(",\n", $pieces);
@@ -32,7 +50,7 @@ class Alias implements ArrayAccess
 
     public function v(string $view): string
     {
-        return "`{$view}` AS `{$this->alias}`";
+        return $this->view ? "`{$view}` AS `{$this->view}`" : "`{$view}`";
     }
 
     public function offsetExists($alias): bool
@@ -40,10 +58,20 @@ class Alias implements ArrayAccess
         return isset($this->columns[$alias]);
     }
 
+    private function get($alias, bool $asColumn): string
+    {
+        if ($alias instanceof Column) {
+            $alias = $alias->alias ?: $alias->name;
+        }
+        if (!($column = $this->columns[$alias] ?? null) || !$asColumn) {
+            return $this->concat('.', "`$alias`");
+        }
+        return $column;
+    }
+
     public function offsetGet($alias)
     {
-        $column = $this->columns[$alias] ?? $alias;
-        return $this->alias ? "`{$this->alias}`.`$column`" : "`$column`";
+        return $this->get($alias, false);
     }
 
     public function offsetSet($alias, $column): void
