@@ -58,7 +58,7 @@ class Alias implements ArrayAccess
         return isset($this->columns[$alias]);
     }
 
-    private function get($alias, bool $asColumn): string
+    public function get($alias, bool $asColumn = false): string
     {
         if ($alias instanceof Column) {
             $alias = $alias->alias ?: $alias->name;
@@ -71,7 +71,7 @@ class Alias implements ArrayAccess
 
     public function offsetGet($alias)
     {
-        return $this->get($alias, false);
+        return $this->get($alias, true);
     }
 
     public function offsetSet($alias, $column): void
