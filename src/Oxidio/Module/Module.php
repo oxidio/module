@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (C) oxidio. See LICENSE file for license details.
  */
@@ -253,7 +253,7 @@ class Module implements JsonSerializable
      */
     public function getMetadata(): array
     {
-        $this->generateFiles(dirname(debug_backtrace(false, 1)[0]['file'] ?? null));
+        $this->generateFiles(dirname(debug_backtrace(0, 1)[0]['file'] ?? null));
         return json_decode(json_encode($this), true);
     }
 

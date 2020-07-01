@@ -8,8 +8,6 @@ namespace Oxidio\Module;
 use OxidEsales\Eshop\Application\Controller\Admin\AdminController;
 use OxidEsales\Eshop\Core\Registry;
 
-/**
- */
 class App extends AdminController
 {
     protected $_sThisTemplate = Module::APP;

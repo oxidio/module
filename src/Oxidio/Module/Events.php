@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (C) oxidio. See LICENSE file for license details.
  */
@@ -8,8 +8,6 @@ namespace Oxidio\Module;
 use JsonSerializable;
 use OxidEsales\Eshop\Core\Module\Module as OxidModule;
 
-/**
- */
 class Events implements JsonSerializable
 {
     /**
@@ -50,7 +48,7 @@ class Events implements JsonSerializable
      */
     private static function activate(bool $enable): bool
     {
-        $module = debug_backtrace(FALSE, 5)[4]['args'][0] ?? null;
+        $module = debug_backtrace(0, 5)[4]['args'][0] ?? null;
         return $module instanceof OxidModule && Module::instance($module->getId())->activate($enable, $module);
     }
 }
