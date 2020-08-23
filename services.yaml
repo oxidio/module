@@ -6,3 +6,7 @@ services:
   Oxidio\Cli\App: ~
   Oxidio\Framework\Configuration\Shops: ~
   Oxidio\Framework\Context: ~
+  Oxidio\DI\RegistryResolver: ~
+  Oxidio\DI\SmartyTemplateVars:
+    arguments:
+      - "@=service('OxidEsales\\\\EshopCommunity\\\\Internal\\\\Framework\\\\Templating\\\\TemplateRendererBridgeInterface').getEngine()"

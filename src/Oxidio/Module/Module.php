@@ -11,10 +11,7 @@ use Php;
 use Generator;
 use JsonSerializable;
 use OxidEsales\Eshop\Core\Module\Module as OxidModule;
-use Oxidio\DI\RegistryResolver;
-use Oxidio\DI\SmartyTemplateVars;
 use Symfony\Component\Filesystem\Filesystem;
-use Invoker\ParameterResolver;
 
 /**
  * @property-read string           $id
@@ -53,10 +50,6 @@ class Module implements JsonSerializable
      */
     private static $cache = [];
 
-    /**
-     * @see $context
-     * @return BasicContextInterface
-     */
     protected function resolveContext(): BasicContextInterface
     {
         return Oxidio::di(BasicContextInterface::class);
@@ -68,33 +61,27 @@ class Module implements JsonSerializable
         return  ['en', 'de'];
     }
 
-    /**
-     * @see $package
-     * @return Php\Package
-     */
     protected function resolvePackage(): Php\Package
     {
         return Php\Package::get($this->id);
     }
 
-    /**
-     * @see $container
-     * @return Php\DI\Container
-     */
     protected function resolveContainer(): Php\DI\Container
     {
         $package = $this->package;
         ($di = $package->extra['di'] ?? []) && $di = $package->file($di);
         return Php::di(
-            [self::ID => $this->id, self::class => $this,],
+            [self::ID => $this->id, self::class => $this],
             $di,
-            Php\Composer\DIClassLoader::instance()->getContainer()
+            Oxidio::di()
         );
     }
 
-    /**
-     * @param string $id
-     */
+    protected function resolveInvoker(): Php\DI\Invoker
+    {
+        return Oxidio\DI\Container::invoker($this->container);
+    }
+
     public function __construct(string $id)
     {
         $this->properties['id'] = $id;
@@ -105,11 +92,6 @@ class Module implements JsonSerializable
         return new Blocks($this->di(self::BLOCKS, []));
     }
 
-    /**
-     * @param string $id
-     *
-     * @return static
-     */
     public static function instance(string $id): self
     {
         return self::$cache[$id] ?? self::$cache[$id] = new static($id);
@@ -131,28 +113,6 @@ class Module implements JsonSerializable
         return '';
     }
 
-    /**
-     * @see $invoker
-     * @return Php\DI\Invoker
-     */
-    protected function resolveInvoker(): Php\DI\Invoker
-    {
-        return new Php\DI\Invoker(
-            new SmartyTemplateVars,
-            new ParameterResolver\AssociativeArrayResolver,
-            $this->container,
-            new ParameterResolver\Container\ParameterNameContainerResolver($this->container),
-            new RegistryResolver,
-            new ParameterResolver\DefaultValueResolver
-        );
-    }
-
-    /**
-     * @param bool       $enable
-     * @param OxidModule $module
-     *
-     * @return bool
-     */
     public function activate(bool $enable, OxidModule $module): bool
     {
         $enable && $this->generateFiles($module->getModuleFullPath(), true);
@@ -225,9 +185,6 @@ class Module implements JsonSerializable
         });
     }
 
-    /**
-     * @inheritdoc
-     */
     public function jsonSerialize()
     {
         $author = $this->package->authors[0] ?? [];
@@ -248,20 +205,12 @@ class Module implements JsonSerializable
         ];
     }
 
-    /**
-     * @return array
-     */
     public function getMetadata(): array
     {
         $this->generateFiles(dirname(debug_backtrace(0, 1)[0]['file'] ?? null));
-        return json_decode(json_encode($this), true);
+        return json_decode(json_encode($this, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
     }
 
-    /**
-     * @param string $lang
-     *
-     * @return Generator
-     */
     private function getTranslations(string $lang): Generator
     {
         yield from (new Settings($this->di(self::SETTINGS, [])))->translate($lang);

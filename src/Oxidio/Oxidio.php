@@ -5,12 +5,7 @@
 
 namespace Oxidio;
 
-use Exception;
-use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
-use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use Oxidio\DI\Container;
-use Oxidio\DI\SmartyTemplateVars;
-use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
 
@@ -93,16 +88,7 @@ class Oxidio
      */
     public static function di($name = null, $default = null)
     {
-        static $container;
-        if (!$container) {
-            try {
-                $oe = ContainerFactory::getInstance()->getContainer();
-            } catch (Exception $e) {
-                $oe = BootstrapContainerFactory::getBootstrapContainer();
-            }
-            $container = new Container(SmartyTemplateVars::container($oe));
-        }
-        return $container->di(...func_get_args());
+        return Container::instance()->di(...func_get_args());
     }
 
     public static function call($callable, array $params = [])
