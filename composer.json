@@ -37,12 +37,10 @@
     "psr-4": {
       "Oxidio\\": [
         "src/Oxidio"
-      ],
-      "": [
-        "src"
       ]
     },
     "files": [
+      "src/Oxidio.php",
       "src/autoload-files.php"
     ]
   },
