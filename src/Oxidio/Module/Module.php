@@ -52,7 +52,7 @@ class Module implements JsonSerializable
 
     protected function resolveContext(): BasicContextInterface
     {
-        return Oxidio::di(BasicContextInterface::class);
+        return Oxidio\DI\Container::oe()->get(BasicContextInterface::class);
     }
 
     protected function resolveLanguages(): array
@@ -73,7 +73,7 @@ class Module implements JsonSerializable
         return Php::di(
             [self::ID => $this->id, self::class => $this],
             $di,
-            Oxidio::di()
+            Oxidio\DI\Container::oe()
         );
     }
 
