@@ -18,7 +18,6 @@ use Symfony\Component\Filesystem\Filesystem;
  * @property-read Php\Package      $package
  * @property-read Php\Cli          $cli
  * @property-read Php\DI\Container $container
- * @property-read Php\DI\Invoker   $invoker
  * @property-read BasicContextInterface $context
  * @property-read string[] $languages
  */
@@ -26,7 +25,7 @@ class Module implements JsonSerializable
 {
     /**
      * @see Php\PropertiesTrait::propResolver
-     * @uses resolveContext, resolveLanguages, resolvePackage, resolveContainer, resolveInvoker
+     * @uses resolveContext, resolveLanguages, resolvePackage, resolveContainer
      */
     use Php\PropertiesTrait\ReadOnly;
     use Php\DI\AwareTrait;
@@ -77,11 +76,6 @@ class Module implements JsonSerializable
         );
     }
 
-    protected function resolveInvoker(): Php\DI\Invoker
-    {
-        return Oxidio\DI\Container::invoker($this->container);
-    }
-
     public function __construct(string $id)
     {
         $this->properties['id'] = $id;
@@ -100,7 +94,7 @@ class Module implements JsonSerializable
     public function renderBlock(string $file): string
     {
         if ($block = $this->getBlocks()->get($file)) {
-            return (string) $this->invoker->call($block->callback);
+            return (string) Oxidio::call($block->callback);
         }
         return '';
     }
@@ -108,7 +102,7 @@ class Module implements JsonSerializable
     public function renderApp($menuKey): string
     {
         if ($menu = $this->getMenu(true)[$menuKey] ?? null) {
-            return (string) $this->invoker->call($menu->callback);
+            return (string) Oxidio::call($menu->callback);
         }
         return '';
     }
