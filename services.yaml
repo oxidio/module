@@ -6,7 +6,81 @@ services:
   Oxidio\Cli\App: ~
   Oxidio\Framework\Configuration\Shops: ~
   Oxidio\Framework\Context: ~
-  Oxidio\DI\RegistryResolver: ~
-  Oxidio\DI\SmartyTemplateVars:
+
+  oxidio.di.definition.container:
+    class: Psr\Container\ContainerInterface
+    factory: Oxidio\DI\Factory::value
     arguments:
-      - "@=service('OxidEsales\\\\EshopCommunity\\\\Internal\\\\Framework\\\\Templating\\\\TemplateRendererBridgeInterface').getEngine()"
+      - '@service_container'
+    tags:
+      - name: oxidio.di.definition
+        priority: 100
+
+  oxidio.di.definition.composer-container:
+    class: Psr\Container\ContainerInterface
+    factory: Php\Composer\DIClassLoader::instance
+    tags:
+      - name: oxidio.di.definition
+        priority: 90
+
+  oxidio.di.definition.rr-container:
+    class: Psr\Container\ContainerInterface
+    factory: Oxidio\DI\Factory::property
+    arguments:
+      - Oxidio\DI\RegistryResolver
+      - container
+    tags:
+      - name: oxidio.di.definition
+        priority: 80
+
+  Php\DI\Invoker:
+    factory: Oxidio\DI\Factory::variadic
+    arguments:
+      - Php\DI\Invoker
+      - !tagged oxidio.di.resolver
+
+  Invoker\InvokerInterface:
+    alias: Php\DI\Invoker
+
+  Invoker\ParameterResolver\AssociativeArrayResolver:
+    tags:
+      - name: oxidio.di.resolver
+        priority: 100
+
+  Smarty:
+    class: Smarty
+    factory: ['@OxidEsales\EshopCommunity\Internal\Framework\Templating\TemplateRendererBridgeInterface', getEngine]
+
+  Oxidio\DI\SmartyTemplateVars:
+    tags:
+      - name: oxidio.di.resolver
+        priority: 90
+
+  Php\DI\MutableContainerInterface:
+    factory: Oxidio\DI\Container::mutable
+    arguments:
+      - !tagged oxidio.di.definition
+
+  Oxidio\DI\Container:
+    arguments:
+      - '@Php\DI\MutableContainerInterface'
+    tags:
+      - name: oxidio.di.resolver
+        priority: 80
+
+  Invoker\ParameterResolver\Container\ParameterNameContainerResolver:
+    arguments:
+      - '@Oxidio\DI\Container'
+    tags:
+      - name: oxidio.di.resolver
+        priority: 70
+
+  Oxidio\DI\RegistryResolver:
+    tags:
+      - name: oxidio.di.resolver
+        priority: 60
+
+  Invoker\ParameterResolver\DefaultValueResolver:
+    tags:
+      - name: oxidio.di.resolver
+        priority: 50

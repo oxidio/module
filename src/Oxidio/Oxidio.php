@@ -88,7 +88,11 @@ class Oxidio
      */
     public static function di($name = null, $default = null)
     {
-        return Container::instance()->di(...func_get_args());
+        static $instance;
+        if (!$instance) {
+            $instance = Container::oe()->get(Container::class);
+        }
+        return $instance->di(...func_get_args());
     }
 
     public static function call($callable, array $params = [])

@@ -9,20 +9,16 @@ use ArrayAccess;
 use Php;
 use Generator;
 use Invoker\ParameterResolver\TypeHintVariadicResolver;
-use IteratorAggregate;
 use ReflectionParameter;
 use Smarty;
 
-/**
- * @property-read Smarty $smarty
- */
-class SmartyTemplateVars implements ArrayAccess, IteratorAggregate
+class SmartyTemplateVars implements ArrayAccess
 {
-    use Php\PropertiesTrait\ReadOnly;
+    private $smarty;
 
     public function __construct(Smarty $smarty)
     {
-        $this->properties = ['smarty' => $smarty];
+        $this->smarty = $smarty;
     }
 
     /**
@@ -48,11 +44,6 @@ class SmartyTemplateVars implements ArrayAccess, IteratorAggregate
                     }
             }
         }
-    }
-
-    public function getIterator(): Php\Map
-    {
-        return Php::map($this->smarty->get_template_vars());
     }
 
     public function offsetExists($offset): bool

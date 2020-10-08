@@ -6,35 +6,22 @@
 namespace Oxidio\DI;
 
 use Exception;
-use Invoker\ParameterResolver\AssociativeArrayResolver;
-use Invoker\ParameterResolver\Container\ParameterNameContainerResolver;
-use Invoker\ParameterResolver\DefaultValueResolver;
 use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use Php;
-use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use OxidEsales\Eshop\Core;
 
 class Container implements Php\DI\MutableContainerInterface
 {
     use Php\DI\AwareTrait;
     use Php\DI\CallerTrait;
 
-    /**
-     * @var self
-     */
-    protected static $instance;
-
-    /**
-     * @var ContainerInterface
-     */
     private $proxy;
 
-    public function __construct(ContainerInterface $proxy)
+    public function __construct(Php\DI\MutableContainerInterface $proxy)
     {
         $this->proxy = $proxy;
-        $this->set(static::class, $this);
-        $this->set(self::class, $this);
     }
 
     public function get($id)
@@ -49,13 +36,12 @@ class Container implements Php\DI\MutableContainerInterface
 
     public function set(string $id, $value): void
     {
-        if ($this->proxy instanceof Php\DI\MutableContainerInterface) {
-            $this->proxy->set($id, $value);
-            return;
-        }
-        throw new class(
-            Php::str('missing %s', Php\DI\MutableContainerInterface::class)
-        ) extends Exception implements ContainerExceptionInterface{};
+        $this->proxy->set($id, $value);
+    }
+
+    public static function mutable(iterable $definitions = null): Php\DI\MutableContainerInterface
+    {
+        return Php::di(...Php::arr($definitions ?: []));
     }
 
     public static function oe(): ContainerInterface
@@ -66,31 +52,5 @@ class Container implements Php\DI\MutableContainerInterface
             return BootstrapContainerFactory::getBootstrapContainer();
         }
     }
-
-    public static function invoker(ContainerInterface $container): Php\DI\Invoker
-    {
-        return new Php\DI\Invoker(
-            $container->get(SmartyTemplateVars::class),
-            new AssociativeArrayResolver(),
-            $container,
-            new ParameterNameContainerResolver($container),
-            $container->get(RegistryResolver::class),
-            new DefaultValueResolver()
-        );
-    }
-
-    public static function instance(): self
-    {
-        if (!self::$instance) {
-            $oe = static::oe();
-            $rr = $oe->get(RegistryResolver::class);
-            $di = Php::di($oe, Php\Composer\DIClassLoader::instance()->getContainer(), ...[$rr->container, [
-                Php\DI\Invoker::class => function (ContainerInterface $container) {
-                    return self::invoker($container);
-                },
-            ]]);
-            self::$instance = new self($di);
-        }
-        return self::$instance;
-    }
 }
+
