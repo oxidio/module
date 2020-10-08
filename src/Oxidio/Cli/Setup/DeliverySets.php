@@ -80,7 +80,10 @@ class DeliverySets
                     T\O2PAYMENT::TYPE => T::COUNTRY,
                 ];
             }
-            foreach (array_keys($this->sets) as $setId) {
+            foreach ($this->sets as $setId => $set) {
+                if (isset($set['payments']) && !in_array($id, $set['payments'], true)) {
+                    continue;
+                }
                 $o2p[$shop::id($id, $setId)] = [
                     T\O2PAYMENT::PAYMENTID => $id,
                     T\O2PAYMENT::OBJECTID => $setId,
@@ -141,6 +144,7 @@ class DeliverySets
             }
         }
         $shop->modify(T::O2DELIVERY)->delete([T\O2DELIVERY::DELIVERYID => ['IN', array_keys($this->sets, $del)]]);
+        $shop->modify(T::O2DELIVERY)->delete([T\O2DELIVERY::TYPE => T::CATEGORIES]);
         $shop->modify(T::O2DELIVERY)->replace($s2c, T\O2DELIVERY::ID);
 
         $shop->modify(T::DELIVERY)->update([T\DELIVERY::ACTIVE => false]);
