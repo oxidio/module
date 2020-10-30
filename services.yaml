@@ -27,7 +27,7 @@ services:
     class: Psr\Container\ContainerInterface
     factory: Oxidio\DI\Factory::property
     arguments:
-      - Oxidio\DI\RegistryResolver
+      - '@Oxidio\DI\RegistryResolver'
       - container
     tags:
       - name: oxidio.di.definition
