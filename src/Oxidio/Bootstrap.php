@@ -10,6 +10,8 @@ use Closure;
 use Dotenv\Dotenv;
 use OxidEsales\Eshop\Core\ConfigFile as ShopConfigFile;
 use OxidEsales\Eshop\Core\Config;
+use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Transition\Utility\BasicContextInterface;
 use OxidEsales\Facts\Config\ConfigFile as FactsConfigFile;
 use Symfony\Component\Debug\Debug;
 
@@ -30,16 +32,18 @@ class Bootstrap
 
     /**
      * @param Config|BootstrapConfigFileReader|FactsConfigFile|ShopConfigFile $config
+     * @param ?BasicContextInterface $context
      */
-    public static function bootstrap($config): void
+    public static function bootstrap($config, BasicContextInterface $context = null): void
     {
-        if (class_exists(Dotenv::class)) {
-            Dotenv::create(INSTALLATION_ROOT_PATH)->overload();
+        if (!class_exists(Dotenv::class)) {
+            return;
         }
-
-        Closure::bind(function (array $configParamNames) {
-            $this->sShopDir    = OX_BASE_PATH;
-            $this->sCompileDir = OX_BASE_PATH . 'tmp/';
+        $context = $context ?: BootstrapContainerFactory::getBootstrapContainer()->get(BasicContextInterface::class);
+        Dotenv::create($context->getShopRootPath())->overload();
+        Closure::bind(function (array $configParamNames, BasicContextInterface $context) {
+            $this->sShopDir    = $context->getSourcePath() . '/';
+            $this->sCompileDir = $context->getSourcePath() . '/tmp/';
             $this->dbHost      = getenv('DB_HOST') ?: 'localhost';
             $this->dbPort      = getenv('DB_PORT') ?: 3306;
             $this->dbName      = getenv('DB_NAME') ?: 'project';
@@ -50,6 +54,7 @@ class Bootstrap
             $this->sAdminEmail = getenv('SHOP_ADMIN') ?: 'webmaster@localhost';
             $this->iDebug      = getenv('SHOP_DEBUG') ?: 0;
             if ($this->iDebug < 0 && class_exists(Debug::class)) {
+                /** @noinspection ForgottenDebugOutputInspection */
                 Debug::enable(E_ALL & ~E_DEPRECATED);
             }
 
@@ -63,11 +68,6 @@ class Bootstrap
                 }
                 $value === null ||  $this->_aConfigParams[$param['name']] = $value;
             }
-
-            $configFile = INSTALLATION_ROOT_PATH . (getenv('SHOP_CONFIG') ?:  '/config/shop.php');
-            /** @noinspection PhpIncludeInspection */
-            file_exists($configFile) && require $configFile;
-
-        }, $config, $config)(self::CONFIG_PARAM_NAMES);
+        }, $config, $config)(self::CONFIG_PARAM_NAMES, $context);
     }
 }

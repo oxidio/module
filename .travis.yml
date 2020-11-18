@@ -17,21 +17,21 @@ sudo: false
 
 before_script:
   - git checkout ${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}
-  - mysql -e "CREATE USER 'oxidio'@'%' IDENTIFIED BY 'oxidio';"
-  - mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'oxidio'@'%';"
-  - composer install --no-plugins
   - echo "DB_HOST=127.0.0.1" > .env
   - echo "DB_NAME=oxidio" >> .env
   - echo "DB_USER=oxidio" >> .env
   - echo "DB_PASSWORD=oxidio" >> .env
   - echo "DB_STATE=ok" >> .env
-  - vendor/bin/oxidio-install @dev
+  - mysql -e "CREATE USER 'oxidio'@'%' IDENTIFIED BY 'oxidio';"
+  - mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'oxidio'@'%';"
+  - composer install --no-suggest --no-plugins --no-scripts --no-autoloader
   - vendor/bin/oxidio-db vendor/oxidio/shop/source/Setup/Sql/database_schema.sql vendor/oxidio/shop/source/Setup/Sql/initial_data.sql
+  - vendor/bin/oxidio-install --env=dev --no-interaction
   - bin/oxidio io:setup:views -v
 
 script:
   - mkdir -p build/logs
-  - vendor/bin/phpunit --debug --coverage-clover build/logs/clover.xml --whitelist src/Oxidio tests
+  - vendor/bin/phpunit --bootstrap source/bootstrap.php --debug --coverage-clover build/logs/clover.xml --whitelist src/Oxidio tests
 
 after_success:
   - travis_retry php vendor/bin/php-coveralls -v

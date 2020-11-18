@@ -5,5 +5,6 @@
  */
 
 exit(call_user_func(require getcwd() . '/vendor/autoload.php', static function () {
+    require_once getcwd() . '/source/bootstrap.php';
     return Oxidio::di()->get(Oxidio\Cli\App::class)->run();
 }));
