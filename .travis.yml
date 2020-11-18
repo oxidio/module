@@ -24,6 +24,7 @@ before_script:
   - echo "DB_STATE=ok" >> .env
   - mysql -e "CREATE USER 'oxidio'@'%' IDENTIFIED BY 'oxidio';"
   - mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'oxidio'@'%';"
+  - composer self-update --1
   - composer install --no-suggest --no-plugins --no-scripts --no-autoloader
   - vendor/bin/oxidio-db vendor/oxidio/shop/source/Setup/Sql/database_schema.sql vendor/oxidio/shop/source/Setup/Sql/initial_data.sql
   - vendor/bin/oxidio-install --env=dev --no-interaction
