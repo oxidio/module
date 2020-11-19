@@ -35,7 +35,7 @@ EOL;
         $shop->addTo($this->command('io:meta:tables', new Meta\Tables(), ['dir']));
     }
 
-    public function getCommands()
+    public function getCommands(): iterable
     {
         yield 'io:shop:info' => new Shop\Info();
         yield 'io:shop:generate' => new Shop\Generate();
