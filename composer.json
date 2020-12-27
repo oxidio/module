@@ -13,18 +13,18 @@
     "oxidio/bin": "^1.0",
     "oxidio/constants": "^1.0",
     "oxidio/shop": "~6.5",
-    "oxidio/composer-plugin": "^4.0",
+    "oxidio/composer-plugin": "^6.0",
     "oxidio/unified-namespace-generator": "^2.0",
     "oxidio/facts": "^2.0",
     "symfony/yaml": "^3.4",
     "symfony/filesystem": "^3.4",
     "vlucas/phpdotenv": "^3.4",
     "php-fn/php-fn": "^3.1",
-    "sebastian/diff": "^3.0",
+    "sebastian/diff": "^4.0",
 
     "ext-json": "*",
     "ext-pdo": "*",
-    "php": ">=7.1"
+    "php": ">=7.3"
   },
   "require-dev": {
     "oxidio/theme-wave": "^1.2",
