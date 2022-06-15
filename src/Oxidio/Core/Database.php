@@ -112,9 +112,6 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
         return $this->conn->getSchemaManager()->listViews();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function query($from = null, $mapper = null, ...$where): DataQuery
     {
         return (new DataQuery($from, $mapper, ...$where))->withDb($this->fix(function ($mode, $query, ...$args) {
@@ -133,9 +130,6 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
         return new DataDefine($this, $version);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function modify($view, callable ...$observers): DataModify
     {
         return (new DataModify($view, ...$observers))->withDb($this->fix(function ($mode, ...$args) {
