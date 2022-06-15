@@ -29,7 +29,7 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
     /**
      * @var static[]
      */
-    protected static $instances = [];
+    protected static array $instances = [];
 
     /**
      * @return string[]
@@ -39,25 +39,13 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
         return static::get()->conn->getSchemaManager()->listDatabases();
     }
 
-    /**
-     * @param int|string $locator
-     * @param int $mode
-     *
-     * @return static
-     */
-    public static function get($locator = null, int $mode = self::FETCH_MODE_ASSOC): self
+    public static function get(string $url = null): self
     {
-        $locator === null && $locator = $mode;
-        if (!isset(static::$instances[$locator])) {
-            static::$instances[$locator] = $db = new static;
-            if (is_int($locator)) {
-                $db->proxy = DatabaseProvider::getDb($locator);
-            } else {
-                if (strpos($locator, '://')) {
-                    $params = DBAL\DriverManager::getConnection(['url' => $locator])->getParams();
-                } else {
-                    $params = ['dbname' => $locator] + static::get()->getConnectionParameters();
-                }
+        $url = (string)$url;
+        if (!isset(static::$instances[$url])) {
+            static::$instances[$url] = $db = new static();
+            if ($url) {
+                $params = DBAL\DriverManager::getConnection(['url' => $url])->getParams();
                 $db->setConnectionParameters(['default' => [
                     'databaseName' => $params['dbname'] ?? null,
                     'databaseHost' => $params['host'] ?? $params['databaseHost'] ?? getenv('DB_HOST'),
@@ -67,12 +55,14 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
                     'connectionCharset' => $params['charset'] ?? $params['connectionCharset'] ?? getenv('DB_CHARSET') ?: '',
                 ]]);
                 $db->connect();
+            } else {
+                $db->proxy = DatabaseProvider::getDb(self::FETCH_MODE_ASSOC);
             }
-            $db->conn->getDatabasePlatform()->registerDoctrineTypeMapping('enum', DBAL\Types\Type::STRING);
-            static::$instances[$locator] = $db;
+            $db->conn->getDatabasePlatform()->registerDoctrineTypeMapping('enum', DBAL\Types\Types::STRING);
+            static::$instances[$url] = $db;
         }
-        static::$instances[$locator]->setFetchMode($mode);
-        return static::$instances[$locator];
+        static::$instances[$url]->setFetchMode(self::FETCH_MODE_ASSOC);
+        return static::$instances[$url];
     }
 
     /**
@@ -89,7 +79,6 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
     protected function resolveSchema(): DBAL\Schema\Schema
     {
         return $this->fix(function () {
-            $this->setFetchMode(self::FETCH_MODE_ASSOC);
             return $this->conn->getSchemaManager()->createSchema();
         })();
     }
@@ -114,10 +103,9 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
 
     public function query($from = null, $mapper = null, ...$where): DataQuery
     {
-        return (new DataQuery($from, $mapper, ...$where))->withDb($this->fix(function ($mode, $query, ...$args) {
-            $this->setFetchMode($mode);
+        return (new DataQuery($from, $mapper, ...$where))->withDb($this->fix(function ($query, ...$args) {
             if ($query instanceof DataQuery && $query->orderTerms) {
-                $it = new SelectStatementIterator($query, $this, $mode);
+                $it = new SelectStatementIterator($query, $this);
             } else {
                 $it = $this->select((string)$query);
             }
@@ -132,19 +120,18 @@ class Database extends Adapter\Doctrine\Database implements DataModificationInte
 
     public function modify($view, callable ...$observers): DataModify
     {
-        return (new DataModify($view, ...$observers))->withDb($this->fix(function ($mode, ...$args) {
-            $this->fetchMode = $mode;
+        return (new DataModify($view, ...$observers))->withDb($this->fix(function (...$args) {
             return $this->executeUpdate(...$args);
         }));
     }
 
-    public function fix(callable $callable)
+    private function fix(callable $callable, int $mode = self::FETCH_MODE_ASSOC): callable
     {
-        $fetchMode = is_object($this->proxy) ? $this->proxy->fetchMode : $this->fetchMode;
-        return function (...$args) use ($callable, $fetchMode) {
-            $temp = is_object($this->proxy) ? $this->proxy->fetchMode : $this->fetchMode;
-            $result = $callable($fetchMode, ...$args);
-            $this->fetchMode = $temp;
+        return function (...$args) use ($callable, $mode) {
+            $pdoMode = is_object($this->proxy) ? $this->proxy->fetchMode : $this->fetchMode;
+            $this->setFetchMode($mode);
+            $result = $callable(...$args);
+            is_object($this->proxy) ? $this->proxy->fetchMode = $pdoMode : $this->fetchMode = $pdoMode;
             return $result;
         };
     }

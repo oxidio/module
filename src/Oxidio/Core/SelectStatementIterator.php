@@ -6,36 +6,23 @@
 namespace Oxidio\Core;
 
 use Iterator;
-use Php;
 use OuterIterator;
 use Oxidio;
+use Php\Map\Tree;
 
-/**
- */
 class SelectStatementIterator implements OuterIterator
 {
-    /**
-     * @var AbstractSelectStatement
-     */
-    private $query;
-    /**
-     * @var Database
-     */
-    private $db;
-    private $fetchMode;
-    /**
-     * @var Iterator
-     */
-    private $it;
-    private $start;
-    private $chunkSize;
-    private $counter = 0;
+    private AbstractSelectStatement $query;
+    private Database $db;
+    private ?Iterator $it;
+    private int $start;
+    private int $chunkSize;
+    private int $counter = 0;
 
-    public function __construct(AbstractSelectStatement $query, Database $db, $fetchMode, $chunkSize = 500)
+    public function __construct(AbstractSelectStatement $query, Database $db, int $chunkSize = 500)
     {
         $this->query = $query;
         $this->db = $db;
-        $this->fetchMode = $fetchMode;
         $this->start = $query->start;
         $this->chunkSize = min($chunkSize, $query->limit ?: $chunkSize);
     }
@@ -43,9 +30,9 @@ class SelectStatementIterator implements OuterIterator
     public function getInnerIterator(): Iterator
     {
         if (!$this->it) {
-            $this->db->setFetchMode($this->fetchMode);
             $this->counter = 0;
-            $this->it = new Php\Map\Tree($this->db->select($this->query->getSql($this->start, $this->chunkSize)));
+            $sql = $this->query->getSql($this->start, $this->chunkSize);
+            $this->it = new Tree($this->db->query("($sql) v"));
         }
         return $this->it;
     }
