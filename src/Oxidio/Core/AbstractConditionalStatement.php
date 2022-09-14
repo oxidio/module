@@ -66,15 +66,15 @@ abstract class AbstractConditionalStatement
                     $value = 'NULL';
                     $operator = $operator ?: 'IS';
                 } else if (is_iterable($value)) {
-                    $value = Php::traverse($value, function ($entry) {
+                    $value = Php::arr($value, function ($entry) {
                         return "'$entry'";
                     });
                     if (($operator === 'IN' || $operator === 'NOT IN') && !$value) {
                         $value = ['SELECT NULL FROM DUAL WHERE FALSE'];
                     }
-                    $value = '(' . implode(', ', $value) . ')';
+                    $value = '(' . implode(', ', array_unique($value)) . ')';
                 } else {
-                    $value = "'{$value}'";
+                    $value = "'$value'";
                 }
 
                 $operator = $operator ?: '=';
